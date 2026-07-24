@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ElegantToast, ToastState } from "@/components/ui/elegant-toast";
 
 const publicProjects = [
   {
@@ -69,6 +70,7 @@ export default function PublicPortalPage() {
   // reCAPTCHA state
   const [recaptchaStatus, setRecaptchaStatus] = useState<"idle" | "verifying" | "verified">("idle");
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const handleRecaptchaClick = () => {
     if (recaptchaStatus === "verified") return;
@@ -81,7 +83,7 @@ export default function PublicPortalPage() {
   const handleSubmitProposal = (e: React.FormEvent) => {
     e.preventDefault();
     if (recaptchaStatus !== "verified") {
-      alert("Por favor confirme la verificación de seguridad reCAPTCHA ('No soy un robot').");
+      setToast({ message: "Por favor confirme la verificación de seguridad reCAPTCHA ('No soy un robot').", type: "error" });
       return;
     }
 
@@ -366,10 +368,13 @@ export default function PublicPortalPage() {
       {/* Footer Público */}
       <footer className="border-t bg-card py-6 text-center text-xs text-muted-foreground">
         <div className="max-w-7xl mx-auto px-4">
-          <p>© 2026 Dirección de Investigación Científica y Tecnológica (DICYT). Todos los derechos reservados.</p>
+          <p>© 2026 Universidad Técnica Privada Cosmos (UNITEPC) — Sistema SIGPRI. Todos los derechos reservados.</p>
           <p className="text-[11px] mt-1">Plataforma de Investigación & Fiscalización Financiera</p>
         </div>
       </footer>
+
+      {/* TOAST ELEGANTE */}
+      <ElegantToast toast={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

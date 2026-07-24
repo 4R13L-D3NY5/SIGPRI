@@ -152,9 +152,9 @@ export default function SignInPage() {
             S
           </div>
           <div>
-            <h1 className="font-bold text-lg leading-none tracking-tight">Acceso al Sistema DICYT UNITEPC</h1>
+            <h1 className="font-bold text-lg leading-none tracking-tight">Acceso al Sistema SIGPRI UNITEPC</h1>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Dirección de Investigación Científica y Tecnológica — Sistema SIGPRI
+              Sistema de Gestión de Proyectos e Investigaciones UNITEPC
             </p>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function SignInPage() {
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold tracking-tight">SELECCIÓN DE PERFIL / ROL DICYT</h2>
+                  <h2 className="text-xl font-bold tracking-tight">SELECCIÓN DE PERFIL / ROL INSTITUCIONAL</h2>
                   <p className="text-xs text-muted-foreground">Elija su rol institucional para ajustar los permisos de navegación y control</p>
                 </div>
                 <Badge variant="outline" className="font-mono bg-primary/10 border-primary/30 text-primary font-bold text-xs">

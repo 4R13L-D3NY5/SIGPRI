@@ -12,6 +12,7 @@ import {
   Lock, Unlock, Save, RefreshCw, AlertCircle, Check, HelpCircle, Building2,
   ListOrdered
 } from "lucide-react";
+import { ElegantToast, ElegantConfirmModal, ToastState } from "@/components/ui/elegant-toast";
 
 export interface AcademicGestion {
   id: string;
@@ -200,6 +201,10 @@ export default function SystemSettingsPage() {
   const [selectedGestionCode, setSelectedGestionCode] = useState<string>("1-2026");
   const [sections, setSections] = useState<AcademicSectionItem[]>([]);
 
+  // TOAST Y MODAL CONFIRMACIÓN
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null);
+
   // MODAL: CREAR NUEVA GESTIÓN
   const [isNewGestionOpen, setIsNewGestionOpen] = useState(false);
   const [newGestionYear, setNewGestionYear] = useState(2026);
@@ -265,7 +270,7 @@ export default function SystemSettingsPage() {
     e.preventDefault();
     const code = `${newGestionSemester}-${newGestionYear}`;
     if (gestiones.some((g) => g.code === code)) {
-      alert(`La gestión académica ${code} ya existe.`);
+      setToast({ message: `La gestión académica ${code} ya existe.`, type: "error" });
       return;
     }
 
@@ -283,7 +288,6 @@ export default function SystemSettingsPage() {
     const updatedGest = [...gestiones, newGestion];
     saveGestionesData(updatedGest);
 
-    // Duplicar o clonar las secciones por defecto para la nueva gestión
     const defaultSectionsForNewGestion: AcademicSectionItem[] = INITIAL_SECTIONS_ANEXO_III.map((s) => ({
       ...s,
       id: `sec-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -292,6 +296,7 @@ export default function SystemSettingsPage() {
 
     saveSectionsData([...sections, ...defaultSectionsForNewGestion]);
     setIsNewGestionOpen(false);
+    setToast({ message: `Gestión ${code} aperturada exitosamente.`, type: "success" });
   };
 
   // MARCAR GESTIÓN POR DEFECTO
@@ -302,12 +307,14 @@ export default function SystemSettingsPage() {
     }));
     saveGestionesData(updated);
     setSelectedGestionCode(code);
+    setToast({ message: `Gestión ${code} fijada como oficial activa.`, type: "success" });
   };
 
   // CAMBIAR ESTADO DE GESTIÓN
   const handleChangeGestionStatus = (code: string, status: AcademicGestion["status"]) => {
     const updated = gestiones.map((g) => (g.code === code ? { ...g, status } : g));
     saveGestionesData(updated);
+    setToast({ message: `Estado de Gestión ${code} actualizado a: ${status}`, type: "info" });
   };
 
   // HABILITAR / DESHABILITAR SECCIÓN EN GESTIÓN SELECCIONADA
@@ -331,7 +338,6 @@ export default function SystemSettingsPage() {
     const targetIndex = direction === "up" ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= currentGestionSections.length) return;
 
-    // Intercambiar orden
     const item1 = currentGestionSections[index];
     const item2 = currentGestionSections[targetIndex];
 
@@ -352,7 +358,7 @@ export default function SystemSettingsPage() {
   const handleSaveSection = (e: React.FormEvent) => {
     e.preventDefault();
     if (!secTitle.trim()) {
-      alert("El título del punto o sección es obligatorio.");
+      setToast({ message: "El título del punto o sección es obligatorio.", type: "error" });
       return;
     }
 
@@ -369,6 +375,7 @@ export default function SystemSettingsPage() {
           : s
       );
       saveSectionsData(updated);
+      setToast({ message: `Sección "${secTitle}" actualizada.`, type: "success" });
     } else {
       const currentCount = sections.filter((s) => s.gestionCode === selectedGestionCode).length;
       const newSec: AcademicSectionItem = {
@@ -382,6 +389,7 @@ export default function SystemSettingsPage() {
         isSystemStandard: false,
       };
       saveSectionsData([...sections, newSec]);
+      setToast({ message: `Punto personalizado "${secTitle}" añadido.`, type: "success" });
     }
 
     setIsSectionModalOpen(false);
@@ -391,11 +399,11 @@ export default function SystemSettingsPage() {
   };
 
   // ELIMINAR SECCIÓN
-  const handleDeleteSection = (id: string) => {
-    if (confirm("¿Está seguro de eliminar esta sección de la estructura académica?")) {
-      const updated = sections.filter((s) => s.id !== id);
-      saveSectionsData(updated);
-    }
+  const executeDeleteSection = (id: string) => {
+    const updated = sections.filter((s) => s.id !== id);
+    saveSectionsData(updated);
+    setDeleteSectionId(null);
+    setToast({ message: "Sección eliminada del esquema.", type: "info" });
   };
 
   // OBTENER SECCIONES DE LA GESTIÓN SELECCIONADA
@@ -722,7 +730,7 @@ export default function SystemSettingsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDeleteSection(sec.id)}
+                            onClick={() => setDeleteSectionId(sec.id)}
                             className="h-8 w-8 text-rose-400 hover:bg-rose-500/10 rounded-full"
                             title="Eliminar punto personalizado"
                           >
@@ -928,6 +936,20 @@ export default function SystemSettingsPage() {
           </div>
         )}
       </main>
+
+      {/* TOAST ELEGANTE */}
+      <ElegantToast toast={toast} onClose={() => setToast(null)} />
+
+      {/* MODAL CONFIRMACIÓN ELIMINAR SECCIÓN */}
+      <ElegantConfirmModal
+        isOpen={deleteSectionId !== null}
+        title="Eliminar Sección Personalizada"
+        message="¿Está seguro de eliminar esta sección personalizada del esquema académico?"
+        confirmText="Sí, Eliminar"
+        isDanger={true}
+        onConfirm={() => deleteSectionId && executeDeleteSection(deleteSectionId)}
+        onCancel={() => setDeleteSectionId(null)}
+      />
     </div>
   );
 }

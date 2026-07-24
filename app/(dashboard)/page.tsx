@@ -126,8 +126,8 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background pb-10">
       <Header
-        title="Resumen General DICYT"
-        description="Dirección de Investigación Científica y Tecnológica - Monitoreo Integral de Proyectos y Presupuestos"
+        title="Resumen General SIGPRI UNITEPC"
+        description="Sistema de Gestión de Proyectos e Investigaciones UNITEPC — Monitoreo Integral"
       />
 
       <div className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8">
@@ -136,13 +136,13 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="border-primary/40 text-primary">
+                <Badge variant="outline" className="border-primary/40 text-primary font-bold">
                   Gestión 2026-2027
                 </Badge>
                 <span className="text-xs text-muted-foreground">Última actualización: Hoy, 12:00</span>
               </div>
               <h2 className="font-bold text-xl tracking-tight">
-                Sistema de Gestión de Investigación DICYT
+                Sistema de Gestión de Proyectos e Investigaciones (SIGPRI)
               </h2>
               <p className="text-muted-foreground text-sm max-w-2xl">
                 Plataforma centralizada para la administración de convocatorias, comités evaluadores y fiscalización presupuestaria y retenciones.
@@ -150,15 +150,15 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <Button asChild size="sm" className="gap-1.5 shadow">
-                <Link href="/projects">
+                <Link href="/directorio">
                   <FolderGit2 className="h-4 w-4" />
                   Ver Proyectos
                 </Link>
               </Button>
               <Button asChild size="sm" variant="outline" className="gap-1.5">
-                <Link href="/budget">
+                <Link href="/comites">
                   <Calculator className="h-4 w-4" />
-                  Calculadora de Retenciones
+                  Comités y Contabilidad
                 </Link>
               </Button>
             </div>
@@ -171,7 +171,7 @@ export default function DashboardPage() {
           <Card className="relative overflow-hidden transition-all hover:shadow-md border-l-4 border-l-blue-500">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Total Proyectos DICYT
+                Total Proyectos SIGPRI
               </CardTitle>
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
                 <FolderGit2 className="h-5 w-5" />
@@ -264,7 +264,7 @@ export default function DashboardPage() {
                   Activity Trend - Tendencia de Proyectos y Ejecución
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Evolución mensual de postulaciones, evaluaciones y aprobación de fondos DICYT
+                  Evolución mensual de postulaciones, evaluaciones y aprobación de fondos SIGPRI
                 </CardDescription>
               </div>
               <Badge variant="secondary" className="gap-1 text-xs">

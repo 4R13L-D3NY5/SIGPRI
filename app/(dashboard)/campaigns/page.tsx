@@ -15,6 +15,7 @@ import {
 import { getStoredMasterProjects } from "@/lib/sigpri-store";
 import { ProjectItem } from "../projects/page";
 import { UNITEPC_SEDES_DATA, getUNITEPCFacultades, getUNITEPCCarreras } from "@/lib/unitepc-structure";
+import { ElegantToast, ElegantConfirmModal, ToastState } from "@/components/ui/elegant-toast";
 
 export interface ResearchCall {
   id: string;
@@ -98,6 +99,10 @@ export default function CallsPage() {
   const [scopeFilter, setScopeFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
 
+  // ALERTAS ELEGANTES Y MODAL DE CONFIRMACIÓN
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
   // MODAL: CREAR NUEVA CONVOCATORIA
   const [isNewCallOpen, setIsNewCallOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -167,7 +172,7 @@ export default function CallsPage() {
   const handleCreateCall = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) {
-      alert("Por favor ingrese el título de la convocatoria.");
+      setToast({ message: "Por favor ingrese el título de la convocatoria.", type: "error" });
       return;
     }
 
@@ -192,27 +197,29 @@ export default function CallsPage() {
     setNewCode("");
     setNewDescription("");
     setIsNewCallOpen(false);
+    setToast({ message: `Convocatoria ${autoCode} aperturada exitosamente.`, type: "success" });
   };
 
   // GUARDAR EDICIÓN DE CONVOCATORIA
   const handleUpdateCall = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCall || !editingCall.title.trim()) {
-      alert("El título de la convocatoria es obligatorio.");
+      setToast({ message: "El título de la convocatoria es obligatorio.", type: "error" });
       return;
     }
 
     const updatedList = calls.map((c) => (c.id === editingCall.id ? editingCall : c));
     saveCallsData(updatedList);
     setEditingCall(null);
+    setToast({ message: `Convocatoria ${editingCall.code} actualizada correctamente.`, type: "success" });
   };
 
   // ELIMINAR CONVOCATORIA
-  const handleDeleteCall = (id: string) => {
-    if (confirm("¿Está seguro de eliminar esta convocatoria?")) {
-      const updatedList = calls.filter((c) => c.id !== id);
-      saveCallsData(updatedList);
-    }
+  const executeDeleteCall = (id: string) => {
+    const updatedList = calls.filter((c) => c.id !== id);
+    saveCallsData(updatedList);
+    setDeleteConfirmId(null);
+    setToast({ message: "Convocatoria eliminada del sistema.", type: "info" });
   };
 
   // OBTENER CONTEO DE PROYECTOS VINCULADOS A CADA CONVOCATORIA
@@ -445,7 +452,7 @@ export default function CallsPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleDeleteCall(call.id)}
+                      onClick={() => setDeleteConfirmId(call.id)}
                       className="h-7 w-7 text-rose-400 hover:bg-rose-500/10 rounded-full"
                       title="Eliminar Convocatoria"
                     >
@@ -823,6 +830,19 @@ export default function CallsPage() {
         </div>
       )}
 
+      {/* TOAST ELEGANTE */}
+      <ElegantToast toast={toast} onClose={() => setToast(null)} />
+
+      {/* MODAL CONFIRMACIÓN ELIMINAR */}
+      <ElegantConfirmModal
+        isOpen={deleteConfirmId !== null}
+        title="Eliminar Convocatoria"
+        message="¿Está seguro de que desea eliminar esta convocatoria? Esta acción no se puede deshacer."
+        confirmText="Sí, Eliminar"
+        isDanger={true}
+        onConfirm={() => deleteConfirmId && executeDeleteCall(deleteConfirmId)}
+        onCancel={() => setDeleteConfirmId(null)}
+      />
     </div>
   );
 }

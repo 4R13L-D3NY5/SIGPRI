@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 import { calculateLey843Tax } from "@/lib/sigpri-data";
 import { getStoredMasterProjects, saveMasterProjects, updateSingleProject } from "@/lib/sigpri-store";
+import { ElegantToast, ToastState } from "@/components/ui/elegant-toast";
 import { CancelProjectModal } from "./_components/cancel-project-modal";
 import { ProjectDetailModal } from "./_components/project-detail-modal";
 import { ProjectWbsModal } from "./_components/project-wbs-modal";
@@ -273,10 +274,11 @@ export default function ProjectsRegistryPage() {
   const [newInvestigator, setNewInvestigator] = useState("Dra. Maria Lorena Orellana Aguilar");
   const [newArea, setNewArea] = useState("Ciencias de la Salud / Epidemiología");
   const [newBudget, setNewBudget] = useState(50000);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const handleCreateProposal = () => {
     if (!newTitle.trim()) {
-      alert("Por favor ingrese el título de la propuesta.");
+      setToast({ message: "Por favor ingrese el título de la propuesta.", type: "error" });
       return;
     }
 
@@ -311,6 +313,7 @@ export default function ProjectsRegistryPage() {
     updateSingleProject(newProposal);
     setNewTitle("");
     setIsNewProposalOpen(false);
+    setToast({ message: `Propuesta ${newCode} registrada exitosamente.`, type: "success" });
   };
 
   // Helper para obtener datos del usuario actual
@@ -454,7 +457,7 @@ export default function ProjectsRegistryPage() {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="border-primary/40 text-primary font-bold">
-                    DICYT UNITEPC
+                    SIGPRI UNITEPC
                   </Badge>
                   <span className="text-xs text-muted-foreground font-medium">Actualizado en tiempo real</span>
                 </div>
@@ -968,6 +971,9 @@ export default function ProjectsRegistryPage() {
           </div>
         </div>
       )}
+
+      {/* TOAST ELEGANTE */}
+      <ElegantToast toast={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

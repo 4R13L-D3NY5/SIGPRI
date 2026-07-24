@@ -80,17 +80,25 @@ export function Sidebar({ communityName }: { communityName?: string }) {
 
   return (
     <SidebarRoot collapsible="icon">
-      <SidebarHeader className="px-3 py-3">
-        <div className="flex items-center gap-2 overflow-hidden">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary font-extrabold text-primary-foreground text-sm shadow-md">
-            S
+      <SidebarHeader className="px-3 py-3 border-b border-sidebar-border/60">
+        <div className="flex items-center gap-2.5 overflow-hidden">
+          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0F2A4A] text-white p-0.5 shadow-md border border-amber-500/40 overflow-hidden group-hover:scale-105 transition-transform">
+            <img 
+              src="/sigpri_logo.jpg" 
+              alt="SIGPRI UNITEPC Logo" 
+              className="w-full h-full object-cover rounded-lg"
+              onError={(e) => {
+                // Fallback SVG if image is missing
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
           </div>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <span className="block truncate font-bold text-sm text-foreground">
-              {communityName || "SIGPRI"}
+            <span className="block truncate font-black text-sm text-foreground tracking-tight">
+              SIGPRI UNITEPC
             </span>
-            <span className="block truncate text-[10px] font-semibold text-primary uppercase tracking-wider">
-              UNITEPC
+            <span className="block truncate text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
+              Gestión de Proyectos
             </span>
           </div>
         </div>

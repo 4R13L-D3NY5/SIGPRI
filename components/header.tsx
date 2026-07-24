@@ -55,11 +55,14 @@ export function Header({ title, description }: HeaderProps) {
 
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background/90 px-4 backdrop-blur-md relative overflow-hidden">
+      {/* LÍNEA ELEGANTE PALETA UNITEPC */}
+      <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-[#0F2A4A] via-emerald-500 to-amber-500" />
+
       <div className="flex items-center gap-3">
         <SidebarTrigger />
         <div className="min-w-0">
-          <h1 className="truncate font-semibold text-base leading-tight text-foreground">{title}</h1>
+          <h1 className="truncate font-bold text-base leading-tight text-foreground">{title}</h1>
           {description && (
             <p className="truncate text-muted-foreground text-xs leading-none">
               {description}

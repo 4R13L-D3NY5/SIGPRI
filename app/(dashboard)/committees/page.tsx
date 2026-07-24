@@ -16,6 +16,7 @@ import {
 import { getStoredMasterProjects } from "@/lib/sigpri-store";
 import { ProjectItem } from "../projects/page";
 import { UNITEPC_SEDES_DATA, getUNITEPCFacultades, getUNITEPCCarreras } from "@/lib/unitepc-structure";
+import { ElegantToast, ElegantConfirmModal, ToastState } from "@/components/ui/elegant-toast";
 
 // ESTRUCTURA DE MIEMBRO DE COMITÉ
 export interface CommitteeMember {
@@ -143,6 +144,10 @@ export default function CommitteesPage() {
   const [query, setQuery] = useState("");
   const [projectsList, setProjectsList] = useState<ProjectItem[]>([]);
 
+  // ALERTAS ELEGANTES Y CONFIRMACIÓN
+  const [toast, setToast] = useState<ToastState | null>(null);
+  const [deleteAccountingId, setDeleteAccountingId] = useState<string | null>(null);
+
   // MODAL: CREAR NUEVO COMITÉ
   const [isNewCommitteeOpen, setIsNewCommitteeOpen] = useState(false);
   const [newCode, setNewCode] = useState("");
@@ -249,13 +254,14 @@ export default function CommitteesPage() {
   };
 
   // CREAR COMITÉ
-  const handleCreateCommittee = () => {
-    if (!newName.trim() || !newArea.trim()) {
-      alert("Por favor complete el nombre y área del nuevo comité.");
+  const handleCreateCommittee = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newName.trim()) {
+      setToast({ message: "Por favor ingrese el nombre del comité.", type: "error" });
       return;
     }
 
-    const autoCode = newCode.trim() || `COM-${newName.substring(0, 3).toUpperCase()}-${newGestion}`;
+    const autoCode = newCode.trim() || `COM-${newArea.substring(0, 4).toUpperCase()}-${newGestion}`;
     const newComm: Committee = {
       id: `com-${Date.now()}`,
       code: autoCode,
@@ -273,6 +279,7 @@ export default function CommitteesPage() {
     setNewName("");
     setNewArea("");
     setIsNewCommitteeOpen(false);
+    setToast({ message: `Comité ${autoCode} creado exitosamente.`, type: "success" });
   };
 
   // REGISTRAR NUEVO INTEGRANTE EN COMITÉ (ROL COMITÉ)
@@ -280,7 +287,7 @@ export default function CommitteesPage() {
     e.preventDefault();
 
     if (!memberManagementCommittee || !memFullName.trim() || !memEmail.trim()) {
-      alert("Por favor ingrese el Nombre Completo y el Correo Electrónico.");
+      setToast({ message: "Por favor ingrese el Nombre Completo y el Correo Electrónico.", type: "error" });
       return;
     }
 
@@ -319,13 +326,14 @@ export default function CommitteesPage() {
     setMemEmail("");
     setMemPhone("");
     setMemDegree("");
+    setToast({ message: `Evaluador ${memFullName} registrado con Rol Comité.`, type: "success" });
   };
 
   // REGISTRAR PERSONAL DE CONTABILIDAD (ROL CONTABILIDAD)
   const handleCreateAccountingOfficer = (e: React.FormEvent) => {
     e.preventDefault();
     if (!accName.trim() || !accEmail.trim()) {
-      alert("Por favor ingrese el Nombre Completo y el Correo Electrónico.");
+      setToast({ message: "Por favor ingrese el Nombre Completo y el Correo Electrónico.", type: "error" });
       return;
     }
 
@@ -349,6 +357,7 @@ export default function CommitteesPage() {
     setAccEmail("");
     setAccPhone("");
     setIsNewAccountingOpen(false);
+    setToast({ message: `Usuario ${accName} registrado con Rol Contabilidad.`, type: "success" });
   };
 
   const handleToggleAccountingStatus = (officerId: string) => {
@@ -362,11 +371,14 @@ export default function CommitteesPage() {
       return o;
     });
     saveAccountingData(updated);
+    setToast({ message: "Estado de acceso contable actualizado.", type: "info" });
   };
 
-  const handleRemoveAccountingOfficer = (officerId: string) => {
+  const executeRemoveAccountingOfficer = (officerId: string) => {
     const updated = accountingOfficers.filter((o) => o.id !== officerId);
     saveAccountingData(updated);
+    setDeleteAccountingId(null);
+    setToast({ message: "Usuario de contabilidad eliminado.", type: "info" });
   };
 
   const handleToggleProjectAccountingAssignment = (projectId: string) => {
@@ -1575,6 +1587,19 @@ export default function CommitteesPage() {
         </div>
       )}
 
+      {/* TOAST ELEGANTE */}
+      <ElegantToast toast={toast} onClose={() => setToast(null)} />
+
+      {/* MODAL CONFIRMACIÓN ELIMINAR CONTABILIDAD */}
+      <ElegantConfirmModal
+        isOpen={deleteAccountingId !== null}
+        title="Eliminar Personal Contable"
+        message="¿Está seguro de que desea revocar el acceso y eliminar a este usuario de contabilidad?"
+        confirmText="Sí, Eliminar"
+        isDanger={true}
+        onConfirm={() => deleteAccountingId && executeRemoveAccountingOfficer(deleteAccountingId)}
+        onCancel={() => setDeleteAccountingId(null)}
+      />
     </div>
   );
 }
