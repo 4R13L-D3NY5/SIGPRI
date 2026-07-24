@@ -55,7 +55,7 @@ const roles: RoleOption[] = [
     description: "Acceso total al sistema, gestión de usuarios, módulos y parámetros globales",
     badgeText: "Acceso Total",
     icon: ShieldCheck,
-    defaultEmail: "admin@dicyt.edu.bo",
+    defaultEmail: "admin@unitepc.edu.bo",
   },
   {
     id: "jefe_investigador",
@@ -63,7 +63,7 @@ const roles: RoleOption[] = [
     description: "Acceso a todos los proyectos, parametrización de convocatorias/campañas y reportes",
     badgeText: "Convocatorias & Reportes",
     icon: Sliders,
-    defaultEmail: "jefe.investigador@dicyt.edu.bo",
+    defaultEmail: "jefe.investigador@unitepc.edu.bo",
   },
   {
     id: "directorio",
@@ -71,7 +71,7 @@ const roles: RoleOption[] = [
     description: "Acceso visual, seguimiento de avance de proyectos (lectura) y reportes ejecutivos",
     badgeText: "Seguimiento (Lectura)",
     icon: BarChart3,
-    defaultEmail: "directorio@dicyt.edu.bo",
+    defaultEmail: "directorio@unitepc.edu.bo",
   },
   {
     id: "investigador",
@@ -79,7 +79,7 @@ const roles: RoleOption[] = [
     description: "Acceso a los proyectos en los que participa y carga de propuestas de investigación",
     badgeText: "Carga & Mis Proyectos",
     icon: FolderGit2,
-    defaultEmail: "investigador@dicyt.edu.bo",
+    defaultEmail: "investigador@unitepc.edu.bo",
   },
   {
     id: "comite",
@@ -87,15 +87,15 @@ const roles: RoleOption[] = [
     description: "Acceso a proyectos (lectura) y apartado de evaluación por dictamen científico y bioético",
     badgeText: "Evaluación & Comités",
     icon: UserCheck,
-    defaultEmail: "comite.evaluador@dicyt.edu.bo",
+    defaultEmail: "comite.evaluador@unitepc.edu.bo",
   },
   {
     id: "contabilidad",
     title: "6. Contabilidad",
-    description: "Acceso a proyectos (lectura) y apartado de evaluación presupuestaria y retenciones Ley 843",
-    badgeText: "Presupuestos Ley 843",
+    description: "Acceso a proyectos (lectura) y apartado de evaluación presupuestaria y retenciones impositivas",
+    badgeText: "Presupuestos y Retenciones",
     icon: Calculator,
-    defaultEmail: "contabilidad.ley843@dicyt.edu.bo",
+    defaultEmail: "contabilidad@unitepc.edu.bo",
   },
 ];
 

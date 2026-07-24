@@ -12,7 +12,7 @@ export function canEditProjectFields(userRole: string, status: string): boolean 
   }
 
   if (userRole === "investigador") {
-    return status === "En Propuesta";
+    return status === "En Propuesta" || status === "En Observación (Rechazado con opción a corrección)";
   }
 
   return false;
@@ -23,7 +23,14 @@ export function canEditBudget(userRole: string, status: string): boolean {
     return true;
   }
   if (userRole === "investigador") {
-    return status === "En Propuesta";
+    return status === "En Propuesta" || status === "En Observación (Rechazado con opción a corrección)";
+  }
+  return false;
+}
+
+export function canUpdateWeeklyProgress(userRole: string, status: string): boolean {
+  if (userRole === "admin" || userRole === "jefe_investigador" || userRole === "investigador") {
+    return status === "Aprobado en Ejecución" || status === "En Propuesta";
   }
   return false;
 }

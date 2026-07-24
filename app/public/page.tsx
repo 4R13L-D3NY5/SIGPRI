@@ -132,7 +132,7 @@ export default function PublicPortalPage() {
             Portal Abierto de Investigación y Convocatorias DICYT
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-            Consulte los proyectos de investigación científica financiados por los Fondos de la Ley 843 o envíe una propuesta preliminar de investigación a nuestros comités evaluadores.
+            Consulte los proyectos de investigación científica financiados por la universidad o envíe una propuesta preliminar de investigación a nuestros comités evaluadores.
           </p>
         </div>
       </section>
@@ -367,7 +367,7 @@ export default function PublicPortalPage() {
       <footer className="border-t bg-card py-6 text-center text-xs text-muted-foreground">
         <div className="max-w-7xl mx-auto px-4">
           <p>© 2026 Dirección de Investigación Científica y Tecnológica (DICYT). Todos los derechos reservados.</p>
-          <p className="text-[11px] mt-1">Plataforma de Investigación & Fiscalización Ley 843</p>
+          <p className="text-[11px] mt-1">Plataforma de Investigación & Fiscalización Financiera</p>
         </div>
       </footer>
     </div>

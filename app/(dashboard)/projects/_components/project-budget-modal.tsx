@@ -73,7 +73,7 @@ const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
     unitPrice: 8500,
     docType: "RETENCIÓN",
     retentionType: "SERVICIOS",
-    observations: "Retención de Servicios 15.5% Ley 843",
+    observations: "Retención de Servicios 15.5%",
   },
   {
     codeNum: 5,
@@ -85,7 +85,7 @@ const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
     unitPrice: 1200,
     docType: "RETENCIÓN",
     retentionType: "COMPRA",
-    observations: "Retención de Bienes 8% Ley 843",
+    observations: "Retención de Bienes 8%",
   },
 ];
 
@@ -212,7 +212,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
                 {project.code}
               </Badge>
               <Badge variant="outline" className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-bold">
-                Ley 843 Automatizada
+                Retenciones Automatizadas
               </Badge>
 
               {/* GESTIÓN DE ESTADO DENTRO DEL MODAL */}
@@ -279,7 +279,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
             </span>
           </div>
           <div className="p-3 rounded-lg bg-card border border-border/60 shadow-sm space-y-1">
-            <span className="text-muted-foreground font-semibold block">Retenciones Ley 843:</span>
+            <span className="text-muted-foreground font-semibold block">Retenciones:</span>
             <span className="text-base font-bold text-rose-400 font-mono">
               Bs. {totalRetenciones.toLocaleString()}
             </span>
@@ -370,7 +370,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
               </select>
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <label className="font-semibold text-muted-foreground block">Tipo de Retención Ley 843</label>
+              <label className="font-semibold text-muted-foreground block">Tipo de Retención Impositiva</label>
               <select
                 value={newItem.retentionType}
                 onChange={(e) => setNewItem({ ...newItem, retentionType: e.target.value as any })}

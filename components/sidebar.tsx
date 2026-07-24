@@ -41,9 +41,8 @@ import { Badge } from "@/components/ui/badge";
 
 export const allSigpriModules = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "jefe_investigador", "directorio", "investigador", "comite", "contabilidad"] },
-  { href: "/directorio", label: "Proyectos", icon: FolderTree, roles: ["admin", "jefe_investigador", "directorio", "investigador", "comite", "contabilidad"] },
-  { href: "/carga-propuesta", label: "Propuestas", icon: FileUp, roles: ["admin", "investigador", "jefe_investigador"] },
-  { href: "/comites", label: "Comités", icon: UserCheck, roles: ["admin", "comite"] },
+  { href: "/directorio", label: "Proyectos y Propuestas", icon: FolderTree, roles: ["admin", "jefe_investigador", "directorio", "investigador", "comite", "contabilidad"] },
+  { href: "/comites", label: "Comités y Contabilidad", icon: UserCheck, roles: ["admin", "jefe_investigador", "comite", "contabilidad"] },
   { href: "/ejecuciones", label: "Ejecuciones", icon: Network, roles: ["admin", "jefe_investigador", "directorio", "contabilidad"] },
   { href: "/convocatorias", label: "Convocatorias", icon: Megaphone, roles: ["admin", "jefe_investigador"] },
   { href: "/parametrizacion", label: "Parametrización", icon: Sliders, roles: ["admin", "jefe_investigador"] },
@@ -71,7 +70,7 @@ export function Sidebar({ communityName }: { communityName?: string }) {
           else if (savedRole === "directorio") setUserLabel("Directorio");
           else if (savedRole === "investigador") setUserLabel("Investigador");
           else if (savedRole === "comite") setUserLabel("Comité Evaluador");
-          else if (savedRole === "contabilidad") setUserLabel("Contabilidad Ley 843");
+          else if (savedRole === "contabilidad") setUserLabel("Contabilidad y Retenciones");
         } catch (e) {
           console.error(e);
         }

@@ -106,18 +106,18 @@ export default function BudgetCalculatorPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background pb-12">
       <Header
-        title="Calculadora de Presupuesto y Retenciones Ley 843"
+        title="Calculadora de Presupuesto y Retenciones Impositivas"
         description="Herramienta oficial de fiscalización financiera para la liquidación de fondos de investigación DICYT (Bolivia)"
       />
 
       <div className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8">
-        {/* Banner Informativo Ley 843 */}
+        {/* Banner Informativo */}
         <div className="relative overflow-hidden rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-5 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Badge className="bg-emerald-600 text-white">Normativa Tributaria Bolivia</Badge>
-                <span className="text-xs text-muted-foreground">Ley Nº 843 y Decretos Reglamentarios</span>
+                <span className="text-xs text-muted-foreground">Retenciones y Decretos Reglamentarios</span>
               </div>
               <h2 className="font-bold text-lg text-foreground">
                 Cálculo Automático de Retenciones e Impuestos Universitarios
@@ -127,7 +127,7 @@ export default function BudgetCalculatorPage() {
               </p>
             </div>
             <Button onClick={handleExport} className="gap-2 shadow shrink-0">
-              <Download className="h-4 w-4" /> Exportar Planilla Ley 843
+              <Download className="h-4 w-4" /> Exportar Planilla de Retenciones
             </Button>
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function BudgetCalculatorPage() {
               {/* Tipo de Rubro */}
               <div>
                 <label className="block font-semibold mb-2 text-foreground">
-                  Categoría de Gasto / Ley 843
+                  Categoría de Gasto / Retenciones
                 </label>
                 <div className="grid grid-cols-1 gap-2.5">
                   <label
@@ -221,7 +221,7 @@ export default function BudgetCalculatorPage() {
                     <div>
                       <span className="font-bold text-foreground block">Servicios Profesionales / Consultorías sin Factura</span>
                       <span className="text-muted-foreground text-[11px]">
-                        Retención Ley 843: <strong>12.5% IUE + 3% IT = 15.5% Retención Total</strong>
+                        Retención: <strong>12.5% IUE + 3% IT = 15.5% Retención Total</strong>
                       </span>
                     </div>
                   </label>
@@ -243,7 +243,7 @@ export default function BudgetCalculatorPage() {
                     <div>
                       <span className="font-bold text-foreground block">Adquisición de Bienes e Insumos sin Factura</span>
                       <span className="text-muted-foreground text-[11px]">
-                        Retención Ley 843: <strong>5% IUE + 3% IT = 8.0% Retención Total</strong>
+                        Retención: <strong>5% IUE + 3% IT = 8.0% Retención Total</strong>
                       </span>
                     </div>
                   </label>
@@ -265,7 +265,7 @@ export default function BudgetCalculatorPage() {
                     <div>
                       <span className="font-bold text-foreground block">Honorarios Docente Investigador / Personal Técnico</span>
                       <span className="text-muted-foreground text-[11px]">
-                        Retención Directa RC-IVA Ley 843: <strong>13% RC-IVA</strong>
+                        Retención Directa RC-IVA: <strong>13% RC-IVA</strong>
                       </span>
                     </div>
                   </label>
@@ -341,7 +341,7 @@ export default function BudgetCalculatorPage() {
               </Badge>
               <CardTitle className="text-base font-bold mt-1">Desglose de Fondos y Líquido Patable</CardTitle>
               <CardDescription className="text-xs">
-                Monto neto final disponible tras la aplicación de la Ley 843
+                Monto neto final disponible tras la aplicación de retenciones impositivas
               </CardDescription>
             </CardHeader>
 

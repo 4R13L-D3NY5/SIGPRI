@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/header";
 import { 
   FolderKanban, Search, Filter, RefreshCw, AlertTriangle, 
   BookOpen, ExternalLink, Eye, ChevronRight, Calculator, CheckCircle2,
   DollarSign, PieChart, TrendingUp, Sparkles, Building2, User, X, Edit3, 
   ShieldAlert, LayoutGrid, List, Table as TableIcon, FileText, Calendar,
-  FileSpreadsheet, Ban, History, ArrowRight
+  FileSpreadsheet, Ban, History, ArrowRight, GitFork, Plus
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +15,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { calculateLey843Tax } from "@/lib/sigpri-data";
+import { getStoredMasterProjects, saveMasterProjects, updateSingleProject } from "@/lib/sigpri-store";
 import { CancelProjectModal } from "./_components/cancel-project-modal";
 import { ProjectDetailModal } from "./_components/project-detail-modal";
 import { ProjectWbsModal } from "./_components/project-wbs-modal";
 import { ProjectBudgetModal } from "./_components/project-budget-modal";
 import { ProjectHistoryModal } from "./_components/project-history-modal";
+import { ProjectStatusFlowModal } from "./_components/project-status-flow-modal";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
 export type ExactProjectStatus = 
@@ -54,6 +56,8 @@ export interface ProjectItem {
   taxCategory: 'servicios' | 'bienes' | 'alquileres';
   wbsProgress: number;
   abstractText: string;
+  callCode?: string;
+  callTitle?: string;
   publicationDoi?: string;
   correctionNotes?: string;
   cancellationReason?: string;
@@ -228,11 +232,27 @@ const INITIAL_PROJECTS: ProjectItem[] = [
 ];
 
 export default function ProjectsRegistryPage() {
-  const [projects, setProjects] = useState<ProjectItem[]>(INITIAL_PROJECTS);
+  const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [query, setQuery] = useState("");
   const [selectedGestion, setSelectedGestion] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedArea, setSelectedArea] = useState<string>("all");
+
+  // CARGAR Y ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE EL STORE UNIFICADO
+  useEffect(() => {
+    setProjects(getStoredMasterProjects());
+
+    const handleSync = (e: any) => {
+      if (e.detail) {
+        setProjects(e.detail);
+      } else {
+        setProjects(getStoredMasterProjects());
+      }
+    };
+
+    window.addEventListener("sigpri_data_updated", handleSync);
+    return () => window.removeEventListener("sigpri_data_updated", handleSync);
+  }, []);
 
   // VISTA EN TARJETAS vs. LISTA
   const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
@@ -243,8 +263,55 @@ export default function ProjectsRegistryPage() {
   const [budgetProject, setBudgetProject] = useState<ProjectItem | null>(null);
   const [historyProject, setHistoryProject] = useState<ProjectItem | null>(null);
 
-  // ESTADO DE MODAL DE CANCELACIÓN
+  // ESTADO DE MODAL DE CANCELACIÓN Y DIAGRAMA DE FLUJO
   const [cancelModalProject, setCancelModalProject] = useState<ProjectItem | null>(null);
+  const [isFlowModalOpen, setIsFlowModalOpen] = useState<boolean>(false);
+
+  // ESTADO PARA REGISTRAR NUEVA PROPUESTA
+  const [isNewProposalOpen, setIsNewProposalOpen] = useState<boolean>(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newInvestigator, setNewInvestigator] = useState("Dra. Maria Lorena Orellana Aguilar");
+  const [newArea, setNewArea] = useState("Ciencias de la Salud / Epidemiología");
+  const [newBudget, setNewBudget] = useState(50000);
+
+  const handleCreateProposal = () => {
+    if (!newTitle.trim()) {
+      alert("Por favor ingrese el título de la propuesta.");
+      return;
+    }
+
+    const newCode = `SIGPRI-2026-${String(projects.length + 1).padStart(3, "0")}`;
+    const newProposal: ProjectItem = {
+      id: `proj-new-${Date.now()}`,
+      code: newCode,
+      title: newTitle,
+      leadInvestigator: newInvestigator,
+      facultyArea: newArea,
+      managementYear: "2026",
+      status: "En Propuesta",
+      requestedBudget: newBudget,
+      approvedBudget: newBudget,
+      taxCategory: "servicios",
+      wbsProgress: 0,
+      abstractText: "Propuesta registrada unificadamente en la plataforma de investigación.",
+      createdAt: new Date().toISOString().substring(0, 10),
+      statusHistory: [
+        {
+          id: `h-new-${Date.now()}`,
+          previousStatus: "En Propuesta",
+          newStatus: "En Propuesta",
+          changedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          changedBy: newInvestigator,
+          userRole: "Investigador Responsable",
+          notes: "Registro unificado de propuesta en la plataforma de proyectos.",
+        }
+      ]
+    };
+
+    updateSingleProject(newProposal);
+    setNewTitle("");
+    setIsNewProposalOpen(false);
+  };
 
   // Helper para obtener datos del usuario actual
   const getCurrentUser = () => {
@@ -311,6 +378,7 @@ export default function ProjectsRegistryPage() {
     );
 
     setProjects(updatedList);
+    saveMasterProjects(updatedList);
 
     // Actualizar referencias en modales abiertos
     if (detailProject?.id === id) setDetailProject(updatedList.find(p => p.id === id) || null);
@@ -335,18 +403,19 @@ export default function ProjectsRegistryPage() {
       notes: reason,
     };
 
-    setProjects(prev =>
-      prev.map(p =>
-        p.id === cancelModalProject.id
-          ? {
-              ...p,
-              status: "Cancelado",
-              cancellationReason: reason,
-              statusHistory: [historyEntry, ...(p.statusHistory || [])],
-            }
-          : p
-      )
+    const updatedList = projects.map(p =>
+      p.id === cancelModalProject.id
+        ? {
+            ...p,
+            status: "Cancelado" as ExactProjectStatus,
+            cancellationReason: reason,
+            statusHistory: [historyEntry, ...(p.statusHistory || [])],
+          }
+        : p
     );
+
+    setProjects(updatedList);
+    saveMasterProjects(updatedList);
     setCancelModalProject(null);
   };
 
@@ -374,7 +443,7 @@ export default function ProjectsRegistryPage() {
     <div className="flex flex-col min-h-screen bg-background pb-10">
       <Header 
         title="Directorio de Proyectos" 
-        description="Gestión y seguimiento de proyectos a nivel nacional clasificados por los estados institucionales y Ley 843." 
+        description="Gestión y seguimiento de proyectos a nivel nacional clasificados por los estados institucionales y retenciones impositivas." 
       />
 
       <main className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8 w-full">
@@ -399,6 +468,27 @@ export default function ProjectsRegistryPage() {
               </div>
 
               <div className="flex items-center space-x-3">
+                {/* BOTÓN REGISTRAR NUEVA PROPUESTA */}
+                <Button
+                  onClick={() => setIsNewProposalOpen(true)}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-1.5 shadow"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>+ Registrar Nueva Propuesta</span>
+                </Button>
+
+                {/* BOTÓN DIAGRAMA DE FLUJO DE ESTADOS */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsFlowModalOpen(true)}
+                  className="gap-1.5 font-bold text-xs bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 shadow-sm"
+                  title="Ver Diagrama de Flujo del Ciclo de Vida del Proyecto"
+                >
+                  <GitFork className="w-4 h-4" />
+                  <span>Flujo de Estados</span>
+                </Button>
+
                 {/* SWITCHER DE VISTA: TARJETAS VS LISTA */}
                 <div className="p-1 rounded-lg bg-muted/60 border border-border flex items-center space-x-1 shadow-inner">
                   <button
@@ -539,14 +629,23 @@ export default function ProjectsRegistryPage() {
           /* VISTA EN TARJETAS */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((p) => {
-              const taxInfo = calculateLey843Tax(p.requestedBudget, p.taxCategory);
+              const reqBudget = p.requestedBudget || p.grossBudget || 0;
+              const taxCat = p.taxCategory || 'servicios';
+              const taxInfo = calculateLey843Tax(reqBudget, taxCat);
               return (
                 <Card key={p.id} className="border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden">
                   <CardHeader className="space-y-2 pb-3">
                     <div className="flex items-center justify-between gap-2">
-                      <Badge variant="outline" className="font-mono text-[10px] bg-primary/10 border-primary/30 text-primary font-bold">
-                        {p.code}
-                      </Badge>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge variant="outline" className="font-mono text-[10px] bg-primary/10 border-primary/30 text-primary font-bold">
+                          {p.code}
+                        </Badge>
+                        {p.callCode && (
+                          <Badge variant="outline" className="font-mono text-[9px] bg-purple-500/10 border-purple-500/30 text-purple-400 font-bold">
+                            📢 {p.callCode}
+                          </Badge>
+                        )}
+                      </div>
                       <div className="flex items-center gap-1.5">
                         {renderStatusBadge(p.status)}
                         <Button
@@ -580,14 +679,14 @@ export default function ProjectsRegistryPage() {
                       </div>
                     )}
 
-                    {/* PRESUPUESTO & RETENCIONES LEY 843 */}
+                    {/* PRESUPUESTO & RETENCIONES */}
                     <div className="p-3 rounded-lg bg-muted/40 border border-border space-y-1.5">
                       <div className="flex justify-between items-center text-[11px]">
                         <span className="text-muted-foreground">Presupuesto Bruto:</span>
-                        <span className="font-mono font-bold text-foreground">Bs. {p.requestedBudget.toLocaleString()}</span>
+                        <span className="font-mono font-bold text-foreground">Bs. {reqBudget.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center text-[11px]">
-                        <span className="text-muted-foreground">Retenciones Ley 843 ({taxInfo.totalTaxPercent}%):</span>
+                        <span className="text-muted-foreground">Retenciones ({taxInfo.totalTaxPercent}%):</span>
                         <span className="font-mono font-bold text-amber-500">Bs. {taxInfo.totalTaxAmount.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between items-center text-[11px] pt-1 border-t border-border">
@@ -640,7 +739,7 @@ export default function ProjectsRegistryPage() {
                       size="sm"
                       onClick={() => setBudgetProject(p)} 
                       className="text-xs font-semibold gap-1 text-foreground hover:bg-muted"
-                      title="3. Presupuesto (Ley 843 Excel)"
+                      title="3. Presupuesto (Retenciones Excel)"
                     >
                       <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500" />
                       <span>Presupuesto</span>
@@ -663,14 +762,16 @@ export default function ProjectsRegistryPage() {
                     <th className="p-3 w-20">Gestión</th>
                     <th className="p-3 w-44">Estado Institucional</th>
                     <th className="p-3 w-32">Presupuesto Bruto</th>
-                    <th className="p-3 w-32">Retenciones Ley 843</th>
+                    <th className="p-3 w-32">Retenciones</th>
                     <th className="p-3 w-24">Avance WBS</th>
                     <th className="p-3 text-center w-36">Acciones Operativas (3 Módulos)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/60">
                   {filteredProjects.map((p) => {
-                    const taxInfo = calculateLey843Tax(p.requestedBudget, p.taxCategory);
+                    const reqBudget = p.requestedBudget || p.grossBudget || 0;
+                    const taxCat = p.taxCategory || 'servicios';
+                    const taxInfo = calculateLey843Tax(reqBudget, taxCat);
                     return (
                       <tr key={p.id} className="hover:bg-muted/40 transition-colors">
                         <td className="p-3 font-mono font-bold text-primary">
@@ -697,7 +798,7 @@ export default function ProjectsRegistryPage() {
                           {renderStatusBadge(p.status)}
                         </td>
                         <td className="p-3 font-mono font-bold text-foreground">
-                          Bs. {p.requestedBudget.toLocaleString()}
+                          Bs. {reqBudget.toLocaleString()}
                         </td>
                         <td className="p-3 font-mono font-bold text-amber-500">
                           Bs. {taxInfo.totalTaxAmount.toLocaleString()}
@@ -729,7 +830,7 @@ export default function ProjectsRegistryPage() {
                               variant="ghost" 
                               size="icon"
                               onClick={() => setBudgetProject(p)} 
-                              title="3. Presupuesto Ley 843"
+                              title="3. Presupuesto y Retenciones"
                               className="h-8 w-8 text-emerald-500 hover:bg-emerald-500/10"
                             >
                               <FileSpreadsheet className="w-4 h-4" />
@@ -771,7 +872,7 @@ export default function ProjectsRegistryPage() {
         onUpdateStatus={(newStatus) => wbsProject && handleStatusChange(wbsProject.id, newStatus)}
       />
 
-      {/* MODAL 3: PRESUPUESTO LEY 843 */}
+      {/* MODAL 3: PRESUPUESTO Y RETENCIONES */}
       <ProjectBudgetModal 
         project={budgetProject} 
         isOpen={!!budgetProject} 
@@ -793,6 +894,80 @@ export default function ProjectsRegistryPage() {
         isOpen={!!historyProject} 
         onClose={() => setHistoryProject(null)} 
       />
+
+      {/* MODAL 6: DIAGRAMA DE FLUJO DE ESTADOS DEL PROYECTO */}
+      <ProjectStatusFlowModal 
+        isOpen={isFlowModalOpen} 
+        onClose={() => setIsFlowModalOpen(false)} 
+      />
+
+      {/* MODAL 7: REGISTRAR NUEVA PROPUESTA */}
+      {isNewProposalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-card border border-border rounded-xl shadow-2xl p-6 space-y-4 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+                <Plus className="h-5 w-5 text-primary" /> + Registrar Nueva Propuesta de Investigación
+              </h3>
+              <Button variant="ghost" size="icon" onClick={() => setIsNewProposalOpen(false)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="space-y-1">
+                <label className="font-bold text-foreground">Título de la Propuesta *</label>
+                <input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="Ej. Evaluación Fitoquímica de plantas medicinales..."
+                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-foreground">Investigador Responsable</label>
+                <input
+                  type="text"
+                  value={newInvestigator}
+                  onChange={(e) => setNewInvestigator(e.target.value)}
+                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-foreground">Área Temática Institucional</label>
+                <input
+                  type="text"
+                  value={newArea}
+                  onChange={(e) => setNewArea(e.target.value)}
+                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-foreground">Presupuesto Estimado (Bs.)</label>
+                <input
+                  type="number"
+                  value={newBudget}
+                  onChange={(e) => setNewBudget(Number(e.target.value))}
+                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-bold text-emerald-400 focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-border">
+              <Button variant="outline" size="sm" onClick={() => setIsNewProposalOpen(false)}>
+                Cancelar
+              </Button>
+              <Button size="sm" onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90 font-bold">
+                Registrar Propuesta
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

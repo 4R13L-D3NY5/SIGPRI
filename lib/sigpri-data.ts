@@ -45,7 +45,7 @@ export function calculateLey843Tax(amount: number, category: 'servicios' | 'bien
 export function calcularRetencionesLey843(
   montoBruto: number,
   tipoGasto: Ley843TaxCategory,
-  descripcion = "Retención de Ley 843"
+  descripcion = "Retención Impositiva"
 ): TaxCalculationResult {
   const round = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100;
 

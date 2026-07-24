@@ -127,7 +127,7 @@ export default function DashboardPage() {
     <div className="flex flex-col min-h-screen bg-background pb-10">
       <Header
         title="Resumen General DICYT"
-        description="Dirección de Investigación Científica y Tecnológica - Monitoreo Integral de Proyectos y Fondos Ley 843"
+        description="Dirección de Investigación Científica y Tecnológica - Monitoreo Integral de Proyectos y Presupuestos"
       />
 
       <div className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8">
@@ -145,7 +145,7 @@ export default function DashboardPage() {
                 Sistema de Gestión de Investigación DICYT
               </h2>
               <p className="text-muted-foreground text-sm max-w-2xl">
-                Plataforma centralizada para la administración de convocatorias, comités evaluadores y fiscalización presupuestaria de la Ley 843.
+                Plataforma centralizada para la administración de convocatorias, comités evaluadores y fiscalización presupuestaria y retenciones.
               </p>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -158,7 +158,7 @@ export default function DashboardPage() {
               <Button asChild size="sm" variant="outline" className="gap-1.5">
                 <Link href="/budget">
                   <Calculator className="h-4 w-4" />
-                  Calculadora Ley 843
+                  Calculadora de Retenciones
                 </Link>
               </Button>
             </div>
@@ -206,7 +206,7 @@ export default function DashboardPage() {
               <div className="mt-2 flex items-center text-xs text-emerald-600 font-medium">
                 <TrendingUp className="mr-1 h-3.5 w-3.5" />
                 <span>+12.4% vs 2025</span>
-                <span className="ml-auto text-muted-foreground font-normal">Ley 843</span>
+                <span className="ml-auto text-muted-foreground font-normal">Retenciones</span>
               </div>
             </CardContent>
           </Card>
