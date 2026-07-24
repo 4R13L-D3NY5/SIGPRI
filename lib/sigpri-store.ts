@@ -175,6 +175,8 @@ export const INITIAL_MASTER_PROJECTS: ProjectItem[] = [
   },
 ];
 
+import { sigpriApi } from "./api-service";
+
 export function getStoredMasterProjects(): ProjectItem[] {
   if (typeof window !== "undefined") {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -194,21 +196,9 @@ export function getStoredMasterProjects(): ProjectItem[] {
 }
 
 export function saveMasterProjects(projects: ProjectItem[]) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
-    window.dispatchEvent(new CustomEvent("sigpri_data_updated", { detail: projects }));
-  }
+  sigpriApi.projects.saveAll(projects);
 }
 
 export function updateSingleProject(updatedProject: ProjectItem) {
-  const list = getStoredMasterProjects();
-  const index = list.findIndex((p) => p.id === updatedProject.id);
-  let newList: ProjectItem[];
-  if (index >= 0) {
-    newList = [...list];
-    newList[index] = updatedProject;
-  } else {
-    newList = [updatedProject, ...list];
-  }
-  saveMasterProjects(newList);
+  sigpriApi.projects.updateSingle(updatedProject);
 }
