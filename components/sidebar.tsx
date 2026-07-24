@@ -82,13 +82,12 @@ export function Sidebar({ communityName }: { communityName?: string }) {
     <SidebarRoot collapsible="icon">
       <SidebarHeader className="px-3 py-3 border-b border-sidebar-border/60">
         <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0F2A4A] text-white p-0.5 shadow-md border border-amber-500/40 overflow-hidden group-hover:scale-105 transition-transform">
+          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0F2A4A] via-[#1E3A8A] to-[#047857] p-0.5 shadow-lg ring-1 ring-amber-500/50 overflow-hidden group-hover:scale-105 transition-transform">
             <img 
               src="/sigpri_logo.jpg" 
               alt="SIGPRI UNITEPC Logo" 
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-cover rounded-lg brightness-110 contrast-110"
               onError={(e) => {
-                // Fallback SVG if image is missing
                 (e.target as HTMLElement).style.display = 'none';
               }}
             />
