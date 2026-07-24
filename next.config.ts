@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import { withWorkflow } from "workflow/next";
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
   cacheComponents: true,
   reactCompiler: true,
   typedRoutes: true,

@@ -53,9 +53,13 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-unitepc-lila: var(--unitepc-lila);
+  --color-unitepc-teal: var(--unitepc-teal);
 }
 
 :root {
+  --unitepc-lila: #8A3BBF;
+  --unitepc-teal: #009B9E;
   --radius: 0.5rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.15 0 0);
@@ -98,6 +102,8 @@
 }
 
 .dark {
+  --unitepc-lila: #8A3BBF;
+  --unitepc-teal: #009B9E;
   --background: oklch(0.12 0 0);
   --foreground: oklch(0.9 0 0);
   --card: oklch(0.14 0 0);
@@ -137,6 +143,49 @@
   --success: oklch(0.765 0.177 163.223);
   --info: oklch(0.707 0.165 254.624);
   color-scheme: dark;
+}
+
+@utility glass-panel {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@utility glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius, 0.5rem);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.07);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-panel {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius, 0.5rem);
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.07);
+}
+
+.dark .glass-card {
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.37);
 }
 
 @layer base {

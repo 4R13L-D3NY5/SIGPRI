@@ -1,315 +1,491 @@
+"use client";
+
 import {
-  ArrowRight,
+  ArrowUpRight,
+  Award,
   BookOpen,
-  ExternalLink,
-  MessageSquare,
+  Building2,
+  Calculator,
+  CheckCircle2,
+  Clock,
+  FileCheck,
+  FileSpreadsheet,
+  FolderGit2,
+  Plus,
+  Search,
+  ShieldAlert,
+  Sparkles,
   TrendingUp,
+  Users,
 } from "lucide-react";
-import type { Route } from "next";
 import Link from "next/link";
-import { Suspense, ViewTransition } from "react";
-import { AnimatedNumber } from "@/components/animated-number";
-import { FormattedTime } from "@/components/formatted-time";
-import { Header } from "@/components/header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { typeConfig } from "@/config/type-config";
+import { useEffect, useState } from "react";
 import {
-  getAnalyticsData,
-  getDashboardStats,
-  getRecentActions,
-} from "@/data/queries/activity";
-import { config } from "@/lib/config";
-import { AnalyticsChart } from "./_components/analytics-chart";
-import { DashboardLive } from "./_components/dashboard-live";
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { Header } from "@/components/header";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const PROTOCOL_RE = /^https?:\/\//;
+// Data for Activity Trend Chart
+const activityTrendData = [
+  { mes: "Ene", postulados: 12, evaluados: 8, aprobados: 5, presupuesto: 420 },
+  { mes: "Feb", postulados: 19, evaluados: 14, aprobados: 9, presupuesto: 680 },
+  { mes: "Mar", postulados: 25, evaluados: 18, aprobados: 14, presupuesto: 950 },
+  { mes: "Abr", postulados: 32, evaluados: 26, aprobados: 20, presupuesto: 1240 },
+  { mes: "May", postulados: 28, evaluados: 24, aprobados: 18, presupuesto: 1100 },
+  { mes: "Jun", postulados: 45, evaluados: 35, aprobados: 28, presupuesto: 1850 },
+  { mes: "Jul", postulados: 50, evaluados: 42, aprobados: 34, presupuesto: 2210 },
+];
 
-export default function OverviewPage() {
-  const analyticsPromise = getAnalyticsData();
+const recentProjects = [
+  {
+    code: "INV-2026-089",
+    title: "Síntesis de Nanopartículas con Extractos Vegetales de la Amazonía",
+    researcher: "Dr. Marcelo Vargas",
+    faculty: "Ciencias Puras y Naturales",
+    status: "En Evaluación",
+    budget: "Bs. 120,000",
+    date: "Hace 2 horas",
+  },
+  {
+    code: "INV-2026-077",
+    title: "Optimización Algorítmica para Redes de Distribución Eléctrica Rural",
+    researcher: "Dra. Elena Quispe",
+    faculty: "Ingeniería",
+    status: "Aprobado",
+    budget: "Bs. 250,000",
+    date: "Hace 5 horas",
+  },
+  {
+    code: "INV-2026-064",
+    title: "Impacto Socioeconómico del Turismo Sostenible en el Lago Titicaca",
+    researcher: "MSc. Javier Condori",
+    faculty: "Ciencias Sociales",
+    status: "En Ejecución",
+    budget: "Bs. 95,000",
+    date: "Ayer",
+  },
+  {
+    code: "INV-2026-052",
+    title: "Estudio Epidemiológico de Enfermedades Zoonóticas en el Altiplano",
+    researcher: "Dra. Sofía Mendoza",
+    faculty: "Medicina",
+    status: "En Evaluación",
+    budget: "Bs. 310,000",
+    date: "Hace 2 días",
+  },
+];
+
+export default function DashboardPage() {
+  // Animated counters state
+  const [counts, setCounts] = useState({
+    proyectos: 0,
+    presupuesto: 0,
+    convocatorias: 0,
+    evaluaciones: 0,
+  });
+
+  useEffect(() => {
+    const duration = 1200; // ms
+    const steps = 30;
+    const intervalTime = duration / steps;
+    let step = 0;
+
+    const timer = setInterval(() => {
+      step++;
+      const progress = step / steps;
+      setCounts({
+        proyectos: Math.floor(142 * progress),
+        presupuesto: Math.floor(8450000 * progress),
+        convocatorias: Math.floor(12 * progress),
+        evaluaciones: Math.floor(28 * progress),
+      });
+
+      if (step >= steps) {
+        clearInterval(timer);
+        setCounts({
+          proyectos: 142,
+          presupuesto: 8450000,
+          convocatorias: 12,
+          evaluaciones: 28,
+        });
+      }
+    }, intervalTime);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen bg-background pb-10">
       <Header
-        description={`${config.communityName} dashboard`}
-        title="Overview"
+        title="Resumen General DICYT"
+        description="Dirección de Investigación Científica y Tecnológica - Monitoreo Integral de Proyectos y Fondos Ley 843"
       />
-      <div className="flex-1 space-y-4 p-4">
-        <DashboardLive />
-        {config.savoirApiUrl && (
-          <div className="flex items-center gap-2 rounded-lg border border-info/20 bg-info/5 px-3 py-2 text-xs">
-            <BookOpen className="h-3.5 w-3.5 text-info" />
-            <span>
-              Knowledge base:{" "}
-              <a
-                className="font-medium text-info hover:underline"
-                href={config.savoirApiUrl}
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {config.savoirApiUrl.replace(PROTOCOL_RE, "")}
-                <ExternalLink className="ml-1 inline h-3 w-3" />
-              </a>
-            </span>
+
+      <div className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8">
+        {/* Banner Informativo */}
+        <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/5 to-background p-5 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="border-primary/40 text-primary">
+                  Gestión 2026-2027
+                </Badge>
+                <span className="text-xs text-muted-foreground">Última actualización: Hoy, 12:00</span>
+              </div>
+              <h2 className="font-bold text-xl tracking-tight">
+                Sistema de Gestión de Investigación DICYT
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-2xl">
+                Plataforma centralizada para la administración de convocatorias, comités evaluadores y fiscalización presupuestaria de la Ley 843.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button asChild size="sm" className="gap-1.5 shadow">
+                <Link href="/projects">
+                  <FolderGit2 className="h-4 w-4" />
+                  Ver Proyectos
+                </Link>
+              </Button>
+              <Button asChild size="sm" variant="outline" className="gap-1.5">
+                <Link href="/budget">
+                  <Calculator className="h-4 w-4" />
+                  Calculadora Ley 843
+                </Link>
+              </Button>
+            </div>
           </div>
-        )}
-        <Suspense
-          fallback={
-            <ViewTransition>
-              <StatsCardsSkeleton />
-            </ViewTransition>
-          }
-        >
-          <ViewTransition>
-            <StatsCards />
-          </ViewTransition>
-        </Suspense>
-        <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-          <Suspense
-            fallback={
-              <ViewTransition>
-                <AnalyticsChartSkeleton />
-              </ViewTransition>
-            }
-          >
-            <ViewTransition>
-              <AnalyticsChart dataPromise={analyticsPromise} />
-            </ViewTransition>
-          </Suspense>
-          <Suspense
-            fallback={
-              <ViewTransition>
-                <RecentActivitySkeleton />
-              </ViewTransition>
-            }
-          >
-            <ViewTransition>
-              <RecentActivityCard />
-            </ViewTransition>
-          </Suspense>
         </div>
-      </div>
-    </>
-  );
-}
 
-async function StatsCards() {
-  const { counts, thisWeek } = await getDashboardStats();
+        {/* 4 KPIs Animados */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {/* KPI 1 */}
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border-l-4 border-l-blue-500">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Total Proyectos DICYT
+              </CardTitle>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+                <FolderGit2 className="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-extrabold tracking-tight text-foreground">
+                {counts.proyectos}
+              </div>
+              <div className="mt-2 flex items-center text-xs text-emerald-600 font-medium">
+                <TrendingUp className="mr-1 h-3.5 w-3.5" />
+                <span>+18.5% esta gestión</span>
+                <span className="ml-auto text-muted-foreground font-normal">2025-2027</span>
+              </div>
+            </CardContent>
+          </Card>
 
-  const cards = [
-    {
-      title: "Questions answered",
-      value: String(counts.answered || 0),
-      type: "answered" as const,
-      href: "/activity?type=answered",
-      weekly: thisWeek.answered || 0,
-    },
-    {
-      title: "Questions routed",
-      value: String(counts.routed || 0),
-      type: "routed" as const,
-      href: "/activity?type=routed",
-      weekly: thisWeek.routed || 0,
-    },
-    {
-      title: "Members welcomed",
-      value: String(counts.welcomed || 0),
-      type: "welcomed" as const,
-      href: "/activity?type=welcomed",
-      weekly: thisWeek.welcomed || 0,
-    },
-    {
-      title: "Questions surfaced",
-      value: String(counts.surfaced || 0),
-      type: "surfaced" as const,
-      href: "/activity?type=surfaced",
-      weekly: thisWeek.surfaced || 0,
-    },
-    {
-      title: "Issues flagged",
-      value: String(counts.flagged || 0),
-      type: "flagged" as const,
-      href: "/activity?type=flagged",
-      weekly: thisWeek.flagged || 0,
-    },
-  ];
+          {/* KPI 2 */}
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border-l-4 border-l-emerald-500">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Presupuesto Ejecutado
+              </CardTitle>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600">
+                <Calculator className="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-extrabold tracking-tight text-foreground">
+                Bs. {counts.presupuesto.toLocaleString("es-BO")}
+              </div>
+              <div className="mt-2 flex items-center text-xs text-emerald-600 font-medium">
+                <TrendingUp className="mr-1 h-3.5 w-3.5" />
+                <span>+12.4% vs 2025</span>
+                <span className="ml-auto text-muted-foreground font-normal">Ley 843</span>
+              </div>
+            </CardContent>
+          </Card>
 
-  return (
-    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-3">
-      {cards.map((stat) => {
-        const cfg = typeConfig[stat.type];
-        return (
-          <Link href={stat.href as Route} key={stat.title}>
-            <Card className="gap-1 py-2.5 transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:gap-1.5 sm:py-3">
-              <CardHeader className="flex flex-row items-center justify-between px-3 pb-0">
-                <CardTitle className="font-medium text-muted-foreground text-xs">
-                  {stat.title}
+          {/* KPI 3 */}
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border-l-4 border-l-amber-500">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Convocatorias Activas
+              </CardTitle>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
+                <Award className="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-extrabold tracking-tight text-foreground">
+                {counts.convocatorias}
+              </div>
+              <div className="mt-2 flex items-center text-xs text-amber-600 font-medium">
+                <Clock className="mr-1 h-3.5 w-3.5" />
+                <span>4 convocatorias por cerrar</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* KPI 4 */}
+          <Card className="relative overflow-hidden transition-all hover:shadow-md border-l-4 border-l-purple-500">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Evaluaciones Pendientes
+              </CardTitle>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600">
+                <FileCheck className="h-5 w-5" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-extrabold tracking-tight text-foreground">
+                {counts.evaluaciones}
+              </div>
+              <div className="mt-2 flex items-center text-xs text-purple-600 font-medium">
+                <Users className="mr-1 h-3.5 w-3.5" />
+                <span>15 evaluadores pares en sesión</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Gráfica Activity Trend + Resumen Estadístico */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Gráfica Activity trend */}
+          <Card className="lg:col-span-2 shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-semibold">
+                  Activity Trend - Tendencia de Proyectos y Ejecución
                 </CardTitle>
-                <div
-                  className={`hidden h-5 w-5 items-center justify-center rounded-full sm:flex ${cfg.bgColor}`}
-                >
-                  <cfg.icon className={`h-2.5 w-2.5 ${cfg.iconColor}`} />
+                <CardDescription className="text-xs">
+                  Evolución mensual de postulaciones, evaluaciones y aprobación de fondos DICYT
+                </CardDescription>
+              </div>
+              <Badge variant="secondary" className="gap-1 text-xs">
+                <Sparkles className="h-3 w-3 text-amber-500" />
+                Tiempo Real
+              </Badge>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={activityTrendData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorPostulados" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
+                      </linearGradient>
+                      <linearGradient id="colorEvaluados" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#a855f7" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#a855f7" stopOpacity={0.0} />
+                      </linearGradient>
+                      <linearGradient id="colorAprobados" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" />
+                    <XAxis dataKey="mes" tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                    <YAxis tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+                    <Tooltip
+                      content={({ active, payload, label }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="rounded-lg border bg-popover p-3 text-popover-foreground shadow-lg text-xs space-y-1">
+                              <p className="font-semibold text-sm border-b pb-1 mb-1">{label} 2026</p>
+                              {payload.map((entry: any) => (
+                                <div key={entry.name} className="flex items-center justify-between gap-4">
+                                  <span style={{ color: entry.color }} className="font-medium">
+                                    {entry.name}:
+                                  </span>
+                                  <span className="font-bold">{entry.value}</span>
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="postulados"
+                      name="Postulados"
+                      stroke="#3b82f6"
+                      fillOpacity={1}
+                      fill="url(#colorPostulados)"
+                      strokeWidth={2}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="evaluados"
+                      name="Evaluados"
+                      stroke="#a855f7"
+                      fillOpacity={1}
+                      fill="url(#colorEvaluados)"
+                      strokeWidth={2}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="aprobados"
+                      name="Aprobados"
+                      stroke="#10b981"
+                      fillOpacity={1}
+                      fill="url(#colorAprobados)"
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Leyenda de la gráfica */}
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground border-t pt-3">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+                  <span>Proyectos Postulados</span>
                 </div>
-              </CardHeader>
-              <CardContent className="px-3">
-                <AnimatedNumber
-                  className="font-bold text-xl"
-                  value={stat.value}
-                />
-                {stat.weekly > 0 ? (
-                  <p className="hidden items-center gap-1 text-success text-xs sm:flex">
-                    <TrendingUp className="h-3 w-3" />+{stat.weekly} this week
-                  </p>
-                ) : (
-                  <p className="hidden text-muted-foreground text-xs sm:block">
-                    No activity this week
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </Link>
-        );
-      })}
-      <Link href="/activity">
-        <Card className="gap-1 py-2.5 transition-colors hover:bg-accent/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:gap-1.5 sm:py-3">
-          <CardHeader className="flex flex-row items-center justify-between px-3 pb-0">
-            <CardTitle className="font-medium text-muted-foreground text-xs">
-              Total actions
-            </CardTitle>
-            <div className="hidden h-5 w-5 items-center justify-center rounded-full bg-muted sm:flex">
-              <MessageSquare className="h-2.5 w-2.5 text-muted-foreground" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-3">
-            <AnimatedNumber
-              className="font-bold text-xl"
-              value={String(counts.total)}
-            />
-            {thisWeek.total > 0 ? (
-              <p className="hidden items-center gap-1 text-success text-xs sm:flex">
-                <TrendingUp className="h-3 w-3" />+{thisWeek.total} this week
-              </p>
-            ) : (
-              <p className="hidden text-muted-foreground text-xs sm:block">
-                No activity this week
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </Link>
-    </div>
-  );
-}
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-purple-500" />
+                  <span>Proyectos Evaluados</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                  <span>Proyectos Aprobados</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-async function RecentActivityCard() {
-  const actions = await getRecentActions();
-  const recent = actions.slice(0, 4);
+          {/* Distribución por Áreas / Estadísticas Rápidas */}
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-base font-semibold">Distribución por Áreas</CardTitle>
+              <CardDescription className="text-xs">Proyectos vigentes según facultad/área</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-medium">
+                  <span>Ingeniería y Tecnología</span>
+                  <span className="text-muted-foreground">38% (54 proy.)</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-blue-500 rounded-full" style={{ width: "38%" }} />
+                </div>
+              </div>
 
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-sm">Recent activity</CardTitle>
-        <Button asChild size="sm" variant="outline">
-          <Link href="/activity">
-            View all <ArrowRight className="ml-1 h-3 w-3" />
-          </Link>
-        </Button>
-      </CardHeader>
-      <CardContent>
-        {recent.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            No activity yet—stats will appear as the bot handles messages.
-          </p>
-        ) : (
-          <div className="space-y-1">
-            {recent.map((action) => {
-              const cfg = typeConfig[action.type];
-              const Icon = cfg.icon;
-              const href =
-                action.type === "answered"
-                  ? `/activity/${action.id}`
-                  : `/activity?type=${action.type}`;
-              return (
-                <ViewTransition key={action.id}>
-                  <Link
-                    className="-mx-2 flex items-start gap-2.5 rounded-md px-2 py-1.5 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    href={href as Route}
-                  >
-                    <div
-                      className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${cfg.bgColor}`}
-                    >
-                      <Icon className={`h-2.5 w-2.5 ${cfg.iconColor}`} />
-                    </div>
-                    <div className="min-w-0 flex-1 text-sm">
-                      <p className="text-foreground">{action.description}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {action.channel} &middot;{" "}
-                        <FormattedTime timestamp={action.timestamp} />
-                      </p>
-                    </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-medium">
+                  <span>Ciencias Puras y Naturales</span>
+                  <span className="text-muted-foreground">27% (38 proy.)</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: "27%" }} />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-medium">
+                  <span>Ciencias de la Salud</span>
+                  <span className="text-muted-foreground">19% (27 proy.)</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-purple-500 rounded-full" style={{ width: "19%" }} />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-medium">
+                  <span>Ciencias Agrícolas y Pecuarias</span>
+                  <span className="text-muted-foreground">11% (15 proy.)</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-amber-500 rounded-full" style={{ width: "11%" }} />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs font-medium">
+                  <span>Ciencias Sociales y Humanidades</span>
+                  <span className="text-muted-foreground">5% (8 proy.)</span>
+                </div>
+                <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-rose-500 rounded-full" style={{ width: "5%" }} />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t">
+                <Button asChild variant="outline" className="w-full text-xs gap-1">
+                  <Link href="/projects">
+                    Ver Directorio Completo
+                    <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>
-                </ViewTransition>
-              );
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-function RecentActivitySkeleton() {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <Skeleton className="h-5 w-28" />
-        <Skeleton className="h-8 w-20" />
-      </CardHeader>
-      <CardContent className="space-y-1">
-        {[1, 2, 3, 4].map((i) => (
-          <div className="-mx-2 flex items-start gap-2.5 px-2 py-1.5" key={i}>
-            <Skeleton className="mt-0.5 h-5 w-5 shrink-0 rounded-full" />
-            <div className="flex-1 space-y-1">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/3" />
+        {/* Proyectos Recientes */}
+        <Card className="shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-semibold">Últimos Proyectos Registrados</CardTitle>
+              <CardDescription className="text-xs">Ingresos recientes a la plataforma DICYT</CardDescription>
             </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-function AnalyticsChartSkeleton() {
-  return (
-    <Card>
-      <CardHeader>
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-3 w-14" />
-      </CardHeader>
-      <CardContent>
-        <Skeleton className="h-[240px] w-full" />
-      </CardContent>
-    </Card>
-  );
-}
-
-function StatsCardsSkeleton() {
-  return (
-    <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-3">
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card className="gap-1 py-3 sm:gap-1.5 sm:py-3.5" key={i}>
-          <CardHeader className="flex flex-row items-center justify-between px-3 pb-0">
-            <Skeleton className="h-3 w-16 sm:w-20" />
-            <Skeleton className="hidden h-5 w-5 rounded-full sm:block" />
+            <Button asChild size="sm" variant="ghost" className="gap-1 text-xs">
+              <Link href="/projects">
+                Ver todos <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
           </CardHeader>
-          <CardContent className="px-3">
-            <Skeleton className="mb-1 h-6 w-8" />
-            <Skeleton className="hidden h-3 w-20 sm:block" />
+          <CardContent>
+            <div className="divide-y divide-border rounded-md border">
+              {recentProjects.map((project) => (
+                <div key={project.code} className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between hover:bg-muted/40 transition-colors">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="font-mono text-[10px]">
+                        {project.code}
+                      </Badge>
+                      <Badge
+                        className={
+                          project.status === "Aprobado"
+                            ? "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border-emerald-500/30"
+                            : project.status === "En Ejecución"
+                            ? "bg-blue-500/10 text-blue-600 hover:bg-blue-500/20 border-blue-500/30"
+                            : "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-amber-500/30"
+                        }
+                      >
+                        {project.status}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{project.date}</span>
+                    </div>
+                    <h3 className="font-semibold text-sm text-foreground">{project.title}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Investigador: <span className="text-foreground font-medium">{project.researcher}</span> &bull; {project.faculty}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0 pt-2 sm:pt-0">
+                    <div className="text-right">
+                      <span className="block text-xs text-muted-foreground">Presupuesto</span>
+                      <span className="font-mono font-semibold text-sm">{project.budget}</span>
+                    </div>
+                    <Button asChild size="sm" variant="outline" className="h-8">
+                      <Link href="/projects">Ficha</Link>
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
-      ))}
+      </div>
     </div>
   );
 }
