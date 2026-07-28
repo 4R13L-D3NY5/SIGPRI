@@ -23,7 +23,7 @@ import { ProjectWbsModal } from "./_components/project-wbs-modal";
 import { ProjectBudgetModal } from "./_components/project-budget-modal";
 import { ProjectHistoryModal } from "./_components/project-history-modal";
 import { ProjectStatusFlowModal } from "./_components/project-status-flow-modal";
-import { NewProposalModal } from "./_components/new-proposal-modal";
+import { InitialProposalModal } from "./_components/initial-proposal-modal";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
 export type ExactProjectStatus = 
@@ -273,27 +273,15 @@ export default function ProjectsRegistryPage() {
   const [isNewProposalOpen, setIsNewProposalOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastState | null>(null);
 
-  // HANDLER PARA GUARDAR PROPUESTA COMPLETA CON DETALLE, CRONOGRAMA Y PRESUPUESTO
-  const handleSaveCompleteProposal = (
-    newProposal: ProjectItem,
-    wbsTasks: any[],
-    budgetItems: any[]
-  ) => {
+  // HANDLER PARA GUARDAR PROPUESTA INICIAL Y ABRIR REUSO DE MODALES EXISTENTES
+  const handleSaveInitialProposal = (newProposal: ProjectItem) => {
     updateSingleProject(newProposal);
-
-    if (typeof window !== "undefined") {
-      if (wbsTasks && wbsTasks.length > 0) {
-        localStorage.setItem(`sigpri_wbs_tasks_${newProposal.id}`, JSON.stringify(wbsTasks));
-      }
-      if (budgetItems && budgetItems.length > 0) {
-        localStorage.setItem(`sigpri_budget_items_${newProposal.id}`, JSON.stringify(budgetItems));
-      }
-    }
-
     setToast({
-      message: `Propuesta ${newProposal.code} registrada exitosamente con Detalle, Cronograma y Presupuesto.`,
+      message: `Propuesta ${newProposal.code} creada. Proceda a completar el Detalle, Cronograma y Presupuesto con los botones del proyecto.`,
       type: "success",
     });
+    // Abrir automáticamente el modal de detalle para completar los campos
+    setActiveModalProject(newProposal);
   };
 
   // Helper para obtener datos del usuario actual
@@ -884,11 +872,11 @@ export default function ProjectsRegistryPage() {
         onClose={() => setIsFlowModalOpen(false)} 
       />
 
-      {/* MODAL 7: REGISTRAR NUEVA PROPUESTA COMPLETA (DETALLE, CRONOGRAMA, PRESUPUESTO) */}
-      <NewProposalModal
+      {/* MODAL 7: REGISTRAR NUEVA PROPUESTA INICIAL (REUSANDO VISTAS EXISTENTES) */}
+      <InitialProposalModal
         isOpen={isNewProposalOpen}
         onClose={() => setIsNewProposalOpen(false)}
-        onSave={handleSaveCompleteProposal}
+        onSave={handleSaveInitialProposal}
         existingCount={projects.length}
       />
 
