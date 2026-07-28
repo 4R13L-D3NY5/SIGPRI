@@ -23,6 +23,7 @@ import { ProjectWbsModal } from "./_components/project-wbs-modal";
 import { ProjectBudgetModal } from "./_components/project-budget-modal";
 import { ProjectHistoryModal } from "./_components/project-history-modal";
 import { ProjectStatusFlowModal } from "./_components/project-status-flow-modal";
+import { NewProposalModal } from "./_components/new-proposal-modal";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
 export type ExactProjectStatus = 
@@ -268,52 +269,31 @@ export default function ProjectsRegistryPage() {
   const [cancelModalProject, setCancelModalProject] = useState<ProjectItem | null>(null);
   const [isFlowModalOpen, setIsFlowModalOpen] = useState<boolean>(false);
 
-  // ESTADO PARA REGISTRAR NUEVA PROPUESTA
+  // ESTADO PARA REGISTRAR NUEVA PROPUESTA Y ALERTAS
   const [isNewProposalOpen, setIsNewProposalOpen] = useState<boolean>(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newInvestigator, setNewInvestigator] = useState("Dra. Maria Lorena Orellana Aguilar");
-  const [newArea, setNewArea] = useState("Ciencias de la Salud / Epidemiología");
-  const [newBudget, setNewBudget] = useState(50000);
   const [toast, setToast] = useState<ToastState | null>(null);
 
-  const handleCreateProposal = () => {
-    if (!newTitle.trim()) {
-      setToast({ message: "Por favor ingrese el título de la propuesta.", type: "error" });
-      return;
+  // HANDLER PARA GUARDAR PROPUESTA COMPLETA CON DETALLE, CRONOGRAMA Y PRESUPUESTO
+  const handleSaveCompleteProposal = (
+    newProposal: ProjectItem,
+    wbsTasks: any[],
+    budgetItems: any[]
+  ) => {
+    updateSingleProject(newProposal);
+
+    if (typeof window !== "undefined") {
+      if (wbsTasks && wbsTasks.length > 0) {
+        localStorage.setItem(`sigpri_wbs_tasks_${newProposal.id}`, JSON.stringify(wbsTasks));
+      }
+      if (budgetItems && budgetItems.length > 0) {
+        localStorage.setItem(`sigpri_budget_items_${newProposal.id}`, JSON.stringify(budgetItems));
+      }
     }
 
-    const newCode = `SIGPRI-2026-${String(projects.length + 1).padStart(3, "0")}`;
-    const newProposal: ProjectItem = {
-      id: `proj-new-${Date.now()}`,
-      code: newCode,
-      title: newTitle,
-      leadInvestigator: newInvestigator,
-      facultyArea: newArea,
-      managementYear: "2026",
-      status: "En Propuesta",
-      requestedBudget: newBudget,
-      approvedBudget: newBudget,
-      taxCategory: "servicios",
-      wbsProgress: 0,
-      abstractText: "Propuesta registrada unificadamente en la plataforma de investigación.",
-      createdAt: new Date().toISOString().substring(0, 10),
-      statusHistory: [
-        {
-          id: `h-new-${Date.now()}`,
-          previousStatus: "En Propuesta",
-          newStatus: "En Propuesta",
-          changedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-          changedBy: newInvestigator,
-          userRole: "Investigador Responsable",
-          notes: "Registro unificado de propuesta en la plataforma de proyectos.",
-        }
-      ]
-    };
-
-    updateSingleProject(newProposal);
-    setNewTitle("");
-    setIsNewProposalOpen(false);
-    setToast({ message: `Propuesta ${newCode} registrada exitosamente.`, type: "success" });
+    setToast({
+      message: `Propuesta ${newProposal.code} registrada exitosamente con Detalle, Cronograma y Presupuesto.`,
+      type: "success",
+    });
   };
 
   // Helper para obtener datos del usuario actual
@@ -904,73 +884,13 @@ export default function ProjectsRegistryPage() {
         onClose={() => setIsFlowModalOpen(false)} 
       />
 
-      {/* MODAL 7: REGISTRAR NUEVA PROPUESTA */}
-      {isNewProposalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-card border border-border rounded-xl shadow-2xl p-6 space-y-4 animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
-                <Plus className="h-5 w-5 text-primary" /> + Registrar Nueva Propuesta de Investigación
-              </h3>
-              <Button variant="ghost" size="icon" onClick={() => setIsNewProposalOpen(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="space-y-1">
-                <label className="font-bold text-foreground">Título de la Propuesta *</label>
-                <input
-                  type="text"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  placeholder="Ej. Evaluación Fitoquímica de plantas medicinales..."
-                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-bold text-foreground">Investigador Responsable</label>
-                <input
-                  type="text"
-                  value={newInvestigator}
-                  onChange={(e) => setNewInvestigator(e.target.value)}
-                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-bold text-foreground">Área Temática Institucional</label>
-                <input
-                  type="text"
-                  value={newArea}
-                  onChange={(e) => setNewArea(e.target.value)}
-                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-bold text-foreground">Presupuesto Estimado (Bs.)</label>
-                <input
-                  type="number"
-                  value={newBudget}
-                  onChange={(e) => setNewBudget(Number(e.target.value))}
-                  className="w-full bg-background border border-input rounded-lg px-3 py-2 text-xs font-bold text-emerald-400 focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-3 border-t border-border">
-              <Button variant="outline" size="sm" onClick={() => setIsNewProposalOpen(false)}>
-                Cancelar
-              </Button>
-              <Button size="sm" onClick={handleCreateProposal} className="bg-primary hover:bg-primary/90 font-bold">
-                Registrar Propuesta
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* MODAL 7: REGISTRAR NUEVA PROPUESTA COMPLETA (DETALLE, CRONOGRAMA, PRESUPUESTO) */}
+      <NewProposalModal
+        isOpen={isNewProposalOpen}
+        onClose={() => setIsNewProposalOpen(false)}
+        onSave={handleSaveCompleteProposal}
+        existingCount={projects.length}
+      />
 
       {/* TOAST ELEGANTE */}
       <ElegantToast toast={toast} onClose={() => setToast(null)} />
