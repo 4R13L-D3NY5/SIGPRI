@@ -37,6 +37,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { InvestigatorRegisterForm } from "./_components/investigator-register-form";
+import { ProposalTutorialModal } from "@/components/proposal-tutorial-modal";
 
 export interface RoleOption {
   id: string;
@@ -160,6 +161,8 @@ export default function SignInPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <ProposalTutorialModal />
+
           <Button
             variant={isRegisterMode ? "default" : "outline"}
             size="sm"

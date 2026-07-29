@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ElegantToast, ToastState } from "@/components/ui/elegant-toast";
+import { ProposalTutorialModal } from "@/components/proposal-tutorial-modal";
 
 const publicProjects = [
   {
@@ -112,6 +113,8 @@ export default function PublicPortalPage() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ProposalTutorialModal />
+
             <Button asChild variant="ghost" size="sm" className="text-xs">
               <Link href="/sign-in">Acceso Institucional</Link>
             </Button>
@@ -136,6 +139,12 @@ export default function PublicPortalPage() {
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
             Consulte los proyectos de investigación científica financiados por la universidad o envíe una propuesta preliminar de investigación a nuestros comités evaluadores.
           </p>
+          <div className="pt-2 flex justify-center">
+            <ProposalTutorialModal
+              triggerButtonText="📖 Ver Guía Interactiva y Diagrama de Flujo del Investigador"
+              triggerButtonClassName="font-bold text-xs gap-2 px-5 py-2.5 shadow-md bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl"
+            />
+          </div>
         </div>
       </section>
 
