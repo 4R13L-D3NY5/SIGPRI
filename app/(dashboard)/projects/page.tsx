@@ -24,6 +24,7 @@ import { ProjectBudgetModal } from "./_components/project-budget-modal";
 import { ProjectHistoryModal } from "./_components/project-history-modal";
 import { ProjectStatusFlowModal } from "./_components/project-status-flow-modal";
 import { InitialProposalModal } from "./_components/initial-proposal-modal";
+import { ProposalTutorialModal } from "@/components/proposal-tutorial-modal";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
 export type ExactProjectStatus = 
@@ -447,6 +448,12 @@ export default function ProjectsRegistryPage() {
                   <Plus className="w-4 h-4" />
                   <span>+ Registrar Nueva Propuesta</span>
                 </Button>
+
+                {/* BOTÓN GUÍA INTERACTIVA Y DIAGRAMA SVG DE POSTULACIÓN */}
+                <ProposalTutorialModal
+                  triggerButtonText="📖 Guía & Flujo Investigador"
+                  triggerButtonClassName="font-bold text-xs gap-1.5 bg-amber-500/10 text-amber-500 border-amber-500/30 hover:bg-amber-500/20 shadow-sm"
+                />
 
                 {/* BOTÓN DIAGRAMA DE FLUJO DE ESTADOS */}
                 <Button
