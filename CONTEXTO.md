@@ -172,43 +172,34 @@ c:/laragon/www/agentes/acme-community-agent/
 
 Para clonar y poner en marcha el proyecto en una nueva computadora o servidor, siga estos pasos:
 
-### 1. Clonar el Repositorio desde GitHub:
+### 1. Prerrequisitos en Windows 11 (Descargar 3 herramientas gratuitas):
+1. **Git para Windows**: https://git-scm.com/download/win
+2. **Node.js (v20 o v22 LTS)**: https://nodejs.org/
+3. **Python (3.11 o 3.12)**: https://www.python.org/downloads/ (*⚠️ Marcar casilla "Add python.exe to PATH"*)
+
+### 2. Clonar el Repositorio desde GitHub:
 ```bash
 git clone https://github.com/4R13L-D3NY5/SIGPRI.git
 cd SIGPRI
 ```
 
-### 2. Instalar Dependencias del Frontend:
+### 3. Configurar e Iniciar el Backend (FastAPI):
+```bash
+cd backend
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8008
+```
+*API Base:* `http://127.0.0.1:8008` | *Swagger:* `http://127.0.0.1:8008/docs`
+
+### 4. Configurar e Iniciar el Frontend (Next.js):
+En una nueva terminal en la raíz del proyecto SIGPRI:
 ```bash
 npm install
-# o con pnpm / yarn:
-pnpm install
-```
-
-### 3. Verificar Archivo de Variables de Entorno (`.env.local`):
-Asegúrese de tener un archivo `.env.local` en la raíz con el siguiente contenido:
-```env
-ALLOW_ADMIN_DEMO_MODE=true
-ADMIN_DEMO_MODE=true
-COMMUNITY_NAME=SIGPRI UNITEPC
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
-BETTER_AUTH_SECRET=demo-secret-key-unitepc-123456789012345
-```
-
-### 4. Iniciar el Servidor de Desarrollo Frontend:
-```bash
-npm run dev -- -p 3001
+npx next dev -p 3001
 ```
 *El sistema estará disponible en:* **`http://localhost:3001`**
-
-### 5. Iniciar el Backend FastAPI (Opcional para Modo Servidor API):
-Si desea ejecutar el backend de base de datos Python en paralelo:
-```bash
-# Desde la carpeta backend del proyecto:
-pip install fastapi uvicorn sqlalchemy pydantic
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-*Documentación de la API en:* **`http://127.0.0.1:8000/docs`**
 
 ---
 
