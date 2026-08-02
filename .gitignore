@@ -41,6 +41,12 @@ Thumbs.db
 *.tsbuildinfo
 next-env.d.ts
 
+# Python & SQLite
+__pycache__/
+*.pyc
+*.db
+.pytest_cache/
+
 # Local database
 *.db
 
