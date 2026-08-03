@@ -28,6 +28,7 @@ import { ProposalTutorialModal } from "@/components/proposal-tutorial-modal";
 import { ProjectPdfGenerator } from "./_components/project-pdf-generator";
 import { AssignCommitteesModal, CommitteeEvaluatorOption } from "./_components/assign-committees-modal";
 import { EvaluateProposalModal, PointEvaluation } from "./_components/evaluate-proposal-modal";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
 export type ExactProjectStatus = 
@@ -515,7 +516,8 @@ export default function ProjectsRegistryPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-10">
+    <TooltipProvider delayDuration={0}>
+      <div className="flex flex-col min-h-screen bg-background pb-10">
       <Header 
         title="Directorio de Proyectos" 
         description="Gestión y seguimiento de proyectos a nivel nacional clasificados por los estados institucionales y retenciones impositivas." 
@@ -791,84 +793,127 @@ export default function ProjectsRegistryPage() {
                     </div>
                   </CardContent>
 
-                  {/* ACCIONES OPERATIVAS (MÓDULOS CON ICONOS Y POPUPS TÍTULO) */}
+                  {/* ACCIONES OPERATIVAS CON TOOLTIPS INSTANTÁNEOS (DELAY 0) */}
                   <CardFooter className="pt-2.5 pb-2.5 bg-muted/20 border-t border-border flex items-center justify-start gap-1.5 overflow-x-auto">
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => setDetailProject(p)} 
-                      className="h-8 w-8 text-blue-400 border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 shrink-0"
-                      title="1. Ver Detalle del Proyecto (Anexos I, II y III)"
-                    >
-                      <FileText className="w-4 h-4" />
-                    </Button>
+                    
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => setDetailProject(p)} 
+                          className="h-8 w-8 text-blue-400 border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 shrink-0"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                        📄 1. Ver Detalle (Anexos I, II y III)
+                      </TooltipContent>
+                    </Tooltip>
 
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => setWbsProject(p)} 
-                      className="h-8 w-8 text-amber-400 border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 shrink-0"
-                      title="2. Cronograma WBS (Gestión de Actividades)"
-                    >
-                      <Calendar className="w-4 h-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => setWbsProject(p)} 
+                          className="h-8 w-8 text-amber-400 border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 shrink-0"
+                        >
+                          <Calendar className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                        📅 2. Cronograma de Actividades WBS
+                      </TooltipContent>
+                    </Tooltip>
 
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => setBudgetProject(p)} 
-                      className="h-8 w-8 text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 shrink-0"
-                      title="3. Presupuesto y Fiscalización Impositiva"
-                    >
-                      <FileSpreadsheet className="w-4 h-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => setBudgetProject(p)} 
+                          className="h-8 w-8 text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 shrink-0"
+                        >
+                          <FileSpreadsheet className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                        📊 3. Presupuesto & Retenciones
+                      </TooltipContent>
+                    </Tooltip>
 
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => setPdfProject(p)} 
-                      className="h-8 w-8 text-primary border-primary/30 bg-primary/10 hover:bg-primary/20 shrink-0"
-                      title="Generar Documento Oficial PAT UNITEPC (.PDF)"
-                    >
-                      <Printer className="w-4 h-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => setPdfProject(p)} 
+                          className="h-8 w-8 text-primary border-primary/30 bg-primary/10 hover:bg-primary/20 shrink-0"
+                        >
+                          <Printer className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                        🖨️ Imprimir Documento PDF Oficial
+                      </TooltipContent>
+                    </Tooltip>
 
                     {/* BOTÓN DESIGNAR EVALUADORES (JEFE DE INVESTIGACIÓN - EN PROPUESTA) */}
                     {p.status === "En Propuesta" && (
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        onClick={() => setAssignProject(p)} 
-                        className="h-8 w-8 text-purple-400 border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 shrink-0"
-                        title="Designar Miembros Evaluadores de Comités"
-                      >
-                        <Users className="w-4 h-4" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="icon"
+                            onClick={() => setAssignProject(p)} 
+                            className="h-8 w-8 text-purple-400 border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 shrink-0"
+                          >
+                            <Users className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="bg-purple-950 border border-purple-700 text-purple-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                          👥 Designar Miembros Evaluadores
+                        </TooltipContent>
+                      </Tooltip>
                     )}
 
                     {/* BOTÓN EVALUAR PROPUESTA (COMITÉ - EN PROPUESTA O EN EVALUACIÓN) */}
                     {(p.status === "En Propuesta" || p.status === "En Evaluación") && (
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        onClick={() => setEvaluateProject(p)} 
-                        className="h-8 w-8 text-amber-400 border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 shrink-0"
-                        title="Evaluar Puntos del Anexo III Parte II por Comité"
-                      >
-                        <Scale className="w-4 h-4" />
-                      </Button>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="icon"
+                            onClick={() => setEvaluateProject(p)} 
+                            className="h-8 w-8 text-amber-400 border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 shrink-0"
+                          >
+                            <Scale className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="bg-amber-950 border border-amber-700 text-amber-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                          ⚖️ Evaluar Puntos Anexo III Parte II
+                        </TooltipContent>
+                      </Tooltip>
                     )}
 
                     {/* BOTÓN VER HISTORIAL DE ESTADOS */}
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      onClick={() => setHistoryProject(p)} 
-                      className="h-8 w-8 text-muted-foreground border-border hover:bg-muted shrink-0"
-                      title="Ver Historial de Cambios de Estado"
-                    >
-                      <History className="w-4 h-4" />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="icon"
+                          onClick={() => setHistoryProject(p)} 
+                          className="h-8 w-8 text-muted-foreground border-border hover:bg-muted shrink-0"
+                        >
+                          <History className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                        📜 Ver Historial de Cambios de Estado
+                      </TooltipContent>
+                    </Tooltip>
                   </CardFooter>
                 </Card>
               );
@@ -933,73 +978,121 @@ export default function ProjectsRegistryPage() {
                         </td>
                         <td className="p-3 text-center">
                           <div className="flex items-center justify-center gap-1">
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => setDetailProject(p)} 
-                              title="1. Ver Detalle (Científico, Anexo 1, 2 y 3)"
-                              className="h-8 w-8 text-primary hover:bg-primary/10"
-                            >
-                              <FileText className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => setWbsProject(p)} 
-                              title="2. Cronograma WBS"
-                              className="h-8 w-8 text-amber-500 hover:bg-amber-500/10"
-                            >
-                              <Calendar className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => setBudgetProject(p)} 
-                              title="3. Presupuesto y Retenciones"
-                              className="h-8 w-8 text-emerald-500 hover:bg-emerald-500/10"
-                            >
-                              <FileSpreadsheet className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => setPdfProject(p)} 
-                              title="Generar Documento Oficial PAT UNITEPC (.PDF)"
-                              className="h-8 w-8 text-primary hover:bg-primary/20 bg-primary/10"
-                            >
-                              <Printer className="w-4 h-4" />
-                            </Button>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => setDetailProject(p)} 
+                                  className="h-8 w-8 text-blue-400 hover:bg-blue-500/10"
+                                >
+                                  <FileText className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                                📄 1. Ver Detalle (Anexos I, II y III)
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => setWbsProject(p)} 
+                                  className="h-8 w-8 text-amber-500 hover:bg-amber-500/10"
+                                >
+                                  <Calendar className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                                📅 2. Cronograma WBS
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => setBudgetProject(p)} 
+                                  className="h-8 w-8 text-emerald-500 hover:bg-emerald-500/10"
+                                >
+                                  <FileSpreadsheet className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                                📊 3. Presupuesto & Retenciones
+                              </TooltipContent>
+                            </Tooltip>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => setPdfProject(p)} 
+                                  className="h-8 w-8 text-primary hover:bg-primary/20 bg-primary/10"
+                                >
+                                  <Printer className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                                🖨️ Documento PDF Oficial
+                              </TooltipContent>
+                            </Tooltip>
+
                             {p.status === "En Propuesta" && (
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={() => setAssignProject(p)} 
-                                title="Designar Miembros Evaluadores de Comités"
-                                className="h-8 w-8 text-purple-400 hover:bg-purple-500/20 bg-purple-500/10"
-                              >
-                                <Users className="w-4 h-4" />
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => setAssignProject(p)} 
+                                    className="h-8 w-8 text-purple-400 hover:bg-purple-500/20 bg-purple-500/10"
+                                  >
+                                    <Users className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="bg-purple-950 border border-purple-700 text-purple-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                                  👥 Designar Evaluadores
+                                </TooltipContent>
+                              </Tooltip>
                             )}
+
                             {(p.status === "En Propuesta" || p.status === "En Evaluación") && (
-                              <Button 
-                                variant="ghost" 
-                                size="icon"
-                                onClick={() => setEvaluateProject(p)} 
-                                title="Evaluar Puntos del Anexo III Parte II por Comité"
-                                className="h-8 w-8 text-amber-400 hover:bg-amber-500/20 bg-amber-500/10"
-                              >
-                                <Scale className="w-4 h-4" />
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon"
+                                    onClick={() => setEvaluateProject(p)} 
+                                    className="h-8 w-8 text-amber-400 hover:bg-amber-500/20 bg-amber-500/10"
+                                  >
+                                    <Scale className="w-4 h-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="bg-amber-950 border border-amber-700 text-amber-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                                  ⚖️ Evaluar Propuesta
+                                </TooltipContent>
+                              </Tooltip>
                             )}
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => setHistoryProject(p)} 
-                              title="Ver Historial de Cambios de Estado"
-                              className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
-                            >
-                              <History className="w-4 h-4" />
-                            </Button>
+
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={() => setHistoryProject(p)} 
+                                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
+                                >
+                                  <History className="w-4 h-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold px-2.5 py-1.5 shadow-xl">
+                                📜 Ver Historial de Cambios
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                         </td>
                       </tr>
@@ -1093,5 +1186,6 @@ export default function ProjectsRegistryPage() {
       {/* TOAST ELEGANTE */}
       <ElegantToast toast={toast} onClose={() => setToast(null)} />
     </div>
-  );
+  </TooltipProvider>
+);
 }
