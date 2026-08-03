@@ -7,7 +7,7 @@ import {
   BookOpen, ExternalLink, Eye, ChevronRight, Calculator, CheckCircle2,
   DollarSign, PieChart, TrendingUp, Sparkles, Building2, User, X, Edit3, 
   ShieldAlert, LayoutGrid, List, Table as TableIcon, FileText, Calendar,
-  FileSpreadsheet, Ban, History, ArrowRight, GitFork, Plus, Printer
+  FileSpreadsheet, Ban, History, ArrowRight, GitFork, Plus, Printer, Users, Scale, ShieldCheck
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,8 @@ import { ProjectStatusFlowModal } from "./_components/project-status-flow-modal"
 import { InitialProposalModal } from "./_components/initial-proposal-modal";
 import { ProposalTutorialModal } from "@/components/proposal-tutorial-modal";
 import { ProjectPdfGenerator } from "./_components/project-pdf-generator";
+import { AssignCommitteesModal, CommitteeEvaluatorOption } from "./_components/assign-committees-modal";
+import { EvaluateProposalModal, PointEvaluation } from "./_components/evaluate-proposal-modal";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
 export type ExactProjectStatus = 
@@ -272,9 +274,107 @@ export default function ProjectsRegistryPage() {
   const [isFlowModalOpen, setIsFlowModalOpen] = useState<boolean>(false);
   const [pdfProject, setPdfProject] = useState<ProjectItem | null>(null);
 
+  // ESTADOS PARA DESIGNACIÓN Y EVALUACIÓN POR COMITÉS
+  const [assignProject, setAssignProject] = useState<ProjectItem | null>(null);
+  const [evaluateProject, setEvaluateProject] = useState<ProjectItem | null>(null);
+
   // ESTADO PARA REGISTRAR NUEVA PROPUESTA Y ALERTAS
   const [isNewProposalOpen, setIsNewProposalOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<ToastState | null>(null);
+
+  // HANDLER PARA DESIGNAR EVALUADORES
+  const handleAssignEvaluators = (projectId: string, assignedEvaluators: CommitteeEvaluatorOption[]) => {
+    setProjects(projects.map((p) => {
+      if (p.id === projectId) {
+        const updated: ProjectItem = {
+          ...p,
+          statusHistory: [
+            ...p.statusHistory,
+            {
+              id: `h-${Date.now()}`,
+              previousStatus: p.status,
+              newStatus: p.status,
+              changedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+              changedBy: "Jefe de Investigación",
+              userRole: "Jefe de Investigación",
+              notes: `Asignación de ${assignedEvaluators.length} evaluadores: ${assignedEvaluators.map((e) => e.name).join(", ")}`,
+            }
+          ]
+        };
+        updateSingleProject(updated);
+        return updated;
+      }
+      return p;
+    }));
+
+    setToast({
+      message: `Se han designado ${assignedEvaluators.length} miembros evaluadores para la propuesta.`,
+      type: "success",
+    });
+  };
+
+  // HANDLER PARA GUARDAR EVALUACIÓN Y GESTIONAR CAMBIO AUTOMÁTICO DE ESTADO
+  const handleSaveEvaluation = (
+    projectId: string, 
+    evaluations: PointEvaluation[], 
+    overallNotes: string,
+    evaluatorName: string,
+    evaluatorRole: string
+  ) => {
+    setProjects(projects.map((p) => {
+      if (p.id === projectId) {
+        const hasObservationsOrRejections = evaluations.some(
+          (e) => e.status === "PARCIALMENTE_APROBADO" || e.status === "RECHAZADO"
+        );
+
+        let newStatus: ExactProjectStatus = p.status;
+
+        // TRANSICIÓN 1: Si estaba "En Propuesta", pasa a "En Evaluación" al iniciar calificar
+        if (p.status === "En Propuesta") {
+          newStatus = "En Evaluación";
+        }
+
+        // TRANSICIÓN 2: Dictamen final del comité
+        if (hasObservationsOrRejections) {
+          newStatus = "En Observación (Rechazado con opción a corrección)";
+        } else {
+          newStatus = "Aprobado en Ejecución";
+        }
+
+        const compiledNotes = evaluations
+          .filter((e) => e.observation && e.observation.trim().length > 0)
+          .map((e) => `• ${e.title}: ${e.observation}`)
+          .join("\n");
+
+        const updated: ProjectItem = {
+          ...p,
+          status: newStatus,
+          committeeRating: evaluations.filter((e) => e.status === "APROBADO").length * 12.5,
+          correctionNotes: compiledNotes || p.correctionNotes || overallNotes || "Dictamen de comité completado.",
+          statusHistory: [
+            ...p.statusHistory,
+            {
+              id: `h-${Date.now()}`,
+              previousStatus: p.status,
+              newStatus: newStatus,
+              changedAt: new Date().toISOString().replace("T", " ").substring(0, 16),
+              changedBy: evaluatorName,
+              userRole: evaluatorRole,
+              notes: `Dictamen de evaluación emitido: ${newStatus}. ${overallNotes}`,
+            }
+          ]
+        };
+        updateSingleProject(updated);
+        return updated;
+      }
+      return p;
+    }));
+
+    setToast({
+      message: `Evaluación registrada. La propuesta ha actualizado su estado institucional.`,
+      type: "success",
+    });
+  };
 
   // HANDLER PARA GUARDAR PROPUESTA INICIAL Y ABRIR REUSO DE MODALES EXISTENTES
   const handleSaveInitialProposal = (newProposal: ProjectItem) => {
@@ -736,6 +836,34 @@ export default function ProjectsRegistryPage() {
                       <Printer className="w-3.5 h-3.5" />
                       <span>PDF Oficial</span>
                     </Button>
+
+                    {/* BOTÓN DESIGNAR EVALUADORES (JEFE DE INVESTIGACIÓN - EN PROPUESTA) */}
+                    {p.status === "En Propuesta" && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setAssignProject(p)} 
+                        className="text-xs font-bold gap-1 bg-purple-500/10 text-purple-400 border-purple-500/30 hover:bg-purple-500/20"
+                        title="Designar Miembros Evaluadores de Comités"
+                      >
+                        <Users className="w-3.5 h-3.5" />
+                        <span>Designar</span>
+                      </Button>
+                    )}
+
+                    {/* BOTÓN EVALUAR PROPUESTA (COMITÉ - EN PROPUESTA O EN EVALUACIÓN) */}
+                    {(p.status === "En Propuesta" || p.status === "En Evaluación") && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setEvaluateProject(p)} 
+                        className="text-xs font-bold gap-1 bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20"
+                        title="Evaluar Puntos del Anexo III Parte II por Comité"
+                      >
+                        <Scale className="w-3.5 h-3.5" />
+                        <span>Evaluar</span>
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
               );
@@ -836,6 +964,28 @@ export default function ProjectsRegistryPage() {
                             >
                               <Printer className="w-4 h-4" />
                             </Button>
+                            {p.status === "En Propuesta" && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => setAssignProject(p)} 
+                                title="Designar Miembros Evaluadores de Comités"
+                                className="h-8 w-8 text-purple-400 hover:bg-purple-500/20 bg-purple-500/10"
+                              >
+                                <Users className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {(p.status === "En Propuesta" || p.status === "En Evaluación") && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => setEvaluateProject(p)} 
+                                title="Evaluar Puntos del Anexo III Parte II por Comité"
+                                className="h-8 w-8 text-amber-400 hover:bg-amber-500/20 bg-amber-500/10"
+                              >
+                                <Scale className="w-4 h-4" />
+                              </Button>
+                            )}
                             <Button 
                               variant="ghost" 
                               size="icon"
@@ -918,6 +1068,22 @@ export default function ProjectsRegistryPage() {
           project={pdfProject}
         />
       )}
+
+      {/* MODAL 9: DESIGNAR EVALUADORES DE COMITÉ (JEFE DE INVESTIGACIÓN) */}
+      <AssignCommitteesModal
+        isOpen={!!assignProject}
+        onClose={() => setAssignProject(null)}
+        project={assignProject}
+        onAssign={handleAssignEvaluators}
+      />
+
+      {/* MODAL 10: EVALUACIÓN DE PUNTOS DEL ANEXO III PARTE II (MIEMBROS DE COMITÉ Y CONTABILIDAD) */}
+      <EvaluateProposalModal
+        isOpen={!!evaluateProject}
+        onClose={() => setEvaluateProject(null)}
+        project={evaluateProject}
+        onSaveEvaluation={handleSaveEvaluation}
+      />
 
       {/* TOAST ELEGANTE */}
       <ElegantToast toast={toast} onClose={() => setToast(null)} />

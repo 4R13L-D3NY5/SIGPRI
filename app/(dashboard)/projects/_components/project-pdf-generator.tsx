@@ -266,7 +266,7 @@ export function ProjectPdfGenerator({
                 />
                 <div className="text-right text-[10px] text-slate-600">
                   <p className="font-bold uppercase">UNIVERSIDAD TÉCNICA PRIVADA COSMOS</p>
-                  <p>Dirección de Investigación Científica y Tecnológica (DICYT)</p>
+                  <p>Dirección de Investigación Científica</p>
                   <p className="font-mono">Gestión Académica {project.managementYear || "2026"}</p>
                 </div>
               </div>
@@ -346,7 +346,7 @@ export function ProjectPdfGenerator({
                 />
                 <div className="text-right text-[10px] text-slate-600">
                   <p className="font-bold uppercase">UNIVERSIDAD TÉCNICA PRIVADA COSMOS</p>
-                  <p>Dirección de Investigación Científica y Tecnológica (DICYT)</p>
+                  <p>Dirección de Investigación Científica</p>
                 </div>
               </div>
 
@@ -429,7 +429,7 @@ export function ProjectPdfGenerator({
                 />
                 <div className="text-right text-[10px] text-slate-600">
                   <p className="font-bold uppercase">UNIVERSIDAD TÉCNICA PRIVADA COSMOS</p>
-                  <p>Dirección de Investigación Científica y Tecnológica (DICYT)</p>
+                  <p>Dirección de Investigación Científica</p>
                 </div>
               </div>
 
@@ -604,7 +604,7 @@ export function ProjectPdfGenerator({
                 />
                 <div className="text-right text-[10px] text-slate-600">
                   <p className="font-bold uppercase">UNIVERSIDAD TÉCNICA PRIVADA COSMOS</p>
-                  <p>Dirección de Investigación Científica y Tecnológica (DICYT)</p>
+                  <p>Dirección de Investigación Científica</p>
                 </div>
               </div>
 
@@ -667,7 +667,7 @@ export function ProjectPdfGenerator({
                 />
                 <div className="text-right text-[10px] text-slate-600">
                   <p className="font-bold uppercase">UNIVERSIDAD TÉCNICA PRIVADA COSMOS</p>
-                  <p>Dirección de Investigación Científica y Tecnológica (DICYT)</p>
+                  <p>Dirección de Investigación Científica</p>
                 </div>
               </div>
 
