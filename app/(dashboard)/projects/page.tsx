@@ -244,6 +244,7 @@ export default function ProjectsRegistryPage() {
   const [selectedGestion, setSelectedGestion] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [selectedArea, setSelectedArea] = useState<string>("all");
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
 
   // CARGAR Y ESCUCHAR CAMBIOS EN TIEMPO REAL DESDE EL STORE UNIFICADO
   useEffect(() => {
@@ -415,8 +416,9 @@ export default function ProjectsRegistryPage() {
     const matchesGestion = selectedGestion === "all" || p.managementYear === selectedGestion;
     const matchesStatus = selectedStatus === "all" || p.status === selectedStatus;
     const matchesArea = selectedArea === "all" || p.facultyArea.includes(selectedArea);
+    const matchesCampaign = selectedCampaign === "all" || (p.campaignCode && p.campaignCode.toLowerCase().includes(selectedCampaign.toLowerCase()));
 
-    return matchesQuery && matchesGestion && matchesStatus && matchesArea;
+    return matchesQuery && matchesGestion && matchesStatus && matchesArea && matchesCampaign;
   });
 
   // Action: Change Status con Registro de Auditoría (Llamado desde los Modales)
@@ -656,10 +658,10 @@ export default function ProjectsRegistryPage() {
           </CardHeader>
         </Card>
 
-        {/* BARRA DE FILTROS Y BÚSQUEDA */}
+        {/* BARRA DE FILTROS Y BÚSQUEDA (INCLUYENDO FILTRO POR CONVOCATORIA) */}
         <Card className="border-border bg-card text-card-foreground shadow-sm">
           <CardContent className="p-4 space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
               <div className="relative sm:col-span-2">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <input
@@ -671,6 +673,25 @@ export default function ProjectsRegistryPage() {
                 />
               </div>
 
+              {/* FILTRO POR CONVOCATORIA */}
+              <div>
+                <select
+                  value={selectedCampaign}
+                  onChange={(e) => setSelectedCampaign(e.target.value)}
+                  className="w-full bg-background border border-input rounded-md px-3 py-2 text-xs font-medium text-foreground cursor-pointer font-mono"
+                >
+                  <option value="all">📢 Todas las Convocatorias</option>
+                  {Array.from(new Set(projects.map((p) => p.campaignCode).filter(Boolean))).map((code) => (
+                    <option key={code} value={code!}>
+                      {code}
+                    </option>
+                  ))}
+                  <option value="CONV-1-2026-03">CONV-1-2026-03 (Nacional DICYT)</option>
+                  <option value="CONV-2-2026-01">CONV-2-2026-01 (Salud)</option>
+                </select>
+              </div>
+
+              {/* FILTRO POR ESTADO */}
               <div>
                 <select
                   value={selectedStatus}
@@ -688,6 +709,7 @@ export default function ProjectsRegistryPage() {
                 </select>
               </div>
 
+              {/* FILTRO POR GESTIÓN */}
               <div>
                 <select
                   value={selectedGestion}
