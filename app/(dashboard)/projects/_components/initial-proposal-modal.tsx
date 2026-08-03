@@ -34,7 +34,7 @@ export function InitialProposalModal({
   const [facultadesList, setFacultadesList] = useState<string[]>([]);
   const [carrerasList, setCarrerasList] = useState<string[]>([]);
   const [managementYear, setManagementYear] = useState<"2025" | "2026" | "2027">("2026");
-  const [leadInvestigator, setLeadInvestigator] = useState("Dra. Maria Lorena Orellana Aguilar");
+  const [leadInvestigator, setLeadInvestigator] = useState("");
   const [abstractText, setAbstractText] = useState("");
 
   useEffect(() => {
@@ -114,6 +114,9 @@ export function InitialProposalModal({
     };
 
     onSave(newProjectItem);
+    setTitle("");
+    setLeadInvestigator("");
+    setAbstractText("");
     onClose();
   };
 

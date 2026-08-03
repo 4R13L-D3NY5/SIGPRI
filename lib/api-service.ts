@@ -7,7 +7,7 @@ import { AcademicGestion, AcademicSectionItem } from "@/app/(dashboard)/settings
 import { INITIAL_MASTER_PROJECTS } from "./sigpri-store";
 
 // DIRECCIÓN DE LA API BACKEND DESACOPLADA (Configurable por variable de entorno)
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8008/api";
 
 // CLAVES DE ALMACENAMIENTO CACHÉ
 const KEYS = {

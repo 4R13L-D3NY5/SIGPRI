@@ -7,7 +7,7 @@ import {
   BookOpen, ExternalLink, Eye, ChevronRight, Calculator, CheckCircle2,
   DollarSign, PieChart, TrendingUp, Sparkles, Building2, User, X, Edit3, 
   ShieldAlert, LayoutGrid, List, Table as TableIcon, FileText, Calendar,
-  FileSpreadsheet, Ban, History, ArrowRight, GitFork, Plus
+  FileSpreadsheet, Ban, History, ArrowRight, GitFork, Plus, Printer
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,7 @@ import { ProjectHistoryModal } from "./_components/project-history-modal";
 import { ProjectStatusFlowModal } from "./_components/project-status-flow-modal";
 import { InitialProposalModal } from "./_components/initial-proposal-modal";
 import { ProposalTutorialModal } from "@/components/proposal-tutorial-modal";
+import { ProjectPdfGenerator } from "./_components/project-pdf-generator";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
 export type ExactProjectStatus = 
@@ -269,6 +270,7 @@ export default function ProjectsRegistryPage() {
   // ESTADO DE MODAL DE CANCELACIÓN Y DIAGRAMA DE FLUJO
   const [cancelModalProject, setCancelModalProject] = useState<ProjectItem | null>(null);
   const [isFlowModalOpen, setIsFlowModalOpen] = useState<boolean>(false);
+  const [pdfProject, setPdfProject] = useState<ProjectItem | null>(null);
 
   // ESTADO PARA REGISTRAR NUEVA PROPUESTA Y ALERTAS
   const [isNewProposalOpen, setIsNewProposalOpen] = useState<boolean>(false);
@@ -277,12 +279,13 @@ export default function ProjectsRegistryPage() {
   // HANDLER PARA GUARDAR PROPUESTA INICIAL Y ABRIR REUSO DE MODALES EXISTENTES
   const handleSaveInitialProposal = (newProposal: ProjectItem) => {
     updateSingleProject(newProposal);
+    setIsNewProposalOpen(false);
     setToast({
       message: `Propuesta ${newProposal.code} creada. Proceda a completar el Detalle, Cronograma y Presupuesto con los botones del proyecto.`,
       type: "success",
     });
     // Abrir automáticamente el modal de detalle para completar los campos
-    setActiveModalProject(newProposal);
+    setDetailProject(newProposal);
   };
 
   // Helper para obtener datos del usuario actual
@@ -722,6 +725,17 @@ export default function ProjectsRegistryPage() {
                       <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500" />
                       <span>Presupuesto</span>
                     </Button>
+
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setPdfProject(p)} 
+                      className="text-xs font-bold gap-1 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 shadow-xs"
+                      title="Generar Documento Oficial PAT UNITEPC (.PDF / Anexos I, II, III, WBS y Presupuesto)"
+                    >
+                      <Printer className="w-3.5 h-3.5" />
+                      <span>PDF Oficial</span>
+                    </Button>
                   </CardFooter>
                 </Card>
               );
@@ -816,6 +830,15 @@ export default function ProjectsRegistryPage() {
                             <Button 
                               variant="ghost" 
                               size="icon"
+                              onClick={() => setPdfProject(p)} 
+                              title="Generar Documento Oficial PAT UNITEPC (.PDF)"
+                              className="h-8 w-8 text-primary hover:bg-primary/20 bg-primary/10"
+                            >
+                              <Printer className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="icon"
                               onClick={() => setHistoryProject(p)} 
                               title="Ver Historial de Cambios de Estado"
                               className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -886,6 +909,15 @@ export default function ProjectsRegistryPage() {
         onSave={handleSaveInitialProposal}
         existingCount={projects.length}
       />
+
+      {/* MODAL 8: GENERADOR DE DOCUMENTO OFICIAL PAT UNITEPC (.PDF) */}
+      {pdfProject && (
+        <ProjectPdfGenerator
+          isOpen={!!pdfProject}
+          onClose={() => setPdfProject(null)}
+          project={pdfProject}
+        />
+      )}
 
       {/* TOAST ELEGANTE */}
       <ElegantToast toast={toast} onClose={() => setToast(null)} />
