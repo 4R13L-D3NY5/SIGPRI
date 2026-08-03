@@ -791,63 +791,58 @@ export default function ProjectsRegistryPage() {
                     </div>
                   </CardContent>
 
-                  {/* ACCIONES OPERATIVAS (3 MÓDULOS REQUERIDOS + HISTORIAL) */}
-                  <CardFooter className="pt-3 pb-3 bg-muted/20 border-t border-border flex items-center justify-between gap-1">
+                  {/* ACCIONES OPERATIVAS (MÓDULOS CON ICONOS Y POPUPS TÍTULO) */}
+                  <CardFooter className="pt-2.5 pb-2.5 bg-muted/20 border-t border-border flex items-center justify-start gap-1.5 overflow-x-auto">
                     <Button 
                       variant="outline" 
-                      size="sm"
+                      size="icon"
                       onClick={() => setDetailProject(p)} 
-                      className="text-xs font-semibold gap-1 text-foreground hover:bg-muted"
-                      title="1. Ver Detalle (Científico, Anexo 1, 2 y 3)"
+                      className="h-8 w-8 text-blue-400 border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 shrink-0"
+                      title="1. Ver Detalle del Proyecto (Anexos I, II y III)"
                     >
-                      <FileText className="w-3.5 h-3.5 text-primary" />
-                      <span>Detalle</span>
+                      <FileText className="w-4 h-4" />
                     </Button>
 
                     <Button 
                       variant="outline" 
-                      size="sm"
+                      size="icon"
                       onClick={() => setWbsProject(p)} 
-                      className="text-xs font-semibold gap-1 text-foreground hover:bg-muted"
+                      className="h-8 w-8 text-amber-400 border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 shrink-0"
                       title="2. Cronograma WBS (Gestión de Actividades)"
                     >
-                      <Calendar className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Cronograma</span>
+                      <Calendar className="w-4 h-4" />
                     </Button>
 
                     <Button 
                       variant="outline" 
-                      size="sm"
+                      size="icon"
                       onClick={() => setBudgetProject(p)} 
-                      className="text-xs font-semibold gap-1 text-foreground hover:bg-muted"
-                      title="3. Presupuesto (Retenciones Excel)"
+                      className="h-8 w-8 text-emerald-400 border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 shrink-0"
+                      title="3. Presupuesto y Fiscalización Impositiva"
                     >
-                      <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>Presupuesto</span>
+                      <FileSpreadsheet className="w-4 h-4" />
                     </Button>
 
                     <Button 
                       variant="outline" 
-                      size="sm"
+                      size="icon"
                       onClick={() => setPdfProject(p)} 
-                      className="text-xs font-bold gap-1 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 shadow-xs"
-                      title="Generar Documento Oficial PAT UNITEPC (.PDF / Anexos I, II, III, WBS y Presupuesto)"
+                      className="h-8 w-8 text-primary border-primary/30 bg-primary/10 hover:bg-primary/20 shrink-0"
+                      title="Generar Documento Oficial PAT UNITEPC (.PDF)"
                     >
-                      <Printer className="w-3.5 h-3.5" />
-                      <span>PDF Oficial</span>
+                      <Printer className="w-4 h-4" />
                     </Button>
 
                     {/* BOTÓN DESIGNAR EVALUADORES (JEFE DE INVESTIGACIÓN - EN PROPUESTA) */}
                     {p.status === "En Propuesta" && (
                       <Button 
                         variant="outline" 
-                        size="sm"
+                        size="icon"
                         onClick={() => setAssignProject(p)} 
-                        className="text-xs font-bold gap-1 bg-purple-500/10 text-purple-400 border-purple-500/30 hover:bg-purple-500/20"
+                        className="h-8 w-8 text-purple-400 border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 shrink-0"
                         title="Designar Miembros Evaluadores de Comités"
                       >
-                        <Users className="w-3.5 h-3.5" />
-                        <span>Designar</span>
+                        <Users className="w-4 h-4" />
                       </Button>
                     )}
 
@@ -855,15 +850,25 @@ export default function ProjectsRegistryPage() {
                     {(p.status === "En Propuesta" || p.status === "En Evaluación") && (
                       <Button 
                         variant="outline" 
-                        size="sm"
+                        size="icon"
                         onClick={() => setEvaluateProject(p)} 
-                        className="text-xs font-bold gap-1 bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20"
+                        className="h-8 w-8 text-amber-400 border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 shrink-0"
                         title="Evaluar Puntos del Anexo III Parte II por Comité"
                       >
-                        <Scale className="w-3.5 h-3.5" />
-                        <span>Evaluar</span>
+                        <Scale className="w-4 h-4" />
                       </Button>
                     )}
+
+                    {/* BOTÓN VER HISTORIAL DE ESTADOS */}
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => setHistoryProject(p)} 
+                      className="h-8 w-8 text-muted-foreground border-border hover:bg-muted shrink-0"
+                      title="Ver Historial de Cambios de Estado"
+                    >
+                      <History className="w-4 h-4" />
+                    </Button>
                   </CardFooter>
                 </Card>
               );
