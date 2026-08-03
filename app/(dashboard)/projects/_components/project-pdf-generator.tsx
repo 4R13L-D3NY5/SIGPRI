@@ -31,7 +31,7 @@ export interface WbsTaskDocx {
   responsible: string;
   startDate: string;
   endDate: string;
-  weeks: string[]; // 20 semanas
+  weeks: string[];
 }
 
 export interface BudgetItemDocx {
@@ -65,9 +65,9 @@ export function ProjectPdfGenerator({
     return [
       {
         num: 1,
-        name: "Ariel Denys Camara Arze",
+        name: project.leadInvestigator || "Ariel Denys Camara Arze",
         ci: "6522053",
-        carrera: "ING. DE SISTEMAS",
+        carrera: project.facultyArea || "ING. DE SISTEMAS",
         institution: "UNITEPC",
         occupation: "DOC. INVESTIGADOR",
         cityCountry: "COCHABAMBA, BOLIVIA",
@@ -267,7 +267,7 @@ export function ProjectPdfGenerator({
                 <div className="text-right text-[10px] text-slate-600">
                   <p className="font-bold uppercase">UNIVERSIDAD TÉCNICA PRIVADA COSMOS</p>
                   <p>Dirección de Investigación Científica y Tecnológica (DICYT)</p>
-                  <p className="font-mono">Gestión Academic {project.managementYear || "2026"}</p>
+                  <p className="font-mono">Gestión Académica {project.managementYear || "2026"}</p>
                 </div>
               </div>
 
@@ -418,7 +418,7 @@ export function ProjectPdfGenerator({
             </div>
 
             {/* ============================================================ */}
-            {/* ANEXO 3: PROPUESTA DE PROYECTO (PARTE 1 Y PARTE 2)            */}
+            {/* ANEXO 3: PROPUESTA DE PROYECTO (PARTE I Y PARTE II)           */}
             {/* ============================================================ */}
             <div className="space-y-4 page-break-after border-b-2 border-slate-800 pb-8 pt-4">
               <div className="flex items-center justify-between border-b border-slate-300 pb-4">
@@ -441,43 +441,84 @@ export function ProjectPdfGenerator({
                 </p>
               </div>
 
-              {/* PARTE 1: DATOS GENERALES (TABLAS 9, 10, 11 Y 12 DOCX) */}
+              {/* PARTE I: INFORMACIÓN GENERAL DEL PROYECTO (TABLA 7 DOCX) */}
               <div className="space-y-3">
-                <div>
-                  <label className="font-bold uppercase text-[11px]">NOMBRE DEL PROYECTO:</label>
-                  <div className="border border-slate-800 p-2.5 bg-slate-50 font-bold uppercase">
-                    {project.title}
-                  </div>
+                <div className="bg-slate-200 border border-slate-800 p-2 font-extrabold text-center uppercase tracking-wider text-xs">
+                  PARTE I: INFORMACIÓN GENERAL DEL PROYECTO
                 </div>
 
-                <div>
-                  <label className="font-bold uppercase text-[11px]">GESTORA / DIRECTOR DE PROYECTO:</label>
-                  <div className="border border-slate-800 p-2.5 bg-slate-50 font-bold">
-                    {project.leadInvestigator || "Dra. Maria Lorena Orellana Aguilar"}
-                  </div>
-                </div>
+                <table className="w-full text-left text-[11px] border-collapse border border-slate-800">
+                  <tbody>
+                    <tr className="border-b border-slate-800">
+                      <td className="p-2 font-bold bg-slate-100 border-r border-slate-800 w-1/3">Título del proyecto</td>
+                      <td className="p-2 font-bold uppercase">{project.title}</td>
+                    </tr>
+                    <tr className="border-b border-slate-800">
+                      <td className="p-2 font-bold bg-slate-100 border-r border-slate-800">Descriptores / palabras claves</td>
+                      <td className="p-2 font-mono text-[10px]">Gestión de Proyectos, Comités Científico/Bioético, Flujo Editorial, Contabilidad, Trazabilidad.</td>
+                    </tr>
+                    <tr className="border-b border-slate-800">
+                      <td className="p-2 font-bold bg-slate-100 border-r border-slate-800">Duración del proyecto (en meses)</td>
+                      <td className="p-2 font-bold">5 meses</td>
+                    </tr>
+                    <tr className="border-b border-slate-800">
+                      <td className="p-2 font-bold bg-slate-100 border-r border-slate-800">Proponentes</td>
+                      <td className="p-2">{teamMembers.map(m => m.name).join(", ")}</td>
+                    </tr>
+                    <tr className="border-b border-slate-800">
+                      <td className="p-2 font-bold bg-slate-100 border-r border-slate-800">Línea(s) de Investigación</td>
+                      <td className="p-2 font-semibold">Desarrollo de Software & Tecnología de la Información</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2 font-bold bg-slate-100 border-r border-slate-800">Carrera(s)</td>
+                      <td className="p-2 font-semibold">{project.facultyArea}</td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="border border-slate-800 p-2 bg-slate-50">
-                    <span className="block text-[10px] font-bold text-slate-600 uppercase">FECHA INICIO PROYECTO</span>
-                    <span className="font-mono font-bold">03/08/2026</span>
+                {/* EJE TEMÁTICO / ÁREAS ESTRATÉGICAS (TABLA 6 DOCX) */}
+                <p className="font-bold text-[11px] pt-1 uppercase">Eje Temático Estratégico UNITEPC:</p>
+                <div className="border border-slate-800 p-2.5 grid grid-cols-2 gap-2 text-[11px] bg-slate-50">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold">[ X ]</span>
+                    <span className="font-bold">1) Innovación, Tecnología y Ciencia</span>
                   </div>
-                  <div className="border border-slate-800 p-2 bg-slate-50">
-                    <span className="block text-[10px] font-bold text-slate-600 uppercase">FECHA FINALIZACIÓN</span>
-                    <span className="font-mono font-bold">19/12/2026</span>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="font-mono">[  ]</span>
+                    <span>2) Desarrollo agropecuario Integral</span>
                   </div>
-                  <div className="border border-slate-800 p-2 bg-slate-50">
-                    <span className="block text-[10px] font-bold text-slate-600 uppercase">FECHA DE EMISIÓN</span>
-                    <span className="font-mono font-bold">{new Date().toLocaleDateString("es-BO")}</span>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="font-mono">[  ]</span>
+                    <span>3) Inclusión, Derechos Humanos, Cultura</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="font-mono">[  ]</span>
+                    <span>4) Productividad y Emprendedurismo</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="font-mono">[  ]</span>
+                    <span>5) Educación y Salud</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="font-mono">[  ]</span>
+                    <span>6) Biodiversidad y Medio Ambiente</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="font-mono">[  ]</span>
+                    <span>7) Arte, Cultura y Literatura</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <span className="font-mono">[  ]</span>
+                    <span>8) Otro</span>
                   </div>
                 </div>
               </div>
 
-              {/* PARTE 2: ESTRUCTURA CIENTÍFICA (TABLA 8 DOCX) */}
-              <div className="space-y-4 pt-4 border-t border-slate-400">
-                <h3 className="font-extrabold uppercase text-xs tracking-wider border-b border-slate-800 pb-1">
-                  CUERPO CIENTÍFICO DE LA PROPUESTA (ANEXO III PARTE 2)
-                </h3>
+              {/* PARTE II: CUERPO CIENTÍFICO Y METODOLÓGICO (TABLA 8 DOCX) */}
+              <div className="space-y-4 pt-4 border-t border-slate-800">
+                <div className="bg-slate-200 border border-slate-800 p-2 font-extrabold text-center uppercase tracking-wider text-xs">
+                  PARTE II: CONTENIDO CIENTÍFICO Y METODOLÓGICO DE LA PROPUESTA
+                </div>
 
                 <div className="space-y-3">
                   <div>
@@ -489,8 +530,8 @@ export function ProjectPdfGenerator({
                     <h4 className="font-bold text-slate-900 uppercase">2. Justificación</h4>
                     <p className="pt-1 text-slate-800 leading-relaxed">
                       Centralizar la recepción de propuestas y habilitar módulos específicos para el Comité Científico y el Comité Bioético reducirá drásticamente los tiempos de evaluación y feedback iterativo.  
-                      <strong>Justificación Académica:</strong> El sistema garantizará que todo proyecto financiado concluya de manera estandarizada en la elaboración de un artículo científico original.  
-                      <strong>Justificación Administrativa/Contable:</strong> Integrar un módulo financiero permitirá validar cotizaciones, aprobar o rechazar costos y calcular retenciones impositivas en tiempo real.
+                      <br /><strong>Justificación Académica:</strong> El sistema garantizará que todo proyecto financiado concluya de manera estandarizada en la elaboración de un artículo científico original.  
+                      <br /><strong>Justificación Administrativa/Contable:</strong> Integrar un módulo financiero permitirá validar cotizaciones, aprobar o rechazar costos y calcular retenciones impositivas en tiempo real.
                     </p>
                   </div>
 
@@ -534,8 +575,8 @@ export function ProjectPdfGenerator({
                     <h4 className="font-bold text-slate-900 uppercase">7. Impactos que se pretenden lograr</h4>
                     <p className="pt-1 text-slate-800 leading-relaxed">
                       Erradicación total de la pérdida de documentos físicos y la redundancia de trámites.  
-                      <strong>Impacto Académico y Científico:</strong> Fomento directo e incremento medible en la producción de artículos científicos originales.  
-                      <strong>Impacto Económico y Financiero:</strong> Instauración de una cultura de transparencia institucional robusta que blindará a la universidad ante errores de cálculo tributario.
+                      <br /><strong>Impacto Académico y Científico:</strong> Fomento directo e incremento medible en la producción de artículos científicos originales.  
+                      <br /><strong>Impacto Económico y Financiero:</strong> Instauración de una cultura de transparencia institucional robusta que blindará a la universidad ante errores de cálculo tributario.
                     </p>
                   </div>
 
