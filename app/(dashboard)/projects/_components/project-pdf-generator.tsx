@@ -178,7 +178,7 @@ export function ProjectPdfGenerator({
       unitPrice: Math.round(project.requestedBudget * 0.6) || 30000,
       docType: "RETENCIÓN",
       retentionType: "SERVICIOS",
-      observations: "Retención 15.5% Ley 843 (IUE 12.5% + IT 3.0%)",
+      observations: "Retención Impositiva (Servicios 15.5%)",
     },
     {
       num: 2,
@@ -567,7 +567,7 @@ export function ProjectPdfGenerator({
                       <li>Implementación de una plataforma web centralizada y 100% funcional que interconecte a investigadores, comités y contabilidad.</li>
                       <li>Reducción drástica en los tiempos de tramitación y retroalimentación eliminando expedientes físicos.</li>
                       <li>Consolidación de un repositorio investigativo estandarizado que garantice entregables científicos verificados.</li>
-                      <li>Trazabilidad financiera absoluta en tiempo real con cálculo automático de retenciones Ley 843.</li>
+                      <li>Trazabilidad financiera absoluta en tiempo real con cálculo automático de retenciones e impuestos.</li>
                     </ul>
                   </div>
 
@@ -656,7 +656,7 @@ export function ProjectPdfGenerator({
             </div>
 
             {/* ============================================================ */}
-            {/* ANEXO 3 - PARTE 4: PRESUPUESTO Y FISCALIZACIÓN LEY 843        */}
+            {/* ANEXO 3 - PARTE 4: PRESUPUESTO Y FISCALIZACIÓN               */}
             {/* ============================================================ */}
             <div className="space-y-4 pt-4">
               <div className="flex items-center justify-between border-b border-slate-300 pb-4">
@@ -672,8 +672,8 @@ export function ProjectPdfGenerator({
               </div>
 
               <div className="text-center pt-2">
-                <h1 className="text-sm font-extrabold tracking-widest uppercase">PRESUPUESTO Y FISCALIZACIÓN IMPOSITIVA</h1>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">(ANEXO 3 - PARTE 4 / LEY 843)</h2>
+                <h1 className="text-sm font-extrabold tracking-widest uppercase">PRESUPUESTO Y FISCALIZACIÓN PRESUPUESTARIA</h1>
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">(ANEXO 3 - PARTE 4 / PRESUPUESTO)</h2>
               </div>
 
               <table className="w-full text-left text-[11px] border-collapse border border-slate-800">
@@ -683,7 +683,7 @@ export function ProjectPdfGenerator({
                     <th className="p-1.5 border-r border-slate-800">Descripción del Gasto</th>
                     <th className="p-1.5 border-r border-slate-800 text-center">Modo</th>
                     <th className="p-1.5 border-r border-slate-800 text-center">Tipo Doc.</th>
-                    <th className="p-1.5 border-r border-slate-800 text-center">Categoría Ley 843</th>
+                    <th className="p-1.5 border-r border-slate-800 text-center">Categoría Impositiva</th>
                     <th className="p-1.5 border-r border-slate-800 text-right">Solicitado (Bs.)</th>
                     <th className="p-1.5 text-right">Retención (Bs.)</th>
                   </tr>
@@ -718,7 +718,7 @@ export function ProjectPdfGenerator({
                   <span>Bs. {grossTotal.toLocaleString("es-BO")}</span>
                 </div>
                 <div>
-                  <span className="text-slate-600 block text-[10px]">TOTAL RETENCIONES (LEY 843):</span>
+                  <span className="text-slate-600 block text-[10px]">TOTAL RETENCIONES TRIBUTARIAS:</span>
                   <span>Bs. {taxTotal.toLocaleString("es-BO")}</span>
                 </div>
                 <div>

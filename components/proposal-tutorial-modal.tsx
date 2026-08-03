@@ -263,7 +263,7 @@ export function ProposalTutorialModal({
                           <text x="80" y="116" textAnchor="middle" fill="#FDE047" fontSize="8.5" fontWeight="bold">📅 2. Cronograma WBS</text>
 
                           <rect x="15" y="130" width="130" height="22" rx="6" fill="#1E293B" stroke="#10B981" strokeWidth="1" />
-                          <text x="80" y="144" textAnchor="middle" fill="#6EE7B7" fontSize="8.5" fontWeight="bold">📗 3. Presupuesto Ley 843</text>
+                          <text x="80" y="144" textAnchor="middle" fill="#6EE7B7" fontSize="8.5" fontWeight="bold">📗 3. Presupuesto & Retenciones</text>
                         </g>
 
                         {/* PASO 4: COMITÉ CIENTÍFICO Y BIOÉTICO */}
@@ -299,7 +299,7 @@ export function ProposalTutorialModal({
                           <rect x="0" y="0" width="920" height="75" rx="12" fill="#0F172A" stroke="#334155" strokeWidth="1" />
                           <text x="20" y="24" fill="#38BDF8" fontSize="11" fontWeight="bold">💡 Leyenda de Flujo y Requisitos Normativos UNITEPC:</text>
                           <text x="20" y="43" fill="#94A3B8" fontSize="10">• Anexo III Parte 2: Formulación científica completa (Problema, Objetivos, Metodología, Impactos, APA 7) y Equipo con C.I.</text>
-                          <text x="20" y="60" fill="#94A3B8" fontSize="10">• Cronograma WBS (Semanas 1-22) y Presupuesto Ley 843 (Facturas o Retenciones 15.5% Servicios / 8.0% Bienes / 16.0% Alquileres).</text>
+                          <text x="20" y="60" fill="#94A3B8" fontSize="10">• Cronograma WBS (Semanas 1-22) y Presupuesto Financiero (Facturas o Retenciones impositivas de Servicios / Bienes / Alquileres).</text>
                         </g>
 
                       </svg>
@@ -408,7 +408,7 @@ export function ProposalTutorialModal({
 
                           <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-1">
                             <div className="font-bold text-xs text-emerald-500 flex items-center gap-1">
-                              <Calculator className="h-3.5 w-3.5" /> 📗 3. Presupuesto Ley 843
+                              <Calculator className="h-3.5 w-3.5" /> 📗 3. Presupuesto & Retenciones
                             </div>
                             <p className="text-[11px] text-muted-foreground leading-snug">
                               Tabla de gastos indicando FACTURA o RETENCIÓN (Servicios 15.5%, Bienes 8%, Alquileres 16%) con cálculo automático.
@@ -467,13 +467,13 @@ export function ProposalTutorialModal({
                       </div>
 
                       <div className="p-3.5 rounded-xl bg-card border border-border space-y-2">
-                        <span className="font-bold text-foreground block">📗 Presupuesto & Retenciones Ley 843:</span>
+                        <span className="font-bold text-foreground block">📗 Presupuesto & Fiscalización Impositiva:</span>
                         <ul className="space-y-1 text-muted-foreground list-disc list-inside">
                           <li>Desglose detallado por ítem y cantidad.</li>
                           <li>Factura comercial con NIT de la Universidad.</li>
-                          <li>Retención impositiva Ley 843 para servicios (15.5%).</li>
-                          <li>Retención impositiva Ley 843 para compras (8.0%).</li>
-                          <li>Retención impositiva Ley 843 para alquileres (16.0%).</li>
+                          <li>Retención impositiva para servicios (15.5%).</li>
+                          <li>Retención impositiva para compras (8.0%).</li>
+                          <li>Retención impositiva para alquileres (16.0%).</li>
                           <li>Firma digital y visto bueno de Contabilidad.</li>
                         </ul>
                       </div>
