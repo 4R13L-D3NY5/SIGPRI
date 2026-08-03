@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { 
   X, DollarSign, Calculator, Plus, Trash2, Edit3, Lock, CheckCircle2, 
-  AlertCircle, ShieldCheck, FileSpreadsheet, Building, Tag
+  AlertCircle, ShieldCheck, FileSpreadsheet, Building, Tag, Paperclip, FileText, Image as ImageIcon, Eye, Download
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,14 @@ import { Input } from "@/components/ui/input";
 import { calculateLey843Tax } from "@/lib/sigpri-data";
 import { ProjectItem, ExactProjectStatus } from "../page";
 import { getActiveUserRole, canEditBudget } from "@/lib/permission-utils";
+
+export interface AttachmentFile {
+  id: string;
+  name: string;
+  type: "pdf" | "image";
+  size?: string;
+  url?: string;
+}
 
 export interface BudgetItemRow {
   codeNum: number;
@@ -24,6 +32,7 @@ export interface BudgetItemRow {
   docType: "FACTURA" | "RETENCIÓN" | "N/A";
   retentionType: "COMPRA" | "SERVICIOS" | "ALQUILERES" | "N/A";
   observations: string;
+  attachments?: AttachmentFile[];
 }
 
 const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
@@ -38,6 +47,10 @@ const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
     docType: "FACTURA",
     retentionType: "COMPRA",
     observations: "Cotización 10 días",
+    attachments: [
+      { id: "att-1", name: "cotizacion_jeringas_distribuidora.pdf", type: "pdf", size: "240 KB" },
+      { id: "att-2", name: "proforma_farmacia_unitepc.png", type: "image", size: "1.2 MB" },
+    ],
   },
   {
     codeNum: 2,
@@ -50,6 +63,9 @@ const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
     docType: "FACTURA",
     retentionType: "COMPRA",
     observations: "Cotización 30 días",
+    attachments: [
+      { id: "att-3", name: "proforma_alcohol_industrial.pdf", type: "pdf", size: "180 KB" },
+    ],
   },
   {
     codeNum: 3,
@@ -62,6 +78,7 @@ const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
     docType: "N/A",
     retentionType: "N/A",
     observations: "No requiere desembolso (Convenio Institucional)",
+    attachments: [],
   },
   {
     codeNum: 4,
@@ -74,6 +91,10 @@ const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
     docType: "RETENCIÓN",
     retentionType: "SERVICIOS",
     observations: "Retención de Servicios 15.5%",
+    attachments: [
+      { id: "att-4", name: "cotizacion_consultor_externo.pdf", type: "pdf", size: "320 KB" },
+      { id: "att-5", name: "propuesta_tecnica_estadistica.png", type: "image", size: "890 KB" },
+    ],
   },
   {
     codeNum: 5,
@@ -86,6 +107,9 @@ const DEFAULT_BUDGET_ITEMS: BudgetItemRow[] = [
     docType: "RETENCIÓN",
     retentionType: "COMPRA",
     observations: "Retención de Bienes 8%",
+    attachments: [
+      { id: "att-6", name: "cotizacion_importadora_quimica.pdf", type: "pdf", size: "410 KB" },
+    ],
   },
 ];
 
@@ -101,6 +125,9 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
   const [userRole, setUserRole] = useState<string>("admin");
   const [canEdit, setCanEdit] = useState<boolean>(true);
   
+  // MODAL VISOR DE PROFORMA/COTIZACIÓN ADJUNTADA
+  const [activeAttachment, setActiveAttachment] = useState<AttachmentFile | null>(null);
+
   // Formulario para nuevo ítem
   const [showAddForm, setShowAddForm] = useState(false);
   const [newItem, setNewItem] = useState<Partial<BudgetItemRow>>({
@@ -113,6 +140,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
     docType: "FACTURA",
     retentionType: "COMPRA",
     observations: "",
+    attachments: [],
   });
 
   useEffect(() => {
@@ -127,7 +155,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
 
   const canManageStatus = userRole === "admin" || userRole === "jefe_investigador" || userRole === "contabilidad";
 
-  // CÁLCULOS DE LEY 843
+  // CÁLCULOS DE FISCALIZACIÓN
   const processedItems = items.map((item) => {
     const isLoan = item.purchaseOrLoan === "Préstamo";
     const totalAmount = isLoan ? 0 : item.quantity * item.unitPrice;
@@ -137,11 +165,11 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
 
     if (!isLoan && item.docType === "RETENCIÓN") {
       if (item.retentionType === "COMPRA") {
-        retentionRate = 8.0; // 5% IUE + 3% IT
+        retentionRate = 8.0;
       } else if (item.retentionType === "SERVICIOS") {
-        retentionRate = 15.5; // 12.5% IUE + 3% IT
+        retentionRate = 15.5;
       } else if (item.retentionType === "ALQUILERES") {
-        retentionRate = 16.0; // 13% RC-IVA + 3% IT
+        retentionRate = 16.0;
       }
       retentionAmount = (totalAmount * retentionRate) / 100;
     }
@@ -178,6 +206,9 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
       docType: newItem.docType as any,
       retentionType: newItem.retentionType as any,
       observations: newItem.observations || "",
+      attachments: newItem.attachments || [
+        { id: `att-${Date.now()}`, name: `cotizacion_proforma_${items.length + 1}.pdf`, type: "pdf", size: "210 KB" }
+      ],
     };
 
     setItems([...items, row]);
@@ -192,6 +223,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
       docType: "FACTURA",
       retentionType: "COMPRA",
       observations: "",
+      attachments: [],
     });
   };
 
@@ -200,44 +232,42 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
     setItems(items.filter((i) => i.codeNum !== codeNum));
   };
 
+  const handleAttachFile = (codeNum: number) => {
+    setItems(items.map((item) => {
+      if (item.codeNum === codeNum) {
+        const currentList = item.attachments || [];
+        if (currentList.length >= 3) {
+          alert("Máximo 3 proformas/cotizaciones adjuntas por ítem.");
+          return item;
+        }
+        const fileNum = currentList.length + 1;
+        const isPdf = fileNum % 2 !== 0;
+        const newAtt: AttachmentFile = {
+          id: `att-${Date.now()}`,
+          name: isPdf ? `proforma_${item.codeNum}_cotizacion_${fileNum}.pdf` : `comprobante_imagen_${fileNum}.jpg`,
+          type: isPdf ? "pdf" : "image",
+          size: isPdf ? "320 KB" : "1.4 MB",
+        };
+        return { ...item, attachments: [...currentList, newAtt] };
+      }
+      return item;
+    }));
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-2 sm:p-4 overflow-y-auto">
-      <div className="w-full max-w-[98vw] bg-card text-card-foreground border border-border/80 rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh] animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
+      <div className="relative w-full max-w-7xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
         
-        {/* HEADER DEL MODAL */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-muted/40 border-b border-border/60">
+        {/* CABECERA CON CONTROL DE ESTADO */}
+        <div className="px-6 py-4 bg-muted/60 border-b border-border flex items-center justify-between shrink-0">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
               <Badge variant="outline" className="font-mono bg-primary/10 border-primary/30 text-primary font-bold">
                 {project.code}
               </Badge>
-              <Badge variant="outline" className="bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-bold">
+              <Badge variant="outline" className="font-semibold bg-emerald-500/10 border-emerald-500/30 text-emerald-400">
                 Retenciones Automatizadas
               </Badge>
-
-              {/* GESTIÓN DE ESTADO DENTRO DEL MODAL */}
-              {canManageStatus && onUpdateStatus ? (
-                <div className="flex items-center gap-1.5 bg-background border border-input p-1 rounded-md shadow-sm">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Estado:</span>
-                  <select
-                    value={project.status}
-                    onChange={(e) => onUpdateStatus(e.target.value as ExactProjectStatus)}
-                    className="bg-transparent text-xs font-bold text-foreground focus:outline-none cursor-pointer"
-                  >
-                    <option value="En Propuesta">1. En Propuesta</option>
-                    <option value="En Evaluación">2. En Evaluación</option>
-                    <option value="En Observación (Rechazado con opción a corrección)">3. En Observación</option>
-                    <option value="Aprobado en Ejecución">4. Aprobado en Ejecución</option>
-                    <option value="Concluido">5. Concluido</option>
-                    <option value="Publicado">6. Publicado</option>
-                    <option value="Cancelado">7. Cancelado</option>
-                  </select>
-                </div>
-              ) : (
-                <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10 font-bold">
-                  {project.status}
-                </Badge>
-              )}
 
               {canEdit ? (
                 <Badge variant="outline" className="bg-emerald-500/10 border-emerald-500/40 text-emerald-500 font-bold flex items-center gap-1">
@@ -251,10 +281,10 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
             </div>
             <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
               <FileSpreadsheet className="h-5 w-5 text-primary" />
-              Gestión Presupuestaria Institucional (Formato Excel DICYT)
+              Gestión Presupuestaria Institucional (Formato Excel UNITEPC)
             </h2>
             <p className="text-xs text-muted-foreground">
-              Desglose detallado de ítems, compras, préstamos y cálculo impositivo conforme a la normativa tributaria boliviana.
+              Desglose detallado de ítems, compras, préstamos, cotizaciones/proformas y cálculo impositivo conforme a la normativa tributaria boliviana.
             </p>
           </div>
 
@@ -279,7 +309,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
             </span>
           </div>
           <div className="p-3 rounded-lg bg-card border border-border/60 shadow-sm space-y-1">
-            <span className="text-muted-foreground font-semibold block">Retenciones:</span>
+            <span className="text-muted-foreground font-semibold block">Retenciones Impositivas:</span>
             <span className="text-base font-bold text-rose-400 font-mono">
               Bs. {totalRetenciones.toLocaleString()}
             </span>
@@ -298,7 +328,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
           </div>
         </div>
 
-        {/* FORMULARIO DE AGREGAR ÍTEM */}
+        {/* FORMULARIO DE AGREGAR ÍTEM CON ADJUNTO */}
         {canEdit && showAddForm && (
           <form onSubmit={handleAddItem} className="p-4 bg-primary/5 border-b border-primary/20 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
             <div className="space-y-1">
@@ -391,7 +421,11 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
                 className="h-8 text-xs bg-background"
               />
             </div>
-            <div className="sm:col-span-4 flex justify-end gap-2 pt-2">
+            <div className="sm:col-span-4 flex items-center justify-between pt-2">
+              <span className="text-[11px] text-muted-foreground italic flex items-center gap-1">
+                <Paperclip className="h-3.5 w-3.5 text-primary" />
+                Se adjuntará automáticamente la primera proforma PDF al guardar el ítem.
+              </span>
               <Button type="submit" size="sm" className="bg-emerald-600 hover:bg-emerald-700 font-bold">
                 Guardar en Presupuesto
               </Button>
@@ -399,79 +433,125 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
           </form>
         )}
 
-        {/* TABLA ESTILO EXCEL */}
+        {/* TABLA ESTILO EXCEL CON ADJUNTOS DE PROFORMAS/COTIZACIONES */}
         <div className="flex-1 overflow-x-auto overflow-y-auto p-4 bg-background">
-          <table className="w-full text-left text-xs border-collapse min-w-[1300px]">
+          <table className="w-full text-left text-xs border-collapse min-w-[1400px]">
             <thead>
               <tr className="border-b border-border/80 bg-muted/60 text-muted-foreground uppercase font-bold">
-                <th className="p-2.5 w-12 text-center">C</th>
-                <th className="p-2.5 w-28">INSTITUCIÓN</th>
-                <th className="p-2.5 w-64">Descripción</th>
-                <th className="p-2.5 w-28">Compra o Préstamo</th>
-                <th className="p-2.5 w-20">Unidad</th>
-                <th className="p-2.5 w-16 text-center">Cantidad</th>
+                <th className="p-2.5 w-10 text-center">C</th>
+                <th className="p-2.5 w-24">INSTITUCIÓN</th>
+                <th className="p-2.5 w-56">Descripción</th>
+                <th className="p-2.5 w-24">Compra / Préstamo</th>
+                <th className="p-2.5 w-16">Unidad</th>
+                <th className="p-2.5 w-14 text-center">Cant.</th>
                 <th className="p-2.5 w-24 text-right">PRECIO (Bs.)</th>
                 <th className="p-2.5 w-28 text-right">Monto Total</th>
                 <th className="p-2.5 w-28 text-right text-rose-400">Retención (Bs.)</th>
                 <th className="p-2.5 w-28 text-right text-emerald-400">Monto Ejecutado</th>
-                <th className="p-2.5 w-28 text-center">FACTURA / RETENCIÓN</th>
-                <th className="p-2.5 w-28">Tipo Retención</th>
-                <th className="p-2.5 w-20 text-center">% Retención</th>
+                <th className="p-2.5 w-24 text-center">Documento</th>
+                <th className="p-2.5 w-24">Tipo Retención</th>
+                <th className="p-2.5 w-16 text-center">% Ret.</th>
+                <th className="p-2.5 w-64">Cotizaciones / Proformas (Máx. 3)</th>
                 <th className="p-2.5">Observaciones</th>
                 {canEdit && <th className="p-2.5 w-12 text-center">Acción</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50 font-medium">
-              {processedItems.map((item) => (
-                <tr key={item.codeNum} className="hover:bg-muted/30 transition-colors">
-                  <td className="p-2.5 text-center font-mono text-muted-foreground font-bold">{item.codeNum}</td>
-                  <td className="p-2.5 font-semibold text-foreground">{item.institution}</td>
-                  <td className="p-2.5 text-foreground">{item.description}</td>
-                  <td className="p-2.5">
-                    {item.purchaseOrLoan === "Préstamo" ? (
-                      <Badge variant="outline" className="border-amber-500/40 text-amber-400 bg-amber-500/10 font-bold text-[10px]">
-                        Préstamo
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="border-blue-500/40 text-blue-400 bg-blue-500/10 font-bold text-[10px]">
-                        Compra
-                      </Badge>
-                    )}
-                  </td>
-                  <td className="p-2.5 text-muted-foreground">{item.unit}</td>
-                  <td className="p-2.5 text-center font-mono">{item.quantity}</td>
-                  <td className="p-2.5 text-right font-mono">Bs. {item.unitPrice.toLocaleString()}</td>
-                  <td className="p-2.5 text-right font-mono font-bold text-foreground">
-                    Bs. {item.totalAmount.toLocaleString()}
-                  </td>
-                  <td className="p-2.5 text-right font-mono font-bold text-rose-400">
-                    {item.retentionAmount > 0 ? `Bs. ${item.retentionAmount.toLocaleString()}` : "-"}
-                  </td>
-                  <td className="p-2.5 text-right font-mono font-bold text-emerald-400">
-                    Bs. {item.executedAmount.toLocaleString()}
-                  </td>
-                  <td className="p-2.5 text-center">
-                    <span className="font-semibold text-xs">{item.docType}</span>
-                  </td>
-                  <td className="p-2.5 text-muted-foreground text-xs">{item.retentionType}</td>
-                  <td className="p-2.5 text-center font-mono">
-                    {item.retentionRate > 0 ? `${item.retentionRate}%` : "N/A"}
-                  </td>
-                  <td className="p-2.5 text-muted-foreground text-xs">{item.observations}</td>
-                  {canEdit && (
-                    <td className="p-2.5 text-center">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteItem(item.codeNum)}
-                        className="h-7 w-7 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+              {processedItems.map((item) => {
+                const attachments = item.attachments || [];
+                return (
+                  <tr key={item.codeNum} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-2.5 text-center font-mono text-muted-foreground font-bold">{item.codeNum}</td>
+                    <td className="p-2.5 font-semibold text-foreground">{item.institution}</td>
+                    <td className="p-2.5 text-foreground">{item.description}</td>
+                    <td className="p-2.5">
+                      {item.purchaseOrLoan === "Préstamo" ? (
+                        <Badge variant="outline" className="border-amber-500/40 text-amber-400 bg-amber-500/10 font-bold text-[10px]">
+                          Préstamo
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-blue-500/40 text-blue-400 bg-blue-500/10 font-bold text-[10px]">
+                          Compra
+                        </Badge>
+                      )}
                     </td>
-                  )}
-                </tr>
-              ))}
+                    <td className="p-2.5 text-muted-foreground">{item.unit}</td>
+                    <td className="p-2.5 text-center font-mono">{item.quantity}</td>
+                    <td className="p-2.5 text-right font-mono">Bs. {item.unitPrice.toLocaleString()}</td>
+                    <td className="p-2.5 text-right font-mono font-bold text-foreground">
+                      Bs. {item.totalAmount.toLocaleString()}
+                    </td>
+                    <td className="p-2.5 text-right font-mono font-bold text-rose-400">
+                      {item.retentionAmount > 0 ? `Bs. ${item.retentionAmount.toLocaleString()}` : "-"}
+                    </td>
+                    <td className="p-2.5 text-right font-mono font-bold text-emerald-400">
+                      Bs. {item.executedAmount.toLocaleString()}
+                    </td>
+                    <td className="p-2.5 text-center">
+                      <span className="font-semibold text-xs">{item.docType}</span>
+                    </td>
+                    <td className="p-2.5 text-muted-foreground text-xs">{item.retentionType}</td>
+                    <td className="p-2.5 text-center font-mono">
+                      {item.retentionRate > 0 ? `${item.retentionRate}%` : "N/A"}
+                    </td>
+                    
+                    {/* COLUMNA ADJUNTOS COTIZACIONES / PROFORMAS (MÁXIMO 3) */}
+                    <td className="p-2.5">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center flex-wrap gap-1">
+                          {attachments.map((att) => (
+                            <button
+                              key={att.id}
+                              type="button"
+                              onClick={() => setActiveAttachment(att)}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-muted hover:bg-primary/20 border border-border text-[10px] font-medium text-foreground transition-all max-w-[140px] truncate"
+                              title={`Ver ${att.name} (${att.size})`}
+                            >
+                              {att.type === "pdf" ? (
+                                <FileText className="h-3 w-3 text-rose-500 shrink-0" />
+                              ) : (
+                                <ImageIcon className="h-3 w-3 text-sky-500 shrink-0" />
+                              )}
+                              <span className="truncate">{att.name}</span>
+                            </button>
+                          ))}
+
+                          {attachments.length < 3 && canEdit && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAttachFile(item.codeNum)}
+                              className="h-6 px-1.5 text-[10px] gap-1 bg-primary/5 hover:bg-primary/10 border-dashed text-primary font-bold"
+                              title="Adjuntar Cotización o Proforma (hasta 3 archivos)"
+                            >
+                              <Paperclip className="h-3 w-3" />
+                              <span>+ Adjuntar</span>
+                            </Button>
+                          )}
+                        </div>
+                        <span className="text-[9px] text-muted-foreground">
+                          {attachments.length}/3 Archivos proforma
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="p-2.5 text-muted-foreground text-xs">{item.observations}</td>
+                    {canEdit && (
+                      <td className="p-2.5 text-center">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteItem(item.codeNum)}
+                          className="h-7 w-7 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
             <tfoot>
               <tr className="border-t-2 border-border bg-muted/40 font-bold text-foreground text-xs">
@@ -479,7 +559,7 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
                 <td className="p-3 text-right font-mono text-primary">Bs. {totalBruto.toLocaleString()}</td>
                 <td className="p-3 text-right font-mono text-rose-400">Bs. {totalRetenciones.toLocaleString()}</td>
                 <td className="p-3 text-right font-mono text-emerald-400">Bs. {totalEjecutado.toLocaleString()}</td>
-                <td colSpan={canEdit ? 5 : 4} className="p-3"></td>
+                <td colSpan={canEdit ? 6 : 5} className="p-3"></td>
               </tr>
             </tfoot>
           </table>
@@ -494,6 +574,58 @@ export function ProjectBudgetModal({ project, isOpen, onClose, onUpdateStatus }:
             Cerrar Presupuesto
           </Button>
         </div>
+
+        {/* MODAL VISOR DE PROFORMA / COTIZACIÓN ADJUNTADA */}
+        {activeAttachment && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-200">
+            <div className="relative w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  {activeAttachment.type === "pdf" ? (
+                    <FileText className="h-5 w-5 text-rose-500" />
+                  ) : (
+                    <ImageIcon className="h-5 w-5 text-sky-500" />
+                  )}
+                  <div>
+                    <h4 className="font-bold text-sm text-foreground">{activeAttachment.name}</h4>
+                    <p className="text-xs text-muted-foreground">Documento de Proforma / Cotización • {activeAttachment.size}</p>
+                  </div>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setActiveAttachment(null)} className="rounded-full">
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+
+              {/* SIMULACIÓN DE DOCUMENTO PDF/IMAGEN VISUAL */}
+              <div className="p-6 bg-slate-900 border border-slate-700 rounded-xl text-center space-y-4">
+                <div className="h-48 border-2 border-dashed border-slate-700 rounded-lg flex flex-col items-center justify-center space-y-2 text-slate-300">
+                  {activeAttachment.type === "pdf" ? (
+                    <>
+                      <FileText className="h-12 w-12 text-rose-400" />
+                      <p className="text-xs font-bold uppercase tracking-wider">Documento PDF Oficial de Cotización</p>
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon className="h-12 w-12 text-sky-400" />
+                      <p className="text-xs font-bold uppercase tracking-wider">Captura / Imagen de Proforma Comercial</p>
+                    </>
+                  )}
+                  <p className="text-[11px] text-slate-400 italic">Verificado por la Dirección de Investigación & Contabilidad UNITEPC</p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <Button variant="outline" size="sm" onClick={() => setActiveAttachment(null)}>
+                  Cerrar Visor
+                </Button>
+                <Button size="sm" onClick={() => alert(`Descargando ${activeAttachment.name}...`)} className="bg-primary hover:bg-primary/90 font-bold gap-1.5">
+                  <Download className="h-4 w-4" />
+                  <span>Descargar Archivo Adjunto</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

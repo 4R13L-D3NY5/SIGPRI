@@ -135,7 +135,7 @@ export function InitialProposalModal({
                 <Badge variant="outline" className="font-mono bg-primary/10 border-primary/30 text-primary font-bold text-xs">
                   {generatedCode}
                 </Badge>
-                <span className="text-xs text-muted-foreground font-semibold">Registro Inicial de Propuesta DICYT</span>
+                <span className="text-xs text-muted-foreground font-semibold">Registro Inicial de Propuesta UNITEPC</span>
               </div>
               <h2 className="text-lg font-bold text-foreground tracking-tight leading-tight">
                 Registrar Nueva Propuesta de Investigación

@@ -148,7 +148,7 @@ export function InvestigatorRegisterForm({ onCancel }: InvestigatorRegisterFormP
       <div className="flex items-center justify-between border-b border-border pb-3">
         <div className="space-y-0.5">
           <Badge variant="outline" className="border-primary/40 text-primary bg-primary/10 font-bold text-[10px]">
-            DICYT UNITEPC
+            Plataforma de Investigación UNITEPC
           </Badge>
           <h3 className="text-lg font-bold tracking-tight text-foreground flex items-center gap-2">
             <UserPlus className="h-5 w-5 text-primary" />

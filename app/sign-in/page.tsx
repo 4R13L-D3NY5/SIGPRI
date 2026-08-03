@@ -275,7 +275,7 @@ export default function SignInPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="font-semibold text-foreground">Contraseña DICYT</label>
+                      <label className="font-semibold text-foreground">Contraseña de Acceso</label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input

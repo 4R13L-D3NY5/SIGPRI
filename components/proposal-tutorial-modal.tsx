@@ -79,7 +79,7 @@ export function ProposalTutorialModal({
                 <div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="font-mono bg-primary/10 border-primary/30 text-primary font-bold text-xs">
-                      Normativa DICYT UNITEPC
+                      Normativa UNITEPC
                     </Badge>
                     <span className="text-xs text-muted-foreground font-semibold">Guía Completa de Postulación de Proyectos</span>
                   </div>
@@ -450,7 +450,7 @@ export function ProposalTutorialModal({
                 <div className="space-y-5 animate-in fade-in duration-200">
                   <div className="p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-4">
                     <h3 className="text-xs font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
-                      <FileText className="h-4 w-4" /> Checklist de Requisitos Normativos DICYT UNITEPC
+                      <FileText className="h-4 w-4" /> Checklist de Requisitos Normativos UNITEPC
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       <div className="p-3.5 rounded-xl bg-card border border-border space-y-2">
@@ -488,7 +488,7 @@ export function ProposalTutorialModal({
             <div className="px-6 py-4 border-t border-border bg-muted/40 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                 <ShieldCheck className="h-4 w-4 text-primary" />
-                <span>Dirección de Investigación Científica y Tecnológica (DICYT UNITEPC)</span>
+                <span>Dirección de Investigación Científica UNITEPC</span>
               </div>
               <Button type="button" size="sm" onClick={handleClose} className="bg-primary hover:bg-primary/90 font-bold text-xs gap-1.5 shadow">
                 Entendido / Cerrar Guía <Check className="h-4 w-4" />

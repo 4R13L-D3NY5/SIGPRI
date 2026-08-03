@@ -230,7 +230,7 @@ const INITIAL_PROJECTS: ProjectItem[] = [
         previousStatus: "En Propuesta",
         newStatus: "Cancelado",
         changedAt: "2025-04-15 15:30",
-        changedBy: "Administrador DICYT",
+        changedBy: "Administrador UNITEPC",
         userRole: "Administrador",
         notes: "Falta de autorización de convenios interinstitucionales con el Municipio.",
       },
@@ -402,7 +402,7 @@ export default function ProjectsRegistryPage() {
         }
       }
     }
-    return { name: "Usuario DICYT", roleLabel: "Administrador" };
+    return { name: "Usuario Sistema", roleLabel: "Administrador" };
   };
 
   // Filter Logic
@@ -439,7 +439,7 @@ export default function ProjectsRegistryPage() {
       previousStatus: proj.status,
       newStatus: newStatus,
       changedAt: nowStr,
-      changedBy: currentUser.name || "Usuario DICYT",
+      changedBy: currentUser.name || "Usuario Sistema",
       userRole: currentUser.roleLabel || "Jefe Investigador",
       notes: notes || `Cambio de estado a ${newStatus} desde el modal de gestión`,
     };
@@ -476,7 +476,7 @@ export default function ProjectsRegistryPage() {
       previousStatus: cancelModalProject.status,
       newStatus: "Cancelado",
       changedAt: nowStr,
-      changedBy: currentUser.name || "Usuario DICYT",
+      changedBy: currentUser.name || "Usuario Sistema",
       userRole: currentUser.roleLabel || "Administrador",
       notes: reason,
     };
@@ -686,7 +686,7 @@ export default function ProjectsRegistryPage() {
                       {code}
                     </option>
                   ))}
-                  <option value="CONV-1-2026-03">CONV-1-2026-03 (Nacional DICYT)</option>
+                  <option value="CONV-1-2026-03">CONV-1-2026-03 (Nacional UNITEPC)</option>
                   <option value="CONV-2-2026-01">CONV-2-2026-01 (Salud)</option>
                 </select>
               </div>

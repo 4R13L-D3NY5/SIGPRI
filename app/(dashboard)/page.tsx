@@ -436,7 +436,7 @@ export default function DashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-base font-semibold">Últimos Proyectos Registrados</CardTitle>
-              <CardDescription className="text-xs">Ingresos recientes a la plataforma DICYT</CardDescription>
+              <CardDescription className="text-xs">Ingresos recientes a la plataforma de Investigación UNITEPC</CardDescription>
             </div>
             <Button asChild size="sm" variant="ghost" className="gap-1 text-xs">
               <Link href="/projects">

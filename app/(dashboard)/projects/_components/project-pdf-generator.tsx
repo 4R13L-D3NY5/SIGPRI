@@ -737,7 +737,7 @@ export function ProjectPdfGenerator({
 
                 <div className="border-t border-slate-800 pt-2">
                   <p className="font-bold">Ing. Jose James Claure Ricaldi</p>
-                  <p className="text-[10px] text-slate-600">Director DICYT UNITEPC</p>
+                  <p className="text-[10px] text-slate-600">Director de Investigación UNITEPC</p>
                   <p className="text-[9px] font-mono text-emerald-800">Aval Institucional</p>
                 </div>
 

@@ -173,7 +173,7 @@ const INITIAL_WBS_TASKS: WbsTask[] = [
         newProgress: 100,
         registeredBy: "Dra. Maria Lorena Orellana Aguilar",
         userRole: "Investigador Responsable",
-        observation: "Entregable completado al 100%. Módulo validado por el Comité Científico DICYT.",
+        observation: "Entregable completado al 100%. Módulo validado por el Comité Científico.",
       },
     ],
   },
@@ -351,7 +351,7 @@ export function ProjectWbsModal({ project, isOpen, onClose, onUpdateStatus }: Pr
         }
       }
     }
-    return { name: project.leadInvestigator || "Investigador Responsable", roleLabel: userRole === "admin" ? "Administrador DICYT" : "Investigador Responsable" };
+    return { name: project.leadInvestigator || "Investigador Responsable", roleLabel: userRole === "admin" ? "Administrador Institucional" : "Investigador Responsable" };
   };
 
   const recalculateWbsCodes = (list: WbsTask[]): WbsTask[] => {
@@ -461,7 +461,7 @@ export function ProjectWbsModal({ project, isOpen, onClose, onUpdateStatus }: Pr
       previousProgress: task.progress,
       newProgress: task.progress,
       registeredBy: user.name || project.leadInvestigator,
-      userRole: user.roleLabel || (userRole === "admin" ? "Administrador DICYT" : "Investigador Responsable"),
+      userRole: user.roleLabel || (userRole === "admin" ? "Administrador Institucional" : "Investigador Responsable"),
       observation: observationText,
     };
 

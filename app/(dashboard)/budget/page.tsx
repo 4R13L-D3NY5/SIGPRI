@@ -65,7 +65,7 @@ export default function BudgetCalculatorPage() {
         break;
     }
 
-    const overheadPercent = applyOverhead ? 5 : 0; // 5% Overhead DICYT
+    const overheadPercent = applyOverhead ? 5 : 0; // 5% Overhead UNITEPC
 
     const montoIT = (montoTotal * retencionITPercent) / 100;
     const montoIUE = (montoTotal * retencionIUEPercent) / 100;
@@ -107,7 +107,7 @@ export default function BudgetCalculatorPage() {
     <div className="flex flex-col min-h-screen bg-background pb-12">
       <Header
         title="Calculadora de Presupuesto y Retenciones Impositivas"
-        description="Herramienta oficial de fiscalización financiera para la liquidación de fondos de investigación DICYT (Bolivia)"
+        description="Herramienta oficial de fiscalización financiera para la liquidación de fondos de investigación institucionales (Bolivia)"
       />
 
       <div className="flex-1 space-y-6 p-4 sm:p-6 lg:p-8">
@@ -316,7 +316,7 @@ export default function BudgetCalculatorPage() {
                 </div>
               </div>
 
-              {/* Checkbox Overhead DICYT */}
+              {/* Checkbox Overhead UNITEPC */}
               <div className="pt-2 border-t">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -326,7 +326,7 @@ export default function BudgetCalculatorPage() {
                     className="h-4 w-4 rounded border-border"
                   />
                   <span className="font-semibold text-xs text-foreground">
-                    Aplicar Retención de Gestión Institucional DICYT (5% Overhead)
+                    Aplicar Retención de Gestión Institucional UNITEPC (5% Overhead)
                   </span>
                 </label>
               </div>
@@ -337,7 +337,7 @@ export default function BudgetCalculatorPage() {
           <Card className="lg:col-span-5 shadow-sm border-l-4 border-l-emerald-500 flex flex-col justify-between">
             <CardHeader className="pb-2">
               <Badge variant="outline" className="w-fit font-mono text-[10px] bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
-                Liquidación Tributaria DICYT
+                Liquidación Tributaria UNITEPC
               </Badge>
               <CardTitle className="text-base font-bold mt-1">Desglose de Fondos y Líquido Patable</CardTitle>
               <CardDescription className="text-xs">
@@ -395,7 +395,7 @@ export default function BudgetCalculatorPage() {
 
                 {calcResults.overheadPercent > 0 && (
                   <div className="flex justify-between p-2.5 text-purple-600 dark:text-purple-400">
-                    <span>- Gestión DICYT (5% Overhead)</span>
+                    <span>- Gestión Institucional (5% Overhead)</span>
                     <span className="font-mono font-bold">
                       - Bs. {calcResults.montoOverhead.toLocaleString("es-BO", { minimumFractionDigits: 2 })}
                     </span>
@@ -421,7 +421,7 @@ export default function BudgetCalculatorPage() {
 
             <CardFooter className="pt-2 border-t flex justify-end gap-2">
               <Button onClick={handleExport} className="w-full text-xs gap-1.5">
-                <FileSpreadsheet className="h-4 w-4" /> Generar Comprobante DICYT
+                <FileSpreadsheet className="h-4 w-4" /> Generar Comprobante Institucional
               </Button>
             </CardFooter>
           </Card>

@@ -445,7 +445,7 @@ export function ProjectDetailModal({ project, isOpen, onClose, onUpdateStatus }:
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-l-4 border-primary pl-4 py-1">
                 <div>
                   <h3 className="font-bold text-lg text-foreground uppercase tracking-wide">ANEXO 1: DECLARACIÓN JURADA DE ORIGINALIDAD</h3>
-                  <p className="text-xs text-muted-foreground">Documento legal de adscripción institucional DICYT UNITEPC.</p>
+                  <p className="text-xs text-muted-foreground">Documento legal de adscripción institucional UNITEPC.</p>
                 </div>
                 
                 {/* BOTÓN AGREGAR INVESTIGADOR DISPONIBLE SI CANEDIT ES TRUE */}
@@ -673,7 +673,7 @@ export function ProjectDetailModal({ project, isOpen, onClose, onUpdateStatus }:
             <div className="space-y-6">
               <div className="border-l-4 border-primary pl-4 py-1">
                 <h3 className="font-bold text-lg text-foreground uppercase tracking-wide">ANEXO 3 - PARTE I: INFORMACIÓN GENERAL DEL PROYECTO</h3>
-                <p className="text-xs text-muted-foreground">Ficha institucional oficial DICYT UNITEPC (Campos Editables).</p>
+                <p className="text-xs text-muted-foreground">Ficha institucional oficial UNITEPC (Campos Editables).</p>
               </div>
 
               <div className="overflow-x-auto border border-border rounded-lg shadow-md">
@@ -1026,7 +1026,7 @@ export function ProjectDetailModal({ project, isOpen, onClose, onUpdateStatus }:
         {/* FOOTER DEL MODAL */}
         <div className="flex items-center justify-between p-4 bg-muted/40 border-t border-border shrink-0">
           <span className="text-xs text-muted-foreground hidden sm:inline">
-            Formato Propuesta Oficial UNITEPC - DICYT
+            Formato Propuesta Oficial UNITEPC - Dirección de Investigación
           </span>
           <div className="flex items-center gap-2 ml-auto">
             {canEdit && (

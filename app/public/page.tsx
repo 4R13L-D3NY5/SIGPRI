@@ -104,11 +104,11 @@ export default function PublicPortalPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold shadow">
-              D
+              U
             </div>
             <div>
-              <span className="font-bold text-sm sm:text-base block leading-none">DICYT Portal Público</span>
-              <span className="text-[11px] text-muted-foreground">Dirección de Investigación Científica y Tecnológica</span>
+              <span className="font-bold text-sm sm:text-base block leading-none">UNITEPC Portal Público</span>
+              <span className="text-[11px] text-muted-foreground">Dirección de Investigación Científica</span>
             </div>
           </div>
 
@@ -134,7 +134,7 @@ export default function PublicPortalPage() {
             <Sparkles className="h-3 w-3" /> Transparencia y Divulgación Científica
           </Badge>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Portal Abierto de Investigación y Convocatorias DICYT
+            Portal Abierto de Investigación y Convocatorias Institucionales
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
             Consulte los proyectos de investigación científica financiados por la universidad o envíe una propuesta preliminar de investigación a nuestros comités evaluadores.
@@ -203,7 +203,7 @@ export default function PublicPortalPage() {
             <Badge className="bg-purple-500/10 text-purple-600 border-purple-500/30">Envío de Propuestas</Badge>
             <h2 className="text-2xl font-bold">¿Tienes una Idea de Investigación?</h2>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Complete el formulario para enviar una propuesta preliminar de proyecto para la gestión actual. El comité evaluador de la DICYT analizará la viabilidad y le contactará por correo electrónico.
+              Complete el formulario para enviar una propuesta preliminar de proyecto para la gestión actual. El comité evaluador de la Dirección de Investigación analizará la viabilidad y le contactará por correo electrónico.
             </p>
             <div className="space-y-3 pt-2 text-xs">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-card border">
@@ -217,7 +217,7 @@ export default function PublicPortalPage() {
                 <FileCheck className="h-5 w-5 text-blue-600 shrink-0" />
                 <div>
                   <span className="font-bold text-foreground block">Revisión por Pares Ciegos</span>
-                  <span className="text-muted-foreground text-[11px]">Evaluación transparente bajo la normativa DICYT.</span>
+                  <span className="text-muted-foreground text-[11px]">Evaluación transparente bajo la normativa UNITEPC.</span>
                 </div>
               </div>
             </div>
@@ -233,33 +233,18 @@ export default function PublicPortalPage() {
             <CardContent>
               {formSubmitted ? (
                 <div className="py-8 text-center space-y-3 animate-in fade-in">
-                  <div className="mx-auto h-12 w-12 rounded-full bg-emerald-500/15 flex items-center justify-center text-emerald-600">
-                    <CheckCircle2 className="h-7 w-7" />
+                  <div className="h-12 w-12 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto">
+                    <CheckCircle2 className="h-6 w-6" />
                   </div>
-                  <h3 className="text-lg font-bold text-foreground">¡Propuesta Recibida Exitosamente!</h3>
-                  <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                    Su registro ha sido almacenado con el código temporal <strong>PROP-2026-REG</strong>. Recibirá una confirmación en su correo electrónico institucional.
+                  <h3 className="font-bold text-base">¡Propuesta Registrada Exitosamente!</h3>
+                  <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                    Su propuesta preliminar fue recibida. Se le ha asignado el código de seguimiento provisional.
                   </p>
-                  <Button variant="outline" size="sm" onClick={() => setFormSubmitted(false)}>
+                  <Button variant="outline" size="sm" onClick={() => setFormSubmitted(false)} className="text-xs">
                     Enviar Otra Propuesta
                   </Button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmitProposal} className="space-y-4 text-xs">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block font-semibold mb-1">Nombre Completo del Postulante</label>
-                      <Input
-                        required
-                        placeholder="Ej. Ing. Carlos Mamani"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-semibold mb-1">C.I. / Pasaporte</label>
-                      <Input
-                        required
                         placeholder="Ej. 6894012 LP"
                         value={formData.identityCard}
                         onChange={(e) => setFormData({ ...formData, identityCard: e.target.value })}
@@ -364,7 +349,7 @@ export default function PublicPortalPage() {
                       disabled={recaptchaStatus !== "verified"}
                       className="w-full gap-2 shadow font-bold"
                     >
-                      <Send className="h-4 w-4" /> Enviar Propuesta a la DICYT
+                      <Send className="h-4 w-4" /> Enviar Propuesta a Investigación
                     </Button>
                   </div>
                 </form>
