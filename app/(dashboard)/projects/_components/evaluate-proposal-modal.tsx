@@ -125,8 +125,8 @@ export function EvaluateProposalModal({
   const rechazadosCount = evaluations.filter((e) => e.status === "RECHAZADO").length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-2 sm:p-3 overflow-y-auto">
+      <div className="w-full max-w-[98vw] h-[96vh] bg-card text-card-foreground border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
         
         {/* CABECERA */}
         <div className="px-6 py-4 bg-muted/60 border-b border-border flex items-center justify-between shrink-0">
