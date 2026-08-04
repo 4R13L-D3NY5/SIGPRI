@@ -7,7 +7,7 @@ import {
   FileCheck, FileText, Globe, Lock, Mail, RefreshCw, Search, Send, 
   Shield, ShieldCheck, Sparkles, User, Users, Calendar, DollarSign, 
   Layers, MapPin, Phone, HelpCircle, ArrowRight, Check, Rocket, 
-  FileSpreadsheet, Bookmark, Lightbulb, GraduationCap, HeartHandshake, Eye, Download, Share2
+  FileSpreadsheet, Bookmark, Lightbulb, GraduationCap, HeartHandshake, Eye, Download
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,8 +27,8 @@ const CAMPAIGNS_DATA = [
     budgetPool: "Bs. 150.000",
     maxPerProject: "Hasta Bs. 50.000",
     deadline: "30 de Septiembre, 2026",
-    badgeColor: "bg-blue-100 border-blue-300 text-blue-800",
-    description: "Proyectos de investigación aplicada orientados a resolver problemáticas nacionales en salud, tecnología e innovación productiva.",
+    badgeColor: "bg-blue-100 border-blue-300 text-blue-900",
+    description: "Proyectos de investigación aplicada orientados a resolver problemáticas nacionales en salud, desarrollo tecnológico e innovación productiva.",
   },
   {
     code: "CONV-2-2026-01",
@@ -38,7 +38,7 @@ const CAMPAIGNS_DATA = [
     budgetPool: "Bs. 80.000",
     maxPerProject: "Hasta Bs. 30.000",
     deadline: "15 de Octubre, 2026",
-    badgeColor: "bg-purple-100 border-purple-300 text-purple-800",
+    badgeColor: "bg-purple-100 border-purple-300 text-purple-900",
     description: "Financiamiento enfocado en estudios clínicos, ensayos bioéticos, prevención epidemiológica y salud comunitaria.",
   },
   {
@@ -49,7 +49,7 @@ const CAMPAIGNS_DATA = [
     budgetPool: "Bs. 100.000",
     maxPerProject: "Hasta Bs. 40.000",
     deadline: "30 de Noviembre, 2026",
-    badgeColor: "bg-emerald-100 border-emerald-300 text-emerald-800",
+    badgeColor: "bg-emerald-100 border-emerald-300 text-emerald-900",
     description: "Desarrollo de sistemas de software, algoritmos de inteligencia artificial y transferencia tecnológica con aplicación industrial.",
   },
 ];
@@ -226,16 +226,20 @@ export default function PublicPortalPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
       
-      {/* BARRA SUPERIOR DE ANUNCIOS INSTITUCIONALES */}
-      <div className="bg-slate-900 text-white text-[11px] py-1.5 px-4 text-center font-medium flex items-center justify-between">
-        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+      {/* 1. BARRA DE NOTIFICACIÓN INSTITUCIONAL SUPERIOR */}
+      <div className="bg-slate-900 text-white text-[11px] py-2 px-4 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="bg-emerald-500 text-slate-950 font-bold px-1.5 py-0.5 rounded text-[9px] uppercase">Oficial</span>
-            <span>Universidad Técnica Privada Cosmos (UNITEPC) • Dirección de Investigación Científica</span>
+            <span className="bg-emerald-500 text-slate-950 font-black px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider">
+              OFICIAL
+            </span>
+            <span className="font-medium text-slate-200">
+              UNIVERSIDAD TÉCNICA PRIVADA COSMOS • Dirección de Investigación Científica
+            </span>
           </div>
-          <div className="hidden sm:flex items-center gap-4 text-slate-300">
+          <div className="hidden md:flex items-center gap-4 text-slate-400">
             <span>Convocatorias 2026 Vigentes</span>
             <span>&bull;</span>
             <span className="font-mono text-emerald-400">investigacion@unitepc.edu.bo</span>
@@ -243,65 +247,77 @@ export default function PublicPortalPage() {
         </div>
       </div>
 
-      {/* 1. HEADER / NAVBAR SUPERIOR TEMA CLARO */}
+      {/* 2. HEADER DE NAVEGACIÓN PRINCIPAL (TEMA CLARO LIMPIO) */}
       <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+          
+          {/* BRANDING LOGO UNITEPC */}
+          <div className="flex items-center gap-3 shrink-0">
             <img
               src="/unitepc_logo.png"
               alt="UNITEPC Logo"
-              className="h-10 object-contain"
+              className="h-11 object-contain"
             />
-            <div className="border-l border-slate-300 pl-3">
-              <span className="font-extrabold text-slate-900 text-sm sm:text-base block leading-none tracking-tight">
+            <div className="border-l border-slate-300 pl-3 hidden sm:block">
+              <span className="font-extrabold text-slate-900 text-base block leading-tight tracking-tight">
                 UNITEPC Investigación
               </span>
               <span className="text-[11px] text-slate-500 font-medium">
-                Portal de Postulaciones y Difusión Científica
+                Portal de Postulaciones y Divulgación
               </span>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-6 text-xs font-bold text-slate-600">
-            <a href="#importancia" className="hover:text-blue-900 transition-colors flex items-center gap-1">
-              <Lightbulb className="h-3.5 w-3.5 text-blue-700" /> Importancia
+          {/* MENÚ DE NAVEGACIÓN DIRECTA */}
+          <nav className="hidden lg:flex items-center gap-7 text-xs font-bold text-slate-700">
+            <a href="#importancia" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
+              <Lightbulb className="h-4 w-4 text-blue-700" />
+              <span>Importancia</span>
             </a>
-            <a href="#convocatorias" className="hover:text-blue-900 transition-colors flex items-center gap-1">
-              <Sparkles className="h-3.5 w-3.5 text-amber-600" /> Convocatorias 2026
+            <a href="#convocatorias" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-amber-600" />
+              <span>Convocatorias 2026</span>
             </a>
-            <a href="#publicaciones" className="hover:text-blue-900 transition-colors flex items-center gap-1">
-              <BookOpen className="h-3.5 w-3.5 text-purple-700" /> Publicaciones & Revistas
+            <a href="#publicaciones" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
+              <BookOpen className="h-4 w-4 text-purple-700" />
+              <span>Revistas & Artículos</span>
             </a>
-            <a href="#postular" className="hover:text-blue-900 transition-colors flex items-center gap-1">
-              <Rocket className="h-3.5 w-3.5 text-emerald-700" /> Postular Propuesta
+            <a href="#postular" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
+              <Rocket className="h-4 w-4 text-emerald-600" />
+              <span>Postulación Web</span>
             </a>
-          </div>
+          </nav>
 
-          <div className="flex items-center gap-2">
+          {/* ACCIONES Y BOTONES DE CABECERA */}
+          <div className="flex items-center gap-3 shrink-0">
             <ProposalTutorialModal
-              triggerButtonText="📖 Guía Investigador"
-              triggerButtonClassName="text-xs font-bold gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300"
+              triggerButtonText="📖 Guía del Postulante"
+              triggerButtonClassName="text-xs font-bold gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3 py-2 rounded-xl"
             />
-            <Button asChild size="sm" className="text-xs font-bold gap-1.5 shadow-md bg-blue-900 hover:bg-blue-950 text-white">
+
+            <Button asChild size="sm" className="text-xs font-bold gap-1.5 shadow-md bg-blue-900 hover:bg-blue-950 text-white px-4 py-2 rounded-xl">
               <Link href="/sign-in">
-                <Lock className="h-3.5 w-3.5 text-emerald-400" /> Acceso SIGPRI
+                <Lock className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Acceso SIGPRI</span>
               </Link>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* 2. HERO SECTION TEMA CLARO IMPACTANTE */}
-      <section className="relative bg-gradient-to-b from-blue-50/70 via-white to-slate-50 border-b border-slate-200 py-16 px-4 sm:px-6 lg:px-8">
+      {/* 3. HERO LANDING SECTION (ESTILO WEB MODERNO Y LIMPIO) */}
+      <section className="relative bg-gradient-to-b from-blue-50/80 via-white to-slate-50 border-b border-slate-200 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <Badge variant="outline" className="px-4 py-1.5 text-xs font-bold border-blue-300 text-blue-900 bg-blue-100/60 gap-1.5 uppercase tracking-wider shadow-sm">
-            <Sparkles className="h-3.5 w-3.5 text-blue-700" /> Portal Oficial de Postulaciones y Divulgación Científica
-          </Badge>
           
+          <Badge variant="outline" className="px-4 py-1.5 text-xs font-bold border-blue-300 text-blue-900 bg-blue-100/60 gap-2 uppercase tracking-wider shadow-sm">
+            <Sparkles className="h-3.5 w-3.5 text-blue-700" />
+            <span>PORTAL OFICIAL DE POSTULACIONES Y DIVULGACIÓN CIENTÍFICA</span>
+          </Badge>
+
           <h1 className="text-3xl sm:text-5xl font-black text-blue-950 tracking-tight leading-tight">
             Impulsando el Conocimiento, la Ciencia y la Innovación Tecnológica en Bolivia
           </h1>
-          
+
           <p className="text-slate-600 text-sm sm:text-base max-w-3xl mx-auto leading-relaxed">
             La Dirección de Investigación Científica de la <strong>Universidad Técnica Privada Cosmos (UNITEPC)</strong> promueve el desarrollo científico a través del financiamiento de proyectos de impacto, la evaluación rigurosa por comités pares y la difusión de resultados en revistas electrónicas de prestigio.
           </p>
@@ -314,7 +330,7 @@ export default function PublicPortalPage() {
               <Rocket className="h-4 w-4 text-emerald-400" />
               <span>Postular Mi Proyecto de Investigación</span>
             </a>
-            
+
             <a
               href="#publicaciones"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 shadow-sm transition-all"
@@ -322,14 +338,9 @@ export default function PublicPortalPage() {
               <BookOpen className="h-4 w-4 text-purple-700" />
               <span>Explorar Revistas y Artículos Publicados</span>
             </a>
-
-            <ProposalTutorialModal
-              triggerButtonText="📖 Guía Instructivo UNITEPC"
-              triggerButtonClassName="font-bold text-xs sm:text-sm gap-2 px-5 py-3.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 shadow-sm"
-            />
           </div>
 
-          {/* INDICADORES CIENTÍFICOS DESTACADOS */}
+          {/* TARJETAS DE INDICADORES Y METRICAS CIENTIFICAS */}
           <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 text-left text-xs max-w-4xl mx-auto">
             <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-1">
               <div className="flex items-center justify-between text-blue-900 font-extrabold text-lg">
@@ -367,21 +378,22 @@ export default function PublicPortalPage() {
               <span className="text-slate-500 text-[11px]">Revistas Electrónicas Oficiales</span>
             </div>
           </div>
+
         </div>
       </section>
 
-      {/* CONTENIDO PRINCIPAL */}
+      {/* CONTENIDO PRINCIPAL DE LA LANDING */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 space-y-16 flex-1 w-full">
 
-        {/* 3. SECCIÓN 1: IMPORTANCIA DE LA INVESTIGACIÓN CIENTÍFICA EN UNITEPC */}
-        <section id="importancia" className="space-y-6 scroll-mt-20">
+        {/* 4. SECCIÓN 1: IMPORTANCIA DE LA INVESTIGACIÓN CIENTÍFICA EN UNITEPC */}
+        <section id="importancia" className="space-y-6 scroll-mt-24">
           <div className="text-center max-w-3xl mx-auto space-y-2">
             <Badge className="bg-blue-100 text-blue-900 border-blue-300 font-bold">Misión Institucional</Badge>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               La Importancia de la Investigación en la Universidad
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              En UNITEPC, concebimos la investigación científica no solo como un requisito académico, sino como el motor fundamental para la solución de problemas de la sociedad boliviana y la generación de conocimiento con rigor ético.
+              En UNITEPC, concebimos la investigación científica como el motor fundamental para resolver problemas de la sociedad boliviana y generar nuevo conocimiento con rigor metodológico y bioético.
             </p>
           </div>
 
@@ -403,7 +415,7 @@ export default function PublicPortalPage() {
                 <div className="h-10 w-10 rounded-xl bg-purple-100 text-purple-900 flex items-center justify-center font-bold mb-2">
                   <HeartHandshake className="h-5 w-5" />
                 </div>
-                <CardTitle className="text-base font-extrabold text-slate-900">2. Integridad y Ética Científica</CardTitle>
+                <CardTitle className="text-base font-extrabold text-slate-900">2. Integridad y Ética Bioética</CardTitle>
               </CardHeader>
               <CardContent className="text-xs text-slate-600 leading-relaxed">
                 Garantizamos que toda investigación cumpla con los principios bioéticos internacionales mediante la evaluación de nuestros Comités Científico y Bioético y el estricto apego al modelo PAT UNITEPC.
@@ -424,8 +436,8 @@ export default function PublicPortalPage() {
           </div>
         </section>
 
-        {/* 4. SECCIÓN 2: CONVOCATORIAS VIGENTES Y FONDOS COMPETITIVOS 2026 */}
-        <section id="convocatorias" className="space-y-6 scroll-mt-20 border-t border-slate-200 pt-12">
+        {/* 5. SECCIÓN 2: CONVOCATORIAS VIGENTES Y FONDOS COMPETITIVOS 2026 */}
+        <section id="convocatorias" className="space-y-6 scroll-mt-24 border-t border-slate-200 pt-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-blue-900 pl-4 py-1">
             <div>
               <Badge className="bg-blue-100 text-blue-900 border-blue-300 mb-1 font-bold">Bases Oficiales 2026</Badge>
@@ -486,8 +498,8 @@ export default function PublicPortalPage() {
           </div>
         </section>
 
-        {/* 5. SECCIÓN 3: TRABAJOS CONCLUIDOS, REVISTAS ELECTRÓNICAS Y ARTÍCULOS CIENTÍFICOS */}
-        <section id="publicaciones" className="space-y-6 scroll-mt-20 border-t border-slate-200 pt-12">
+        {/* 6. SECCIÓN 3: TRABAJOS CONCLUIDOS, REVISTAS ELECTRÓNICAS Y ARTÍCULOS CIENTÍFICOS */}
+        <section id="publicaciones" className="space-y-6 scroll-mt-24 border-t border-slate-200 pt-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-l-4 border-purple-700 pl-4 py-1">
             <div>
               <Badge className="bg-purple-100 text-purple-900 border-purple-300 mb-1 font-bold">Divulgación & Producción Intelectual</Badge>
@@ -606,8 +618,8 @@ export default function PublicPortalPage() {
           </div>
         </section>
 
-        {/* 6. SECCIÓN 4: FORMULARIO WEB DE POSTULACIÓN DE PROPUESTA EN TEMA CLARO */}
-        <section id="postular" className="space-y-6 scroll-mt-20 border-t border-slate-200 pt-12">
+        {/* 7. SECCIÓN 4: FORMULARIO WEB DE POSTULACIÓN DE PROPUESTA EN TEMA CLARO */}
+        <section id="postular" className="space-y-6 scroll-mt-24 border-t border-slate-200 pt-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* COLUMNA IZQUIERDA: INSTRUCTIVO Y REQUISITOS */}
@@ -924,7 +936,7 @@ export default function PublicPortalPage() {
                       <Button
                         type="submit"
                         disabled={recaptchaStatus !== "verified"}
-                        className="w-full gap-2 shadow-lg font-extrabold text-xs py-5 bg-blue-900 hover:bg-blue-950 text-white"
+                        className="w-full gap-2 shadow-lg font-extrabold text-xs py-5 bg-blue-900 hover:bg-blue-950 text-white rounded-xl"
                       >
                         <Send className="h-4 w-4 text-emerald-400" />
                         <span>Enviar Propuesta a la Dirección de Investigación</span>
@@ -940,7 +952,7 @@ export default function PublicPortalPage() {
 
       </main>
 
-      {/* 7. FOOTER INSTITUCIONAL COMPLETO EN TEMA CLARO */}
+      {/* 8. FOOTER INSTITUCIONAL COMPLETO EN TEMA CLARO */}
       <footer className="border-t border-slate-200 bg-white py-10 text-xs text-slate-600 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-8">
