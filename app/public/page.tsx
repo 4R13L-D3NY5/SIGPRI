@@ -245,6 +245,21 @@ export default function PublicPortalPage() {
                   </Button>
                 </div>
               ) : (
+                <form onSubmit={handleSubmitProposal} className="space-y-4 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-semibold mb-1">Nombre Completo del Postulante</label>
+                      <Input
+                        required
+                        placeholder="Ej. Ing. Carlos Mamani"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1">C.I. / Pasaporte</label>
+                      <Input
+                        required
                         placeholder="Ej. 6894012 LP"
                         value={formData.identityCard}
                         onChange={(e) => setFormData({ ...formData, identityCard: e.target.value })}
