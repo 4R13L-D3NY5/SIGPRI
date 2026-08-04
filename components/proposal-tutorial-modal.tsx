@@ -432,22 +432,24 @@ export function ProposalTutorialModal({
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                   <div className="p-3.5 rounded-xl bg-card border border-border space-y-2">
-                    <span className="font-bold text-foreground block">📄 Perfil del Proyecto de Investigación:</span>
+                    <span className="font-bold text-foreground block">📄 Perfil del Proyecto & Requisitos:</span>
                     <ul className="space-y-1 text-muted-foreground list-disc list-inside">
                       <li>Planteamiento del Problema y Objeto de Estudio.</li>
                       <li>Justificación Institucional y Académica.</li>
                       <li>Estado del Arte con citas bibliográficas.</li>
                       <li>Objetivos (General y Específicos).</li>
                       <li>Metodología y Diseño Experimental.</li>
+                      <li><strong>Cronograma de Actividades</strong> (fases, entregables y tiempos).</li>
                       <li>Resultados e Impactos Pretendidos.</li>
                       <li>Referencias Bibliográficas y Citas Documentales.</li>
                     </ul>
                   </div>
 
                   <div className="p-3.5 rounded-xl bg-card border border-border space-y-2">
-                    <span className="font-bold text-foreground block">📗 Presupuesto & Fiscalización Impositiva:</span>
+                    <span className="font-bold text-foreground block">📗 Presupuesto & Cotizaciones / Proformas:</span>
                     <ul className="space-y-1 text-muted-foreground list-disc list-inside">
                       <li>Desglose detallado por ítem y cantidad.</li>
+                      <li><strong>Adjuntar cotizaciones o proformas</strong> si requiere adquirir materiales, equipos o insumos.</li>
                       <li>Factura comercial con NIT de la Universidad.</li>
                       <li>Retención impositiva para servicios (15.5%).</li>
                       <li>Retención impositiva para compras (8.0%).</li>
