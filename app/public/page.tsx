@@ -228,11 +228,11 @@ export default function PublicPortalPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-blue-900 selection:text-white">
       
-      {/* 1. BARRA DE NOTIFICACIÓN INSTITUCIONAL SUPERIOR */}
-      <div className="bg-slate-900 text-white text-[11px] py-2 px-4 border-b border-slate-800">
+      {/* 1. BARRA DE NOTIFICACIÓN INSTITUCIONAL SUPERIOR ESTILO CORPORATIVO WEB */}
+      <div className="bg-slate-950 text-white text-[11px] py-2 px-4 border-b border-slate-800 shrink-0">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="bg-emerald-500 text-slate-950 font-black px-1.5 py-0.5 rounded text-[9px] uppercase tracking-wider">
+            <span className="bg-emerald-500 text-slate-950 font-black px-2 py-0.5 rounded text-[9px] uppercase tracking-wider">
               OFICIAL
             </span>
             <span className="font-medium text-slate-200">
@@ -247,55 +247,56 @@ export default function PublicPortalPage() {
         </div>
       </div>
 
-      {/* 2. HEADER DE NAVEGACIÓN PRINCIPAL (TEMA CLARO LIMPIO) */}
-      <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      {/* 2. HEADER DE NAVEGACIÓN CORPORATIVO ESTILO ALIBABA CLOUD / CLOUDFLARE WEB LANDING */}
+      <header className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm shrink-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           
-          {/* BRANDING LOGO UNITEPC */}
+          {/* LOGO E IDENTIDAD UNITEPC */}
           <div className="flex items-center gap-3 shrink-0">
             <img
               src="/unitepc_logo.png"
               alt="UNITEPC Logo"
-              className="h-11 object-contain"
+              className="h-10 object-contain"
             />
-            <div className="border-l border-slate-300 pl-3 hidden sm:block">
-              <span className="font-extrabold text-slate-900 text-base block leading-tight tracking-tight">
-                UNITEPC Investigación
+            <div className="h-6 w-px bg-slate-300 hidden sm:block"></div>
+            <div className="hidden sm:block">
+              <span className="font-extrabold text-slate-900 text-sm block leading-none tracking-tight">
+                UNITEPC
               </span>
-              <span className="text-[11px] text-slate-500 font-medium">
-                Portal de Postulaciones y Divulgación
+              <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+                Investigación
               </span>
             </div>
           </div>
 
-          {/* MENÚ DE NAVEGACIÓN DIRECTA */}
-          <nav className="hidden lg:flex items-center gap-7 text-xs font-bold text-slate-700">
-            <a href="#importancia" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
-              <Lightbulb className="h-4 w-4 text-blue-700" />
+          {/* MENÚ DE NAVEGACIÓN CORPORATIVO CENTRAL */}
+          <nav className="hidden md:flex items-center gap-8 text-xs font-bold text-slate-700">
+            <a href="#importancia" className="hover:text-blue-900 transition-colors flex items-center gap-1.5 py-1">
+              <Lightbulb className="h-3.5 w-3.5 text-blue-700" />
               <span>Importancia</span>
             </a>
-            <a href="#convocatorias" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4 text-amber-600" />
+            <a href="#convocatorias" className="hover:text-blue-900 transition-colors flex items-center gap-1.5 py-1">
+              <Sparkles className="h-3.5 w-3.5 text-amber-600" />
               <span>Convocatorias 2026</span>
             </a>
-            <a href="#publicaciones" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
-              <BookOpen className="h-4 w-4 text-purple-700" />
+            <a href="#publicaciones" className="hover:text-blue-900 transition-colors flex items-center gap-1.5 py-1">
+              <BookOpen className="h-3.5 w-3.5 text-purple-700" />
               <span>Revistas & Artículos</span>
             </a>
-            <a href="#postular" className="hover:text-blue-900 transition-colors flex items-center gap-1.5">
-              <Rocket className="h-4 w-4 text-emerald-600" />
+            <a href="#postular" className="hover:text-blue-900 transition-colors flex items-center gap-1.5 py-1">
+              <Rocket className="h-3.5 w-3.5 text-emerald-600" />
               <span>Postulación Web</span>
             </a>
           </nav>
 
-          {/* ACCIONES Y BOTONES DE CABECERA */}
+          {/* BOTONES DE ACCIÓN LADO DERECHO */}
           <div className="flex items-center gap-3 shrink-0">
             <ProposalTutorialModal
               triggerButtonText="📖 Guía del Postulante"
-              triggerButtonClassName="text-xs font-bold gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3 py-2 rounded-xl"
+              triggerButtonClassName="text-xs font-bold gap-1 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 px-3.5 py-2 rounded-lg transition-all"
             />
 
-            <Button asChild size="sm" className="text-xs font-bold gap-1.5 shadow-md bg-blue-900 hover:bg-blue-950 text-white px-4 py-2 rounded-xl">
+            <Button asChild size="sm" className="text-xs font-bold gap-1.5 shadow-md bg-blue-900 hover:bg-blue-950 text-white px-4 py-2 rounded-lg">
               <Link href="/sign-in">
                 <Lock className="h-3.5 w-3.5 text-emerald-400" />
                 <span>Acceso SIGPRI</span>
@@ -305,8 +306,8 @@ export default function PublicPortalPage() {
         </div>
       </header>
 
-      {/* 3. HERO LANDING SECTION (ESTILO WEB MODERNO Y LIMPIO) */}
-      <section className="relative bg-gradient-to-b from-blue-50/80 via-white to-slate-50 border-b border-slate-200 py-16 px-4 sm:px-6 lg:px-8">
+      {/* 3. HERO LANDING SECTION (ESTILO LANDING WEB INTERNACIONAL) */}
+      <section className="relative bg-gradient-to-b from-blue-50/70 via-white to-slate-50 border-b border-slate-200 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           
           <Badge variant="outline" className="px-4 py-1.5 text-xs font-bold border-blue-300 text-blue-900 bg-blue-100/60 gap-2 uppercase tracking-wider shadow-sm">
@@ -314,7 +315,7 @@ export default function PublicPortalPage() {
             <span>PORTAL OFICIAL DE POSTULACIONES Y DIVULGACIÓN CIENTÍFICA</span>
           </Badge>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-blue-950 tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
             Impulsando el Conocimiento, la Ciencia y la Innovación Tecnológica en Bolivia
           </h1>
 
@@ -953,7 +954,7 @@ export default function PublicPortalPage() {
       </main>
 
       {/* 8. FOOTER INSTITUCIONAL COMPLETO EN TEMA CLARO */}
-      <footer className="border-t border-slate-200 bg-white py-10 text-xs text-slate-600 mt-auto">
+      <footer className="border-t border-slate-200 bg-white py-10 text-xs text-slate-600 mt-auto shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-8">
             <div className="space-y-2 sm:col-span-2">
