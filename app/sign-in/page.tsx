@@ -27,7 +27,9 @@ import {
   UserPlus,
   BarChart3,
   Search,
-  CheckSquare
+  CheckSquare,
+  Sun,
+  Moon
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -107,6 +109,9 @@ export default function SignInPage() {
   const [password, setPassword] = useState<string>("dicyt2026pass");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRegisterMode, setIsRegisterMode] = useState<boolean>(false);
+  
+  // MODO NOCHE / MODO DÍA TOGGLE STATE (Predefinido en Modo Noche)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
 
   const handleRoleSelect = (role: RoleOption) => {
     setSelectedRole(role);
@@ -144,38 +149,79 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between p-4 sm:p-6">
+    <div className={`min-h-screen transition-colors duration-200 flex flex-col justify-between p-4 sm:p-6 ${
+      isDarkMode ? "bg-slate-950 text-slate-100 selection:bg-blue-900 selection:text-white" : "bg-slate-50 text-slate-900 selection:bg-blue-900 selection:text-white"
+    }`}>
       
-      {/* HEADER PRINCIPAL */}
-      <header className="flex items-center justify-between max-w-7xl w-full mx-auto pb-4 border-b border-border">
+      {/* HEADER PRINCIPAL CON BOTÓN TOGGLE MODO DÍA / NOCHE */}
+      <header className={`flex items-center justify-between max-w-7xl w-full mx-auto pb-4 border-b ${
+        isDarkMode ? "border-slate-800" : "border-slate-200"
+      }`}>
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-primary text-primary-foreground font-extrabold flex items-center justify-center text-lg shadow-md">
+          <div className="h-10 w-10 rounded-xl bg-blue-900 text-white font-extrabold flex items-center justify-center text-lg shadow-md">
             S
           </div>
           <div>
-            <h1 className="font-bold text-lg leading-none tracking-tight">Acceso al Sistema SIGPRI UNITEPC</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <h1 className={`font-bold text-lg leading-none tracking-tight ${isDarkMode ? "text-white" : "text-slate-900"}`}>
+              Acceso al Sistema SIGPRI UNITEPC
+            </h1>
+            <p className={`text-xs mt-0.5 ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
               Sistema de Gestión de Proyectos e Investigaciones UNITEPC
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <ProposalTutorialModal />
+          {/* BOTÓN CONMUTADOR MODO NOCHE / MODO DÍA */}
+          <button
+            type="button"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`p-2 rounded-lg font-bold text-xs transition-all flex items-center gap-1.5 border ${
+              isDarkMode
+                ? "bg-slate-800 text-amber-300 border-slate-700 hover:bg-slate-700"
+                : "bg-slate-100 text-slate-800 border-slate-300 hover:bg-slate-200"
+            }`}
+            title="Cambiar Modo Noche / Modo Día"
+          >
+            {isDarkMode ? (
+              <>
+                <Sun className="h-4 w-4 text-amber-400" />
+                <span className="hidden sm:inline">Modo Día</span>
+              </>
+            ) : (
+              <>
+                <Moon className="h-4 w-4 text-slate-700" />
+                <span className="hidden sm:inline">Modo Noche</span>
+              </>
+            )}
+          </button>
+
+          <ProposalTutorialModal
+            triggerButtonText="📖 Guía & Flujo de Postulación"
+            triggerButtonClassName={`text-xs font-bold gap-1.5 px-3 py-2 rounded-lg transition-all border ${
+              isDarkMode 
+                ? "bg-slate-900 text-slate-200 border-slate-800 hover:bg-slate-800" 
+                : "bg-white text-slate-800 border-slate-300 hover:bg-slate-100"
+            }`}
+          />
 
           <Button
             variant={isRegisterMode ? "default" : "outline"}
             size="sm"
             onClick={() => setIsRegisterMode(!isRegisterMode)}
-            className="text-xs font-bold gap-1.5"
+            className={`text-xs font-bold gap-1.5 ${
+              isDarkMode 
+                ? "border-slate-700 bg-slate-900 text-slate-200 hover:bg-slate-800" 
+                : "border-slate-300 bg-white text-slate-800 hover:bg-slate-100"
+            }`}
           >
-            <UserPlus className="h-4 w-4" />
+            <UserPlus className="h-4 w-4 text-blue-500" />
             {isRegisterMode ? "Ir a Iniciar Sesión" : "Registrarme como Investigador"}
           </Button>
 
           <Link href="/portal-publico">
-            <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-foreground">
-              <Globe className="h-4 w-4 mr-1" /> Portal Público
+            <Button variant="ghost" size="sm" className={`text-xs ${isDarkMode ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"}`}>
+              <Globe className="h-4 w-4 mr-1 text-emerald-500" /> Portal Público
             </Button>
           </Link>
         </div>
@@ -185,7 +231,9 @@ export default function SignInPage() {
       <main className="max-w-7xl w-full mx-auto py-8 flex-1 flex flex-col justify-center">
         {isRegisterMode ? (
           // APARTADO DE REGISTRO DE INVESTIGADOR CON RECAPTCHA
-          <div className="max-w-2xl mx-auto w-full bg-card border border-border rounded-2xl shadow-xl p-6 sm:p-8">
+          <div className={`max-w-2xl mx-auto w-full border rounded-2xl shadow-xl p-6 sm:p-8 ${
+            isDarkMode ? "bg-slate-900 border-slate-800 text-slate-100" : "bg-white border-slate-200 text-slate-900"
+          }`}>
             <InvestigatorRegisterForm onCancel={() => setIsRegisterMode(false)} />
           </div>
         ) : (
@@ -196,10 +244,16 @@ export default function SignInPage() {
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold tracking-tight">SELECCIÓN DE PERFIL / ROL INSTITUCIONAL</h2>
-                  <p className="text-xs text-muted-foreground">Elija su rol institucional para ajustar los permisos de navegación y control</p>
+                  <h2 className={`text-xl font-bold tracking-tight ${isDarkMode ? "text-white" : "text-slate-900"}`}>
+                    SELECCIÓN DE PERFIL / ROL INSTITUCIONAL
+                  </h2>
+                  <p className={`text-xs ${isDarkMode ? "text-slate-400" : "text-slate-600"}`}>
+                    Elija su rol institucional para ajustar los permisos de navegación y control
+                  </p>
                 </div>
-                <Badge variant="outline" className="font-mono bg-primary/10 border-primary/30 text-primary font-bold text-xs">
+                <Badge variant="outline" className={`font-mono font-bold text-xs ${
+                  isDarkMode ? "bg-blue-500/10 border-blue-500/30 text-blue-400" : "bg-blue-100 border-blue-300 text-blue-900"
+                }`}>
                   6 Roles Disponibles
                 </Badge>
               </div>
@@ -214,27 +268,43 @@ export default function SignInPage() {
                       onClick={() => handleRoleSelect(role)}
                       className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
                         isSelected
-                          ? "bg-card border-primary ring-2 ring-primary/30 shadow-md"
-                          : "bg-card/50 border-border hover:bg-card hover:border-border/80"
+                          ? isDarkMode 
+                            ? "bg-slate-900 border-blue-500 ring-2 ring-blue-500/30 shadow-md text-white" 
+                            : "bg-white border-blue-900 ring-2 ring-blue-900/20 shadow-md text-slate-900"
+                          : isDarkMode
+                            ? "bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700 text-slate-300"
+                            : "bg-white/80 border-slate-200 hover:bg-slate-100 text-slate-700"
                       }`}
                     >
                       <div className="flex items-center gap-3.5 min-w-0">
-                        <div className={`p-2.5 rounded-lg shrink-0 ${isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                        <div className={`p-2.5 rounded-lg shrink-0 ${
+                          isSelected 
+                            ? "bg-blue-900 text-white" 
+                            : isDarkMode ? "bg-slate-800 text-slate-400" : "bg-slate-100 text-slate-600"
+                        }`}>
                           <IconComponent className="h-5 w-5" />
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <h3 className={`font-bold text-sm truncate ${isSelected ? "text-primary" : "text-foreground"}`}>
+                            <h3 className={`font-bold text-sm truncate ${
+                              isSelected 
+                                ? isDarkMode ? "text-blue-400" : "text-blue-900" 
+                                : isDarkMode ? "text-slate-200" : "text-slate-800"
+                            }`}>
                               {role.title}
                             </h3>
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                          <p className={`text-xs line-clamp-1 mt-0.5 ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
                             {role.description}
                           </p>
                         </div>
                       </div>
 
-                      <Badge variant="outline" className={`shrink-0 font-bold text-[10px] ${isSelected ? "bg-primary/15 border-primary/40 text-primary" : "bg-muted text-muted-foreground border-border"}`}>
+                      <Badge variant="outline" className={`shrink-0 font-bold text-[10px] ${
+                        isSelected 
+                          ? isDarkMode ? "bg-blue-500/15 border-blue-500/40 text-blue-400" : "bg-blue-100 border-blue-300 text-blue-900"
+                          : isDarkMode ? "bg-slate-800 border-slate-700 text-slate-400" : "bg-slate-100 border-slate-200 text-slate-600"
+                      }`}>
                         {role.badgeText}
                       </Badge>
                     </div>
@@ -245,58 +315,72 @@ export default function SignInPage() {
 
             {/* FORMULARIO DE INICIO DE SESIÓN CON CREDENCIALES ROL */}
             <div className="lg:col-span-5 space-y-6">
-              <Card className="border-border shadow-xl bg-card">
-                <CardHeader className="space-y-1 border-b border-border pb-4">
+              <Card className={`border shadow-xl ${
+                isDarkMode ? "bg-slate-900 border-slate-800 text-slate-100" : "bg-white border-slate-200 text-slate-900"
+              }`}>
+                <CardHeader className={`space-y-1 border-b pb-4 ${isDarkMode ? "border-slate-800" : "border-slate-200"}`}>
                   <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground">
+                    <Badge variant="outline" className={`font-mono text-[10px] ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
                       Credenciales Rol Institucional
                     </Badge>
                   </div>
                   <CardTitle className="text-xl font-bold">Iniciar Sesión</CardTitle>
-                  <CardDescription className="text-xs">
-                    Acceso configurado para <strong className="text-primary font-bold">{selectedRole.title}</strong>
+                  <CardDescription className={`text-xs ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+                    Acceso configurado para <strong className={`font-bold ${isDarkMode ? "text-blue-400" : "text-blue-900"}`}>{selectedRole.title}</strong>
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="pt-5 space-y-4">
                   <form onSubmit={handleLogin} className="space-y-4 text-xs">
                     <div className="space-y-1.5">
-                      <label className="font-semibold text-foreground">Correo Institucional</label>
+                      <label className={`font-semibold block ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                        Correo Institucional
+                      </label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                         <Input
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="pl-9 font-mono text-xs bg-background"
+                          className={`pl-9 font-mono text-xs ${
+                            isDarkMode ? "bg-slate-950 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-900"
+                          }`}
                           required
                         />
                       </div>
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="font-semibold text-foreground">Contraseña de Acceso</label>
+                      <label className={`font-semibold block ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+                        Contraseña de Acceso
+                      </label>
                       <div className="relative">
-                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                         <Input
                           type="password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="pl-9 font-mono text-xs bg-background"
+                          className={`pl-9 font-mono text-xs ${
+                            isDarkMode ? "bg-slate-950 border-slate-700 text-white" : "bg-white border-slate-300 text-slate-900"
+                          }`}
                           required
                         />
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-muted/30 border border-border text-[11px] text-muted-foreground leading-relaxed">
-                      <span className="font-bold text-foreground block mb-0.5">Modo Permisos Rol Activado</span>
-                      Permisos asignados: <strong className="text-primary">{selectedRole.badgeText}</strong>.
+                    <div className={`p-3 rounded-lg border text-[11px] leading-relaxed ${
+                      isDarkMode ? "bg-slate-950/60 border-slate-800 text-slate-300" : "bg-slate-50 border-slate-200 text-slate-600"
+                    }`}>
+                      <span className={`font-bold block mb-0.5 ${isDarkMode ? "text-slate-200" : "text-slate-900"}`}>
+                        Modo Permisos Rol Activado
+                      </span>
+                      Permisos asignados: <strong className={isDarkMode ? "text-blue-400" : "text-blue-900"}>{selectedRole.badgeText}</strong>.
                     </div>
 
                     <Button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full bg-primary hover:bg-primary/90 font-bold h-10 text-xs sm:text-sm gap-2 mt-2"
+                      className="w-full bg-blue-900 hover:bg-blue-950 text-white font-bold h-10 text-xs sm:text-sm gap-2 mt-2"
                     >
                       {isLoading ? (
                         <span>Ingresando...</span>
@@ -310,12 +394,12 @@ export default function SignInPage() {
                   </form>
                 </CardContent>
 
-                <CardFooter className="flex flex-col gap-2 pt-0 pb-4 border-t border-border mt-4">
-                  <div className="w-full pt-3 flex items-center justify-between text-xs text-muted-foreground">
-                    <span>¿Eres nuevo en la plataforma?</span>
+                <CardFooter className={`flex flex-col gap-2 pt-0 pb-4 border-t mt-4 ${isDarkMode ? "border-slate-800" : "border-slate-200"}`}>
+                  <div className="w-full pt-3 flex items-center justify-between text-xs">
+                    <span className={isDarkMode ? "text-slate-400" : "text-slate-500"}>¿Eres nuevo en la plataforma?</span>
                     <button
                       onClick={() => setIsRegisterMode(true)}
-                      className="text-primary font-bold hover:underline flex items-center gap-1"
+                      className={`font-bold hover:underline flex items-center gap-1 ${isDarkMode ? "text-blue-400" : "text-blue-900"}`}
                     >
                       Registrarme <ArrowRight className="h-3.5 w-3.5" />
                     </button>
@@ -324,19 +408,25 @@ export default function SignInPage() {
               </Card>
 
               {/* BANNER DE ACCESO DIRECTO A PROPUESTAS */}
-              <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 space-y-3">
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                isDarkMode ? "bg-slate-900/80 border-slate-800 text-slate-200" : "bg-blue-50/60 border-blue-200 text-slate-800"
+              }`}>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                  <div className="p-2 rounded-lg bg-blue-900/20 text-blue-500">
                     <FileUp className="h-5 w-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs sm:text-sm text-foreground">¿Eres Investigador? Presenta tu Propuesta</h4>
-                    <p className="text-[11px] text-muted-foreground">Si ya estás registrado, ingresa directamente para cargar tu proyecto de investigación.</p>
+                    <h4 className="font-bold text-xs sm:text-sm">¿Eres Investigador? Presenta tu Propuesta</h4>
+                    <p className={`text-[11px] ${isDarkMode ? "text-slate-400" : "text-slate-500"}`}>
+                      Si ya estás registrado, ingresa directamente para cargar tu proyecto de investigación.
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Link href="/carga-propuesta" className="w-full">
-                    <Button variant="outline" size="sm" className="w-full border-primary/40 text-primary font-bold text-xs gap-1.5">
+                    <Button variant="outline" size="sm" className={`w-full font-bold text-xs gap-1.5 ${
+                      isDarkMode ? "border-slate-700 bg-slate-900 text-blue-400 hover:bg-slate-800" : "border-blue-300 bg-white text-blue-900 hover:bg-blue-50"
+                    }`}>
                       Ir Directo a Propuestas <ArrowRight className="h-3.5 w-3.5" />
                     </Button>
                   </Link>
@@ -349,11 +439,15 @@ export default function SignInPage() {
       </main>
 
       {/* FOOTER PÁGINA */}
-      <footer className="max-w-7xl w-full mx-auto pt-4 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+      <footer className={`max-w-7xl w-full mx-auto pt-4 border-t flex items-center justify-between text-xs ${
+        isDarkMode ? "border-slate-800 text-slate-400" : "border-slate-200 text-slate-500"
+      }`}>
         <span>© 2026 Ecosistema SIGPRI - UNITEPC</span>
         <div className="flex items-center gap-4">
-          <Link href="/portal-publico" className="hover:underline">Portal Público</Link>
-          <button onClick={() => setIsRegisterMode(true)} className="text-primary font-bold hover:underline">
+          <Link href="/portal-publico" className={`hover:underline ${isDarkMode ? "text-slate-300" : "text-slate-700"}`}>
+            Portal Público
+          </Link>
+          <button onClick={() => setIsRegisterMode(true)} className={`font-bold hover:underline ${isDarkMode ? "text-blue-400" : "text-blue-900"}`}>
             Registro de Investigador
           </button>
         </div>
