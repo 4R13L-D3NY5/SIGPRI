@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { 
   X, BookOpen, Sparkles, ArrowRight, CheckCircle2, AlertCircle, 
   FileText, Calendar, Calculator, UserPlus, ShieldCheck, Check, 
@@ -30,6 +31,11 @@ export function ProposalTutorialModal({
   const [modalTab, setModalTab] = useState<"diagrama" | "pasos" | "requisitos">("diagrama");
   const [activeStepTab, setActiveStepTab] = useState<number>(1);
   const [zoomSvg, setZoomSvg] = useState<boolean>(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
 
@@ -47,25 +53,9 @@ export function ProposalTutorialModal({
     }
   };
 
-  return (
-    <>
-      {/* BOTÓN DISPARADOR INTERNO SI NO SE CONTROLA EXTERNAMENTE */}
-      {externalIsOpen === undefined && (
-        <Button
-          type="button"
-          variant={triggerButtonVariant}
-          className={triggerButtonClassName}
-          onClick={handleOpen}
-        >
-          <BookOpen className="h-4 w-4 text-primary" />
-          <span>{triggerButtonText}</span>
-        </Button>
-      )}
-
-      {/* MODAL DE TUTORIAL Y DIAGRAMA DE SECUENCIA */}
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
-          <div className="relative w-full max-w-5xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh] animate-in zoom-in-95 duration-200">
+  const modalContent = (
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+      <div className="relative my-auto w-full max-w-5xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] animate-in zoom-in-95 duration-200">
             
             {/* ENCABEZADO PRINCIPAL DEL MODAL */}
             <div className="px-6 py-4 border-b border-border bg-gradient-to-r from-muted/50 via-card to-muted/30 flex items-center justify-between shrink-0">
@@ -494,7 +484,25 @@ export function ProposalTutorialModal({
 
           </div>
         </div>
+  );
+
+  return (
+    <>
+      {/* BOTÓN DISPARADOR INTERNO SI NO SE CONTROLA EXTERNAMENTE */}
+      {externalIsOpen === undefined && (
+        <Button
+          type="button"
+          variant={triggerButtonVariant}
+          className={triggerButtonClassName}
+          onClick={handleOpen}
+        >
+          <BookOpen className="h-4 w-4 text-primary shrink-0" />
+          <span>{triggerButtonText}</span>
+        </Button>
       )}
+
+      {/* RENDERIZADO DEL MODAL MEDIANTE PORTAL EN DOCUMENT.BODY */}
+      {isOpen && mounted && createPortal(modalContent, document.body)}
     </>
   );
 }
