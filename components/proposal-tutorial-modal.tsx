@@ -59,15 +59,12 @@ export function ProposalTutorialModal({
         >
           <BookOpen className="h-4 w-4 text-primary" />
           <span>{triggerButtonText}</span>
-          <Badge variant="outline" className="ml-1 font-mono text-[9px] bg-primary/10 text-primary border-primary/20">
-            Guía SVG
-          </Badge>
         </Button>
       )}
 
       {/* MODAL DE TUTORIAL Y DIAGRAMA DE SECUENCIA */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200">
           <div className="relative w-full max-w-5xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh] animate-in zoom-in-95 duration-200">
             
             {/* ENCABEZADO PRINCIPAL DEL MODAL */}
