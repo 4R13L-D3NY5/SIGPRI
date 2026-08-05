@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # SERVICIO 1: FASTAPI BACKEND (PYTHON / PORT 8008)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: sigpri-backend
+    ports:
+      - "8008:8008"
+    volumes:
+      - ./backend:/app
+      - backend-db:/app/data
+    environment:
+      - PORT=8008
+      - HOST=0.0.0.0
+      - ENVIRONMENT=development
+    restart: unless-stopped
+
+  # SERVICIO 2: NEXT.JS FRONTEND (NODE / PORT 3001)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sigpri-frontend
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - PORT=3001
+      - NEXT_PUBLIC_API_URL=http://localhost:8008
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-db:
