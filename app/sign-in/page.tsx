@@ -110,8 +110,20 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isRegisterMode, setIsRegisterMode] = useState<boolean>(false);
   
-  // MODO NOCHE / MODO DÍA TOGGLE STATE (Predefinido en Modo Noche)
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+  // MODO NOCHE / MODO DÍA TOGGLE STATE (Predefinido en Modo Día)
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+
+  // Leer la preferencia global de presentación inicial definida por el Administrador
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("sigpri_global_theme_default");
+      if (savedTheme === "DARK") {
+        setIsDarkMode(true);
+      } else if (savedTheme === "LIGHT") {
+        setIsDarkMode(false);
+      }
+    }
+  }, []);
 
   const handleRoleSelect = (role: RoleOption) => {
     setSelectedRole(role);

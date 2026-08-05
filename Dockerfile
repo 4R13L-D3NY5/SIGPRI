@@ -1,25 +1,21 @@
-# 1. ETAPA DE CONSTRUCCIÓN Y EJECUCIÓN DEL FRONTEND NEXT.JS
-FROM node:20-alpine AS base
-
-# Instalar pnpm globalmente
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# 1. IMAGEN BASE DE NODE.JS 20
+FROM node:20-alpine
 
 WORKDIR /app
+
+# Instalar pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Copiar archivos de dependencias
 COPY package.json pnpm-lock.yaml* ./
 
-# Instalar dependencias
-RUN pnpm install --frozen-lockfile || pnpm install
+# Instalar dependencias rápido
+RUN pnpm install --no-frozen-lockfile --ignore-scripts
 
 # Copiar todo el código fuente
 COPY . .
 
-# Deshabilitar telemetría de Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
-
-# Exponer el puerto 3001 para Next.js dev/start
 EXPOSE 3001
 
-# Comando por defecto para desarrollo con recarga rápida
 CMD ["pnpm", "dev", "-p", "3001"]

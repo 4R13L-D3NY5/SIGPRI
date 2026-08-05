@@ -10,7 +10,7 @@ import {
   Settings, Calendar, FileText, CheckCircle2, XCircle, Plus, Trash2, Edit3, 
   ArrowUp, ArrowDown, ShieldCheck, Layers, BookOpen, ToggleLeft, ToggleRight, 
   Lock, Unlock, Save, RefreshCw, AlertCircle, Check, HelpCircle, Building2,
-  ListOrdered
+  ListOrdered, Sun, Moon
 } from "lucide-react";
 import { ElegantToast, ElegantConfirmModal, ToastState } from "@/components/ui/elegant-toast";
 
@@ -204,6 +204,33 @@ export default function SystemSettingsPage() {
   // TOAST Y MODAL CONFIRMACIÓN
   const [toast, setToast] = useState<ToastState | null>(null);
   const [deleteSectionId, setDeleteSectionId] = useState<string | null>(null);
+
+  // PREFERENCIA GLOBAL DE PRESENTACIÓN INICIAL (TEMA POR DEFECTO PARA EL ADMINISTRADOR)
+  const [globalThemeDefault, setGlobalThemeDefault] = useState<"LIGHT" | "DARK">("LIGHT");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("sigpri_global_theme_default");
+      if (savedTheme === "DARK") {
+        setGlobalThemeDefault("DARK");
+      } else {
+        setGlobalThemeDefault("LIGHT");
+      }
+    }
+  }, []);
+
+  const handleSaveThemePreference = (newTheme: "LIGHT" | "DARK") => {
+    setGlobalThemeDefault(newTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sigpri_global_theme_default", newTheme);
+    }
+    setToast({
+      message: `Preferencia guardada: La presentación inicial por defecto del sistema se ha configurado en ${
+        newTheme === "LIGHT" ? "Modo Día (Light Mode)" : "Modo Noche (Dark Mode)"
+      } para todos los usuarios.`,
+      type: "success",
+    });
+  };
 
   // MODAL: CREAR NUEVA GESTIÓN
   const [isNewGestionOpen, setIsNewGestionOpen] = useState(false);
@@ -772,6 +799,62 @@ export default function SystemSettingsPage() {
                         🏛️ {s}
                       </Badge>
                     ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* PREFERENCIA DE PRESENTACIÓN INICIAL (TEMA POR DEFECTO REQUERIDO POR EL USUARIO) */}
+            <Card className="border-border bg-card shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
+                  <Sun className="h-5 w-5 text-amber-500" /> Preferencia Global de Presentación Inicial (Tema por Defecto)
+                </CardTitle>
+                <CardDescription>
+                  Defina la forma en que los portales de la plataforma (Portal Público, Acceso e Inicio de Sesión) se presentan inicialmente a los usuarios por defecto.
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div 
+                    onClick={() => handleSaveThemePreference("LIGHT")}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${
+                      globalThemeDefault === "LIGHT"
+                        ? "bg-amber-500/15 border-amber-500 text-foreground ring-2 ring-amber-500/30 font-bold shadow-md"
+                        : "bg-muted/30 border-border hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Sun className="h-6 w-6 text-amber-500" />
+                      <div>
+                        <span className="font-bold text-sm block">☀️ Modo Día (Light Mode)</span>
+                        <span className="text-[11px] text-muted-foreground">Predeterminado. Presentación limpia, clara y luminosa para todos los portales.</span>
+                      </div>
+                    </div>
+                    {globalThemeDefault === "LIGHT" && (
+                      <Badge className="bg-amber-500 text-slate-950 font-bold shrink-0">Activo por Defecto</Badge>
+                    )}
+                  </div>
+
+                  <div 
+                    onClick={() => handleSaveThemePreference("DARK")}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-3 ${
+                      globalThemeDefault === "DARK"
+                        ? "bg-purple-500/15 border-purple-500 text-foreground ring-2 ring-purple-500/30 font-bold shadow-md"
+                        : "bg-muted/30 border-border hover:bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Moon className="h-6 w-6 text-purple-400" />
+                      <div>
+                        <span className="font-bold text-sm block">🌙 Modo Noche (Dark Mode)</span>
+                        <span className="text-[11px] text-muted-foreground">Presentación en modo oscuro de alto contraste.</span>
+                      </div>
+                    </div>
+                    {globalThemeDefault === "DARK" && (
+                      <Badge className="bg-purple-500 text-white font-bold shrink-0">Activo por Defecto</Badge>
+                    )}
                   </div>
                 </div>
               </CardContent>

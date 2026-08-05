@@ -123,6 +123,18 @@ export default function PublicPortalPage() {
   const [selectedMediumFilter, setSelectedMediumFilter] = useState("TODOS");
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Leer la preferencia global de presentación inicial definida por el Administrador
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("sigpri_global_theme_default");
+      if (savedTheme === "DARK") {
+        setIsDarkMode(true);
+      } else if (savedTheme === "LIGHT") {
+        setIsDarkMode(false);
+      }
+    }
+  }, []);
+
   // ESTADO DEL FORMULARIO WEB DE POSTULACIÓN
   const [formData, setFormData] = useState({
     campaignCode: "CONV-1-2026-03",
