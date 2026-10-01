@@ -1,6 +1,6 @@
 {
-  "name": "community-agent-template",
-  "description": "Open source Next.js template for building AI-powered community management bots for Slack, with a built-in admin panel.",
+  "name": "sigpri",
+  "description": "SIGPRI - Sistema de Información para Gestión de Proyectos de Investigación | DICYT UNITEPC",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@10.33.0",

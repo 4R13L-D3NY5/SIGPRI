@@ -7,7 +7,7 @@ import {
   BookOpen, ExternalLink, Eye, ChevronRight, Calculator, CheckCircle2,
   DollarSign, PieChart, TrendingUp, Sparkles, Building2, User, X, Edit3, 
   ShieldAlert, LayoutGrid, List, Table as TableIcon, FileText, Calendar,
-  FileSpreadsheet, Ban, History, ArrowRight, GitFork, Plus, Printer, Users, Scale, ShieldCheck
+  FileSpreadsheet, Ban, History, ArrowRight, GitFork, Plus, Printer, Users, Scale, ShieldCheck, CheckSquare, ListChecks
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +28,8 @@ import { ProposalTutorialModal } from "@/components/proposal-tutorial-modal";
 import { ProjectPdfGenerator } from "./_components/project-pdf-generator";
 import { AssignCommitteesModal, CommitteeEvaluatorOption } from "./_components/assign-committees-modal";
 import { EvaluateProposalModal, PointEvaluation } from "./_components/evaluate-proposal-modal";
+import { ProposalChecklistModal } from "./_components/proposal-checklist-modal";
+import { calculateProposalCompletion } from "@/lib/proposal-completion-utils";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 
 // ESTADOS OFICIALES REQUERIDOS (INCLUYENDO EN EVALUACIÓN)
@@ -275,6 +277,7 @@ export default function ProjectsRegistryPage() {
   const [cancelModalProject, setCancelModalProject] = useState<ProjectItem | null>(null);
   const [isFlowModalOpen, setIsFlowModalOpen] = useState<boolean>(false);
   const [pdfProject, setPdfProject] = useState<ProjectItem | null>(null);
+  const [checklistProject, setChecklistProject] = useState<ProjectItem | null>(null);
 
   // ESTADOS PARA DESIGNACIÓN Y EVALUACIÓN POR COMITÉS
   const [assignProject, setAssignProject] = useState<ProjectItem | null>(null);
@@ -416,7 +419,7 @@ export default function ProjectsRegistryPage() {
     const matchesGestion = selectedGestion === "all" || p.managementYear === selectedGestion;
     const matchesStatus = selectedStatus === "all" || p.status === selectedStatus;
     const matchesArea = selectedArea === "all" || p.facultyArea.includes(selectedArea);
-    const matchesCampaign = selectedCampaign === "all" || (p.campaignCode && p.campaignCode.toLowerCase().includes(selectedCampaign.toLowerCase()));
+    const matchesCampaign = selectedCampaign === "all" || ((p as any).campaignCode && (p as any).campaignCode.toLowerCase().includes(selectedCampaign.toLowerCase())) || ((p as any).convocatoriaNombre && (p as any).convocatoriaNombre.toLowerCase().includes(selectedCampaign.toLowerCase()));
 
     return matchesQuery && matchesGestion && matchesStatus && matchesArea && matchesCampaign;
   });
@@ -681,7 +684,7 @@ export default function ProjectsRegistryPage() {
                   className="w-full bg-background border border-input rounded-md px-3 py-2 text-xs font-medium text-foreground cursor-pointer font-mono"
                 >
                   <option value="all">📢 Todas las Convocatorias</option>
-                  {Array.from(new Set(projects.map((p) => p.campaignCode).filter(Boolean))).map((code) => (
+                  {Array.from(new Set(projects.map((p) => (p as any).campaignCode || (p as any).convocatoriaNombre).filter(Boolean))).map((code) => (
                     <option key={code} value={code!}>
                       {code}
                     </option>
@@ -734,8 +737,8 @@ export default function ProjectsRegistryPage() {
           /* VISTA EN TARJETAS */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((p) => {
-              const reqBudget = p.requestedBudget || p.grossBudget || 0;
-              const taxCat = p.taxCategory || 'servicios';
+              const reqBudget = (p as any).requestedBudget || (p as any).grossBudget || (p as any).presupuestoTotalBOB || 0;
+              const taxCat = (p as any).taxCategory || 'servicios';
               const taxInfo = calculateLey843Tax(reqBudget, taxCat);
               return (
                 <Card key={p.id} className="border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden">
@@ -784,35 +787,66 @@ export default function ProjectsRegistryPage() {
                       </div>
                     )}
 
-                    {/* PRESUPUESTO & RETENCIONES */}
-                    <div className="p-3 rounded-lg bg-muted/40 border border-border space-y-1.5">
-                      <div className="flex justify-between items-center text-[11px]">
-                        <span className="text-muted-foreground">Presupuesto Bruto:</span>
-                        <span className="font-mono font-bold text-foreground">Bs. {reqBudget.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-[11px]">
-                        <span className="text-muted-foreground">Retenciones ({taxInfo.totalTaxPercent}%):</span>
-                        <span className="font-mono font-bold text-amber-500">Bs. {taxInfo.totalTaxAmount.toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-[11px] pt-1 border-t border-border">
-                        <span className="font-bold text-foreground">Monto Neto a Desembolsar:</span>
-                        <span className="font-mono font-extrabold text-emerald-500">Bs. {taxInfo.netAmount.toLocaleString()}</span>
-                      </div>
-                    </div>
+                    {/* PRESUPUESTO SOLICITADO Y COMPLETITUD DE PROPUESTA (XF STANDARDS) */}
+                    {(() => {
+                      const completion = calculateProposalCompletion(p);
+                      return (
+                        <div className="space-y-2.5">
+                          {/* INDICADOR DE COMPLETITUD DE PROPUESTA (5 CRITERIOS REQUERIDOS) */}
+                          <div 
+                            onClick={() => setChecklistProject(p)}
+                            title="Verificar los 5 puntos requeridos para que la propuesta esté lista"
+                            className="p-2.5 rounded-lg bg-muted/40 border border-border hover:border-primary/40 cursor-pointer transition-all space-y-1.5 group"
+                          >
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className="font-bold text-foreground group-hover:text-primary transition-colors flex items-center gap-1.5">
+                                <CheckSquare className="h-3.5 w-3.5 text-primary" />
+                                Completitud de la Propuesta:
+                              </span>
+                              <span className={`font-mono font-bold ${completion.isReady ? "text-emerald-500" : "text-amber-500"}`}>
+                                {completion.completedCount}/5 ({completion.percentage}%)
+                              </span>
+                            </div>
+                            <div className="w-full bg-muted rounded-full h-2 overflow-hidden border border-border">
+                              <div
+                                className={`h-full transition-all duration-300 ${
+                                  completion.isReady ? "bg-emerald-500" : completion.percentage >= 60 ? "bg-amber-500" : "bg-rose-500"
+                                }`}
+                                style={{ width: `${completion.percentage}%` }}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-0.5">
+                              <span>{completion.isReady ? "✓ Lista para Enviar" : `Falta: ${completion.items.find(i => !i.isCompleted)?.title.split('.')[1] || 'Secciones'}`}</span>
+                              <span className="text-primary font-semibold group-hover:underline">Ver Checklist →</span>
+                            </div>
+                          </div>
 
-                    {/* AVANCE WBS */}
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-muted-foreground font-medium">Avance Cronograma WBS:</span>
-                        <span className="font-mono font-bold text-primary">{p.wbsProgress}%</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2 overflow-hidden border border-border">
-                        <div 
-                          className="bg-primary h-full transition-all duration-300" 
-                          style={{ width: `${p.wbsProgress}%` }}
-                        />
-                      </div>
-                    </div>
+                          {/* PRESUPUESTO SOLICITADO SIMPLIFICADO (SIN RETENCIONES CONFUSAS EN POSTULACIÓN) */}
+                          <div className="p-2.5 rounded-lg bg-muted/30 border border-border flex justify-between items-center text-[11px]">
+                            <span className="text-muted-foreground font-semibold flex items-center gap-1">
+                              <DollarSign className="h-3.5 w-3.5 text-emerald-500" /> Presupuesto Solicitado:
+                            </span>
+                            <span className="font-mono font-extrabold text-foreground text-xs">
+                              {reqBudget > 0 ? `Bs. ${reqBudget.toLocaleString()}` : "Pendiente"}
+                            </span>
+                          </div>
+
+                          {/* AVANCE WBS DE EJECUCIÓN */}
+                          <div className="space-y-1 pt-1">
+                            <div className="flex justify-between text-[11px]">
+                              <span className="text-muted-foreground font-medium">Avance Cronograma WBS:</span>
+                              <span className="font-mono font-bold text-primary">{p.wbsProgress}%</span>
+                            </div>
+                            <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden border border-border">
+                              <div 
+                                className="bg-primary h-full transition-all duration-300" 
+                                style={{ width: `${p.wbsProgress}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </CardContent>
 
                   {/* ACCIONES OPERATIVAS CON TOOLTIPS INSTANTÁNEOS (DELAY 0) */}
@@ -961,8 +995,8 @@ export default function ProjectsRegistryPage() {
                 </thead>
                 <tbody className="divide-y divide-border/60">
                   {filteredProjects.map((p) => {
-                    const reqBudget = p.requestedBudget || p.grossBudget || 0;
-                    const taxCat = p.taxCategory || 'servicios';
+                    const reqBudget = (p as any).requestedBudget || (p as any).grossBudget || (p as any).presupuestoTotalBOB || 0;
+                    const taxCat = (p as any).taxCategory || 'servicios';
                     const taxInfo = calculateLey843Tax(reqBudget, taxCat);
                     return (
                       <tr key={p.id} className="hover:bg-muted/40 transition-colors">
@@ -1153,7 +1187,8 @@ export default function ProjectsRegistryPage() {
 
       {/* MODAL 4: CANCELACIÓN CON MOTIVO OBLIGATORIO */}
       <CancelProjectModal 
-        project={cancelModalProject} 
+        projectTitle={(cancelModalProject as any)?.titulo || cancelModalProject?.title || ""}
+        projectCode={(cancelModalProject as any)?.codigo || cancelModalProject?.code || ""}
         isOpen={!!cancelModalProject} 
         onClose={() => setCancelModalProject(null)}
         onConfirm={handleConfirmCancel} 
@@ -1203,6 +1238,25 @@ export default function ProjectsRegistryPage() {
         onClose={() => setEvaluateProject(null)}
         project={evaluateProject}
         onSaveEvaluation={handleSaveEvaluation}
+      />
+
+      {/* MODAL 11: CHECKLIST Y VALIDACIÓN DE LOS 5 PUNTOS DE LA PROPUESTA (XF) */}
+      <ProposalChecklistModal
+        isOpen={!!checklistProject}
+        onClose={() => setChecklistProject(null)}
+        project={checklistProject}
+        onNavigateToSection={(actionKey) => {
+          if (!checklistProject) return;
+          const target = checklistProject;
+          setChecklistProject(null);
+          if (actionKey === "details_anexo1" || actionKey === "details_anexo3" || actionKey === "anexo4") {
+            setDetailProject(target);
+          } else if (actionKey === "wbs") {
+            setWbsProject(target);
+          } else if (actionKey === "budget") {
+            setBudgetProject(target);
+          }
+        }}
       />
 
       {/* TOAST ELEGANTE */}

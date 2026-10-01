@@ -12,14 +12,40 @@ class TeamMemberSchema(BaseModel):
     email: Optional[str] = None
     cell: Optional[str] = None
 
+# Attached Document schema
+class AttachedDocumentSchema(BaseModel):
+    id: str
+    name: str
+    type: str
+    size: str
+    upload_date: str
+    status: str = "VIGENTE"
+    notes: Optional[str] = None
+
+# Rights Transfer schema
+class RightsTransferSchema(BaseModel):
+    id: str
+    beneficiary_type: str
+    beneficiary_name: str
+    transfer_type: str
+    legal_advisor: str
+    clauses: str
+    document_hash: str
+    created_at: str
+
 # Proposal schemas
 class ProposalBase(BaseModel):
     title: str
     area: str
+    funding_type: Optional[str] = "INTERNO"
     gestora: Optional[str] = "Dra. Maria Lorena Orellana Aguilar"
     start_date: Optional[str] = "2026-08-03"
     end_date: Optional[str] = "2026-12-19"
     team_members: Optional[List[TeamMemberSchema]] = []
+    attached_documents: Optional[List[AttachedDocumentSchema]] = []
+    rights_transfers: Optional[List[RightsTransferSchema]] = []
+    custom_lines: Optional[List[str]] = []
+    diffusion_data: Optional[dict] = {}
     summary: Optional[str] = None
     justification: Optional[str] = None
     objectives: Optional[str] = None
@@ -34,11 +60,16 @@ class ProposalCreate(ProposalBase):
 class ProposalUpdate(BaseModel):
     title: Optional[str] = None
     area: Optional[str] = None
+    funding_type: Optional[str] = None
     gestora: Optional[str] = None
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     status: Optional[str] = None
     team_members: Optional[List[TeamMemberSchema]] = None
+    attached_documents: Optional[List[AttachedDocumentSchema]] = None
+    rights_transfers: Optional[List[RightsTransferSchema]] = None
+    custom_lines: Optional[List[str]] = None
+    diffusion_data: Optional[dict] = None
     summary: Optional[str] = None
     justification: Optional[str] = None
     objectives: Optional[str] = None

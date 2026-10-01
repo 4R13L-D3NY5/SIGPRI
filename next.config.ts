@@ -1,11 +1,9 @@
 import type { NextConfig } from "next";
-import { withWorkflow } from "workflow/next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
   cacheComponents: true,
   reactCompiler: true,
-  typedRoutes: true,
   experimental: {
     staleTimes: {
       dynamic: 30,
@@ -13,4 +11,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withWorkflow(nextConfig);
+export default nextConfig;

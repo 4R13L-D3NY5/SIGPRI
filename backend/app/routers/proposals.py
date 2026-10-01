@@ -16,18 +16,25 @@ def create_proposal(proposal_in: schemas.ProposalCreate, db: Session = Depends(g
     count = db.query(models.Proposal).count()
     code = f"SIGPRI-2026-{(count + 1):03d}"
     
-    # Process team members JSON
+    # Process JSON fields
     team_members_dict = [tm.model_dump() for tm in proposal_in.team_members] if proposal_in.team_members else []
+    attached_docs_dict = [doc.model_dump() for doc in proposal_in.attached_documents] if proposal_in.attached_documents else []
+    rights_transfers_dict = [rt.model_dump() for rt in proposal_in.rights_transfers] if proposal_in.rights_transfers else []
     
     db_proposal = models.Proposal(
         code=code,
         title=proposal_in.title,
         area=proposal_in.area,
+        funding_type=proposal_in.funding_type or "INTERNO",
         gestora=proposal_in.gestora or "Dra. Maria Lorena Orellana Aguilar",
         start_date=proposal_in.start_date or "2026-08-03",
         end_date=proposal_in.end_date or "2026-12-19",
         status="Enviado",
         team_members=team_members_dict,
+        attached_documents=attached_docs_dict,
+        rights_transfers=rights_transfers_dict,
+        custom_lines=proposal_in.custom_lines or [],
+        diffusion_data=proposal_in.diffusion_data or {},
         summary=proposal_in.summary,
         justification=proposal_in.justification,
         objectives=proposal_in.objectives,

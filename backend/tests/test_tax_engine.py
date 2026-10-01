@@ -45,5 +45,25 @@ class TestTaxEngine(unittest.TestCase):
         self.assertEqual(res["executed_amount"], 2000.0)
         self.assertEqual(res["control_status"], "EXENTO_PRESTAMO")
 
+    def test_remesas_exterior_grossup(self):
+        # Pago al exterior donde el proveedor exige 390.00 exactos netos (No acepta retención -> Gross-Up 12.5%)
+        # Monto Bruto Reexpresado = 390 / 0.875 = 445.71
+        # Retención 12.5% = 55.71
+        # Ejecutado al Proveedor = 390.00
+        res = calculate_retention(quantity=10, unit_price=39, voucher_type="FACTURA INTERNACIONAL", retention_type="REMESAS_EXTERIOR_GROSSUP")
+        self.assertEqual(res["total_amount"], 445.71)
+        self.assertEqual(res["retention_rate"], 12.5)
+        self.assertEqual(res["retention_amount"], 55.71)
+        self.assertEqual(res["executed_amount"], 390.0)
+
+    def test_remesas_exterior_acepta_retencion(self):
+        # Pago al exterior donde el proveedor SÍ acepta retención directa (12.5%)
+        # Monto Facturado = 390.00, Retención 12.5% = 48.75, Ejecutado = 341.25
+        res = calculate_retention(quantity=10, unit_price=39, voucher_type="FACTURA INTERNACIONAL", retention_type="REMESAS_EXTERIOR")
+        self.assertEqual(res["total_amount"], 390.0)
+        self.assertEqual(res["retention_rate"], 12.5)
+        self.assertEqual(res["retention_amount"], 48.75)
+        self.assertEqual(res["executed_amount"], 341.25)
+
 if __name__ == "__main__":
     unittest.main()

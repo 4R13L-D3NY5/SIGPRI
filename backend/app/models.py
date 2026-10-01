@@ -10,11 +10,16 @@ class Proposal(Base):
     code = Column(String(50), unique=True, index=True)
     title = Column(String(255), nullable=False)
     area = Column(String(100), nullable=False)
+    funding_type = Column(String(50), default="INTERNO")  # INTERNO, COFINANCIADO, EXTERNO
     gestora = Column(String(150), default="Dra. Maria Lorena Orellana Aguilar")
     start_date = Column(String(20), default="2026-08-03")
     end_date = Column(String(20), default="2026-12-19")
-    status = Column(String(50), default="Borrador")  # Borrador, Enviado, En Revisión Científica, En Revisión Bioética, Aprobado, Rechazado, Correcciones Solicitadas
+    status = Column(String(50), default="Borrador")  # Borrador, Enviado, En Revisión Científica, En Revisión Bioética, En Revisión Legal, Aprobado en Ejecución, Concluido, Publicado
     team_members = Column(JSON, default=list) # [{name, ci, carrera, institucion, profesion, email, cell}]
+    attached_documents = Column(JSON, default=list) # [{id, name, type, size, upload_date, status, notes}]
+    rights_transfers = Column(JSON, default=list) # [{id, beneficiary_type, beneficiary_name, transfer_type, legal_advisor, clauses, document_hash, created_at}]
+    custom_lines = Column(JSON, default=list) # ["Inteligencia Artificial Biomédica"]
+    diffusion_data = Column(JSON, default=dict) # {type, journal_name, issn, doi, event_name, media_name, screenshots:[], final_document:{}}
     summary = Column(Text, nullable=True)
     justification = Column(Text, nullable=True)
     objectives = Column(Text, nullable=True)
@@ -29,6 +34,25 @@ class Proposal(Base):
     budget_items = relationship("BudgetItem", back_populates="proposal", cascade="all, delete-orphan")
     wbs_tasks = relationship("WbsTask", back_populates="proposal", cascade="all, delete-orphan")
     final_reports = relationship("FinalReport", back_populates="proposal", cascade="all, delete-orphan")
+
+class GestionAnual(Base):
+    __tablename__ = "gestiones_anuales"
+
+    id = Column(Integer, primary_key=True, index=True)
+    year = Column(Integer, unique=True, nullable=False)
+    start_date = Column(String(20), nullable=False)
+    end_date = Column(String(20), nullable=False)
+    is_active = Column(String(10), default="SI")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class LineaInvestigacion(Base):
+    __tablename__ = "lineas_investigacion"
+
+    id = Column(Integer, primary_key=True, index=True)
+    carrera = Column(String(100), nullable=False)
+    area = Column(String(100), nullable=False)
+    linea_nombre = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
 
 class CommitteeEvaluation(Base):
     __tablename__ = "committee_evaluations"

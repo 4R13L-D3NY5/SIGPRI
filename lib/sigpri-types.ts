@@ -11,7 +11,7 @@ export type ProjectStatus =
   | "Publicado con DOI";
 
 /** Tipos de gasto según la normativa fiscal de retenciones de la Ley 843 (Bolivia) */
-export type Ley843TaxCategory = "bienes" | "servicios" | "rc_iva" | "alquileres";
+export type Ley843TaxCategory = "bienes" | "servicios" | "rc_iva" | "alquileres" | "remesas_exterior" | "remesas_exterior_grossup";
 
 /** Resultado detallado de la calculadora de retenciones tributarias (Ley 843) */
 export interface TaxCalculationResult {
@@ -90,6 +90,66 @@ export interface CoInvestigator {
   email: string;
 }
 
+/** Modalidad de Financiamiento Institucional */
+export type FundingType = "INTERNO" | "COFINANCIADO" | "EXTERNO";
+
+/** Documento adjunto de permiso, licencia o aval */
+export interface AttachedDocument {
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  upload_date: string;
+  status: "VIGENTE" | "OBSERVADO" | "CADUCADO";
+  notes?: string;
+}
+
+/** Registro de Cesión de Derechos de Propiedad Intelectual */
+export interface RightsTransfer {
+  id: string;
+  beneficiary_type: "UNITEPC" | "MUNICIPIO" | "INSTITUCION_EXTERNA" | "MIXTO";
+  beneficiary_name: string;
+  transfer_type: "CESION_TOTAL" | "LICENCIA_USO" | "CODIGO_FUENTE" | "EXPLOTACION_COMPARTIDA";
+  legal_advisor: string;
+  clauses: string;
+  document_hash: string;
+  created_at: string;
+}
+
+/** Registro de Difusión de Resultados Finales */
+export interface DiffusionData {
+  type?: "REVISTA" | "EVENTO" | "PRENSA";
+  journal_name?: string;
+  issn?: string;
+  doi?: string;
+  event_name?: string;
+  media_name?: string;
+  screenshots?: string[];
+  final_document?: {
+    name: string;
+    url: string;
+    size: string;
+  };
+}
+
+/** Estructura de Gestión Anual */
+export interface GestionAnual {
+  id?: number;
+  year: number;
+  start_date: string;
+  end_date: string;
+  is_active: boolean;
+}
+
+/** Línea de Investigación Parametrizada por Carrera */
+export interface LineaInvestigacion {
+  id?: number;
+  carrera: string;
+  area: string;
+  linea_nombre: string;
+  description?: string;
+}
+
 /** Estructura principal de un proyecto registrado en SIGPRI */
 export interface SigpriProject {
   id: string;
@@ -99,6 +159,7 @@ export interface SigpriProject {
   investigadorPrincipal: PrincipalInvestigator;
   coInvestigadores: CoInvestigator[];
   areaInvestigacion: string;
+  fundingType?: FundingType;
   convocatoriaId: string;
   convocatoriaNombre: string;
   estado: ProjectStatus;
@@ -111,6 +172,10 @@ export interface SigpriProject {
   urlPublicacion?: string;
   dictamenes: CommitteeDictamen[];
   retencionesHistorial: TaxCalculationResult[];
+  attachedDocuments?: AttachedDocument[];
+  rightsTransfers?: RightsTransfer[];
+  customLines?: string[];
+  diffusionData?: DiffusionData;
   tags: string[];
   ultimaActualizacion: string;
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { 
-  X, BookOpen, UserCheck, ShieldCheck, FileText, Award, AlertTriangle, 
+  X, BookOpen, UserCheck, ShieldCheck, FileText, Award, AlertTriangle, ShieldAlert, FileCheck, FileUp,
   CheckCircle2, Clock, Calendar, Building2, User, Download, ExternalLink, Scale,
   CheckSquare, FileSpreadsheet, Layers, Milestone, Globe, Phone, Mail, MapPin,
   Table as TableIcon, Info, Maximize2, UserPlus, GraduationCap, Briefcase, Plus,
@@ -20,6 +20,7 @@ import {
   RegisteredInvestigator 
 } from "@/lib/investigators-directory";
 import { getActiveUserRole, canEditProjectFields } from "@/lib/permission-utils";
+import { calculateProposalCompletion } from "@/lib/proposal-completion-utils";
 
 export interface TeamMember {
   id: string;
@@ -98,7 +99,7 @@ interface ProjectDetailModalProps {
 }
 
 export function ProjectDetailModal({ project, isOpen, onClose, onUpdateStatus }: ProjectDetailModalProps) {
-  const [activeTab, setActiveTab] = useState<"anexo1" | "anexo2" | "anexo3_p1" | "anexo3_p2">("anexo1");
+  const [activeTab, setActiveTab] = useState<"anexo1" | "anexo2" | "anexo3_p1" | "anexo3_p2" | "adjuntos" | "cesion" | "difusion">("anexo1");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>(DEFAULT_TEAM_MEMBERS);
   const [selectedAreaIndex, setSelectedAreaIndex] = useState<number>(0);
   
@@ -382,6 +383,30 @@ export function ProjectDetailModal({ project, isOpen, onClose, onUpdateStatus }:
           </div>
         </div>
 
+        {/* BARRA DE COMPLETITUD DE PROPUESTA EN CABECERA DEL MODAL */}
+        {(() => {
+          const completion = calculateProposalCompletion(project);
+          return (
+            <div className="px-6 py-2 bg-muted/40 border-b border-border flex items-center justify-between gap-4 text-xs shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-foreground">Estado de Completitud de Postulación:</span>
+                <Badge variant="outline" className={`font-mono text-[11px] font-bold ${completion.isReady ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/30" : "bg-amber-500/10 text-amber-500 border-amber-500/30"}`}>
+                  {completion.completedCount}/5 Requisitos ({completion.percentage}%)
+                </Badge>
+              </div>
+              <div className="flex-1 max-w-xs bg-muted rounded-full h-2 overflow-hidden border border-border hidden sm:block">
+                <div
+                  className={`h-full transition-all duration-300 ${completion.isReady ? "bg-emerald-500" : "bg-amber-500"}`}
+                  style={{ width: `${completion.percentage}%` }}
+                />
+              </div>
+              <span className="text-[11px] text-muted-foreground font-medium hidden md:inline">
+                {completion.isReady ? "✓ Propuesta Lista para Evaluación" : "Requisitos: Datos, Anexos I-III, Permisos, WBS y Presupuesto"}
+              </span>
+            </div>
+          );
+        })()}
+
         {/* TOAST DE CAMBIOS GUARDADOS */}
         {isSavedToast && (
           <div className="bg-emerald-500 text-white text-xs font-bold p-2 text-center flex items-center justify-center gap-2 shrink-0 animate-in fade-in">
@@ -433,6 +458,41 @@ export function ProjectDetailModal({ project, isOpen, onClose, onUpdateStatus }:
             }`}
           >
             <Layers className="h-4 w-4" /> Anexo 3 - Parte II: Propuesta (Puntos 1-8)
+          </button>
+
+          <button
+            onClick={() => setActiveTab("adjuntos")}
+            className={`px-5 py-3 text-xs sm:text-sm font-semibold rounded-t-lg transition-colors border-b-2 flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "adjuntos"
+                ? "border-primary text-primary bg-background shadow-sm"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <FileText className="h-4 w-4" /> Anexo 4: Permisos y Licencias
+          </button>
+
+          <button
+            onClick={() => setActiveTab("cesion")}
+            className={`px-5 py-3 text-xs sm:text-sm font-semibold rounded-t-lg transition-colors border-b-2 flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "cesion"
+                ? "border-primary text-primary bg-background shadow-sm"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ShieldCheck className="h-4 w-4" /> Cesión de Derechos (Ley 1322)
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/30 font-mono">Fase Cierre</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("difusion")}
+            className={`px-5 py-3 text-xs sm:text-sm font-semibold rounded-t-lg transition-colors border-b-2 flex items-center gap-2 whitespace-nowrap ${
+              activeTab === "difusion"
+                ? "border-primary text-primary bg-background shadow-sm"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ExternalLink className="h-4 w-4" /> Difusión & Informe Final
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/30 font-mono">Post-Ejecución</span>
           </button>
         </div>
 
@@ -1017,6 +1077,217 @@ export function ProjectDetailModal({ project, isOpen, onClose, onUpdateStatus }:
                   )}
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* PESTAÑA: ANEXO 4 - PERMISOS Y LICENCIAS */}
+          {activeTab === "adjuntos" && (
+            <div className="space-y-6">
+              <div className="border-l-4 border-amber-500 pl-4 py-1">
+                <h3 className="font-bold text-lg text-foreground uppercase tracking-wide flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-amber-500" />
+                  ANEXO 4: PERMISOS, LICENCIAS Y AVALES INSTITUCIONALES
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Requisito obligatorio previo o durante la postulación cuando el proyecto involucra seres humanos, muestras biológicas, animales o licencias sanitarias.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2 text-xs">
+                <span className="font-bold text-amber-500 uppercase tracking-wide block">⚠️ Nota sobre Requisitos Bioéticos y Normativos</span>
+                <p className="text-muted-foreground leading-relaxed">
+                  Si su propuesta no requiere permisos bioéticos o licencias de terceros, puede dejar esta sección marcada como "Sin Adjuntos Pendientes". Si la investigación se realiza en instalaciones externas o con muestras biológicas, adjunte los respaldos correspondientes.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                      <ShieldAlert className="h-4 w-4 text-amber-500" /> Aval del Comité de Bioética (UNITEPC / CEI)
+                    </h4>
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30 text-[10px] font-bold">
+                      Aprobado / Requerido
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Dictamen de aprobación emitido por el Comité de Ética en Investigación.</p>
+                  <div className="p-3 rounded-lg bg-muted/40 border border-dashed border-border flex items-center justify-between">
+                    <span className="text-xs font-mono font-medium text-foreground truncate">Aval_Bioetica_CEI_2026_APROBADO.pdf</span>
+                    <Button size="sm" variant="ghost" className="text-xs text-primary font-bold">Ver Documento</Button>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
+                      <Building2 className="h-4 w-4 text-blue-500" /> Permiso Bioseguridad / Licencia SEDES
+                    </h4>
+                    <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/30 text-[10px] font-bold">
+                      Licencia Vigente
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Licencia de manejo de sustancias o muestras otorgada por el Servicio Departamental de Salud (SEDES).</p>
+                  <div className="p-3 rounded-lg bg-muted/40 border border-dashed border-border flex items-center justify-between">
+                    <span className="text-xs font-mono font-medium text-foreground truncate">Licencia_Sanitaria_SEDES_CBBA_2026.pdf</span>
+                    <Button size="sm" variant="ghost" className="text-xs text-primary font-bold">Ver Documento</Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PESTAÑA: CESIÓN DE DERECHOS (LEY N° 1322) - FASE DE CIERRE */}
+          {activeTab === "cesion" && (
+            <div className="space-y-6">
+              <div className="border-l-4 border-amber-500 pl-4 py-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-lg text-foreground uppercase tracking-wide">CESIÓN DE DERECHOS PATRIMONIALES (LEY N° 1322)</h3>
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/30 font-bold text-xs font-mono">
+                    Fase de Cierre / Post-Ejecución
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Este trámite legal se suscribe formalmente entre el Investigador Principal y la UNITEPC al finalizar o previo al informe científico final.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2 text-xs">
+                <span className="font-bold text-amber-500 uppercase tracking-wide flex items-center gap-1.5">
+                  <ShieldCheck className="h-4 w-4" /> Marco Normativo de Propiedad Intelectual - Ley N° 1322 de Derecho de Autor
+                </span>
+                <p className="text-muted-foreground leading-relaxed">
+                  De conformidad con la Ley N° 1322 de la República de Bolivia, los derechos morales corresponden inalienablemente al autor/investigador, mientras que la Universidad Técnica Privada Cosmos (UNITEPC) asume la titularidad patrimonial sobre los productos de software, patentes o publicaciones derivados del financiamiento institucional otorgado.
+                </p>
+                {(project.status.includes("Propuesta") || project.status.includes("Observación") || (project as any).status === "1. En Propuesta") && (
+                  <div className="p-3 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-600 dark:text-amber-300 font-semibold mt-2 flex items-center gap-2">
+                    <Info className="h-4 w-4 shrink-0" />
+                    <span>Aviso de Fase de Propuesta: Esta sección de cesión patrimonial se suscribirá formalmente entre el Investigador y Asesoría Legal una vez finalizada la ejecución del proyecto.</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="border border-border rounded-xl bg-card p-6 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                  <div>
+                    <h4 className="font-bold text-base text-foreground">Acta Digital de Transferencia Patrimonial de Autoría</h4>
+                    <p className="text-xs font-mono text-muted-foreground">Código de Acta: ACTA-CESION-2026-SIGPRI-003</p>
+                  </div>
+                  <Badge className="bg-emerald-600 text-white font-bold text-xs">
+                    ✓ Validado por Asesoría Legal (COM-LEGAL-1-2026)
+                  </Badge>
+                </div>
+
+                <div className="p-4 rounded-lg bg-muted/30 border border-border text-xs leading-relaxed space-y-3 text-muted-foreground font-mono">
+                  <p>
+                    <strong className="text-foreground">PRIMERA (PARTES):</strong> Por una parte, el/la Investigador(a) Principal <span className="text-primary font-bold">{editableTitle ? editableTitle.slice(0, 45) + "..." : project.title}</span>, y por otra parte la Universidad Técnica Privada Cosmos (UNITEPC), representada por el Comité de Asesoría Legal.
+                  </p>
+                  <p>
+                    <strong className="text-foreground">SEGUNDA (CESIÓN PATRIMONIAL):</strong> El/la autor(a) cede a título exclusivo a favor de la UNITEPC los derechos de reproducción, publicación, distribución y comercialización de los resultados intangibles generados con fondos CTI.
+                  </p>
+                  <p>
+                    <strong className="text-foreground">TERCERA (FIRMA Y SHA-256):</strong> Hash Criptográfico del Acta: <span className="text-amber-500 font-bold">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    <span className="text-xs text-foreground font-semibold">Responsable Legal: Dr. Gonzalo Morales Salguero</span>
+                  </div>
+                  <Button className="bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-1.5">
+                    <FileCheck className="h-4 w-4" /> Generar y Descargar Acta en PDF (Ley 1322)
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PESTAÑA: DIFUSIÓN DE RESULTADOS E INFORME FINAL - ESTRATEGIA POST-EJECUCIÓN */}
+          {activeTab === "difusion" && (
+            <div className="space-y-6">
+              <div className="border-l-4 border-blue-500 pl-4 py-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-lg text-foreground uppercase tracking-wide">DIFUSIÓN DE RESULTADOS E INFORME CIENTÍFICO FINAL</h3>
+                  <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/30 font-bold text-xs font-mono">
+                    Estrategia DICYT / Post-Ejecución
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Estrategia institucional que ejecuta la universidad una vez finalizada la investigación para divulgar los resultados alcanzados.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 space-y-2 text-xs">
+                <span className="font-bold text-blue-500 uppercase tracking-wide flex items-center gap-1.5">
+                  <Globe className="h-4 w-4" /> Estrategia de Visibilidad y Producción Intelectual UNITEPC
+                </span>
+                <p className="text-muted-foreground leading-relaxed">
+                  Todo proyecto financiado por la universidad culmina en una estrategia de difusión integral que abarca la publicación en revistas indexadas (con DOI/ISSN), presentación en congresos o ferias de investigación y la entrega del Documento Científico Final.
+                </p>
+                {(project.status.includes("Propuesta") || project.status.includes("Observación") || (project as any).status === "1. En Propuesta") && (
+                  <div className="p-3 rounded-lg bg-blue-500/20 border border-blue-500/40 text-blue-600 dark:text-blue-300 font-semibold mt-2 flex items-center gap-2">
+                    <Info className="h-4 w-4 shrink-0" />
+                    <span>Aviso de Fase de Propuesta: La carga de publicaciones (DOI/ISSN), evidencias de ferias y el Documento Final Científico se realiza en la etapa post-ejecución tras concluir la investigación.</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* 1. PUBLICACIÓN EN REVISTA */}
+                <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="h-4 w-4 text-primary" />
+                    <h4 className="font-bold text-xs text-foreground uppercase">1. Publicación Científica</h4>
+                  </div>
+                  <div className="space-y-1.5 text-xs">
+                    <div>
+                      <span className="text-muted-foreground block text-[11px]">Revista Indexada:</span>
+                      <span className="font-bold text-foreground">Revista Científica UNITEPC / Latindex</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[11px]">Código ISSN / DOI:</span>
+                      <span className="font-mono text-primary font-bold">10.5281/zenodo.sigpri.2026.01</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. DIFUSIÓN EN EVENTOS Y MEDIOS */}
+                <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Award className="h-4 w-4 text-amber-500" />
+                    <h4 className="font-bold text-xs text-foreground uppercase">2. Ferias y Difusión</h4>
+                  </div>
+                  <div className="space-y-1.5 text-xs">
+                    <div>
+                      <span className="text-muted-foreground block text-[11px]">Evento / Medio:</span>
+                      <span className="font-bold text-foreground">Feria Nacional de Ciencia y Tecnología UNITEPC 2026</span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground block text-[11px]">Evidencias / Artes:</span>
+                      <span className="text-emerald-500 font-bold">3 Capturas y Afiche Cargados</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. DOCUMENTO CIENTÍFICO FINAL */}
+                <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+                  <div className="flex items-center gap-2">
+                    <FileCheck className="h-4 w-4 text-emerald-500" />
+                    <h4 className="font-bold text-xs text-foreground uppercase">3. Informe Científico Final</h4>
+                  </div>
+                  <div className="space-y-1.5 text-xs">
+                    <div>
+                      <span className="text-muted-foreground block text-[11px]">Estado Documental:</span>
+                      <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/30 font-bold text-[10px]">
+                        Informe Final Aprobado
+                      </Badge>
+                    </div>
+                    <Button size="sm" variant="outline" className="w-full text-xs font-bold gap-1 mt-2">
+                      <FileUp className="h-3.5 w-3.5 text-primary" /> Subir / Ver Documento Final PDF
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

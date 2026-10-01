@@ -315,6 +315,8 @@ interface ProjectWbsModalProps {
 
 export function ProjectWbsModal({ project, isOpen, onClose, onUpdateStatus }: ProjectWbsModalProps) {
   const [tasks, setTasks] = useState<WbsTask[]>(INITIAL_WBS_TASKS);
+  const [startDisplacementWeeks, setStartDisplacementWeeks] = useState<number>(0);
+  const [gestionEndDate] = useState<string>("2026-12-18");
   const [userRole, setUserRole] = useState<string>("admin");
   const [canEditStructure, setCanEditStructure] = useState<boolean>(true);
   const [canWeeklyTrack, setCanWeeklyTrack] = useState<boolean>(true);

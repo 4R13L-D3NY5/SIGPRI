@@ -348,7 +348,7 @@ export function ProjectPdfGenerator({
                     Que no ha sido postulado ni se encuentra en proceso de evaluación o financiamiento en otra institución nacional o internacional.
                   </li>
                   <li>
-                    Que conocemos y aceptamos a cabalidad el Reglamento General de Investigación y las bases de la Convocatoria {project.campaignCode || "CONV-1-2026-03"}.
+                    Que conocemos y aceptamos a cabalidad el Reglamento General de Investigación y las bases de la Convocatoria {(project as any).campaignCode || (project as any).convocatoriaNombre || "CONV-1-2026-03"}.
                   </li>
                 </ol>
 
@@ -452,13 +452,14 @@ export function ProjectPdfGenerator({
                   </div>
 
                   <div className="border border-slate-800 p-3 space-y-2">
-                    <div><strong>Título del Proyecto:</strong> {project.title}</div>
-                    <div><strong>Código de Registro:</strong> {project.code}</div>
-                    <div><strong>Investigador Principal:</strong> {project.leadInvestigator}</div>
-                    <div><strong>Facultad / Área Temática:</strong> {project.facultyArea}</div>
-                    <div><strong>Sede / Campus UNITEPC:</strong> {project.campus || "Cochabamba - Campus Central"}</div>
-                    <div><strong>Gestión Académica de Postulación:</strong> {project.managementYear || "2026"}</div>
-                    <div><strong>Convocatoria Referencial:</strong> {project.campaignCode || "CONV-1-2026-03"} ({project.campaignName || "Convocatoria Nacional de Proyectos 2026"})</div>
+                    <div className="space-y-1">
+                      <div><strong>Código Único de Registro:</strong> {(project as any).codigo || (project as any).code}</div>
+                      <div><strong>Investigador Principal:</strong> {(project as any).leadInvestigator || (project as any).investigadorPrincipal?.nombre}</div>
+                      <div><strong>Facultad / Área Temática:</strong> {(project as any).facultyArea || (project as any).areaInvestigacion}</div>
+                      <div><strong>Sede / Campus UNITEPC:</strong> {(project as any).campus || "Cochabamba - Campus Central"}</div>
+                      <div><strong>Gestión Académica de Postulación:</strong> {(project as any).managementYear || "2026"}</div>
+                      <div><strong>Convocatoria Referencial:</strong> {(project as any).campaignCode || (project as any).convocatoriaNombre || "CONV-1-2026-03"} ({(project as any).campaignTitle || (project as any).convocatoriaNombre || "FONDOS CTI UNITEPC 2026"})</div>
+                    </div>
                   </div>
 
                   {/* SELECCIÓN DE EJE TEMÁTICO ESTRATÉGICO UNITEPC (TABLA 6 DOCX) */}

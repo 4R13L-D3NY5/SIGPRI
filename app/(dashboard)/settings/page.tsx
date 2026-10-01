@@ -79,10 +79,8 @@ const INITIAL_GESTIONES: AcademicGestion[] = [
   },
 ];
 
-const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
+const BASE_ANEXO_III_ITEMS = [
   {
-    id: "sec-1",
-    gestionCode: "1-2026",
     title: "Planteamiento del Problema y Objeto de Estudio",
     description: "Formulación clara y delimitación de la problemática científica, objeto de estudio y preguntas de investigación.",
     isRequired: true,
@@ -91,8 +89,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-2",
-    gestionCode: "1-2026",
     title: "Justificación",
     description: "Justificación científica, técnica, social e institucional de la pertinencia y viabilidad del estudio.",
     isRequired: true,
@@ -101,8 +97,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-3",
-    gestionCode: "1-2026",
     title: "Estado del Arte",
     description: "Revisión crítica y antecedentes relevantes del estado actual del conocimiento nacional e internacional.",
     isRequired: true,
@@ -111,8 +105,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-4",
-    gestionCode: "1-2026",
     title: "Objetivos",
     description: "Objetivo General y Objetivos Específicos medibles y orientados a la solución del problema planteado.",
     isRequired: true,
@@ -121,8 +113,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-5",
-    gestionCode: "1-2026",
     title: "Metodología",
     description: "Tipo de investigación, diseño metodológico, universo, muestra, técnicas e instrumentos de recolección de datos.",
     isRequired: true,
@@ -131,8 +121,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-6",
-    gestionCode: "1-2026",
     title: "Resultados que se Esperan",
     description: "Descripción cualitativa y cuantitativa de los productos o hallazgos científicos esperados al finalizar la investigación.",
     isRequired: true,
@@ -141,8 +129,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-7",
-    gestionCode: "1-2026",
     title: "Impactos que se Pretenden Lograr",
     description: "Evaluación de impactos académico, científico, tecnológico, social, económico o ambiental previstos.",
     isRequired: true,
@@ -151,8 +137,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-8",
-    gestionCode: "1-2026",
     title: "Referencias Bibliográficas (Formato APA v7)",
     description: "Lista bibliográfica citada rigurosamente conforme las normas APA versión 7 (Adaptación PAT UNITEPC).",
     isRequired: true,
@@ -161,8 +145,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: true,
   },
   {
-    id: "sec-9",
-    gestionCode: "1-2026",
     title: "Estrategias de Difusión",
     description: "Plan de publicación en revistas indexadas, congresos académicos, patentes o transferencia a la sociedad.",
     isRequired: false,
@@ -171,8 +153,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: false,
   },
   {
-    id: "sec-10",
-    gestionCode: "1-2026",
     title: "Conclusiones",
     description: "Síntesis de hallazgos para el informe final de avance o proyecto concluido.",
     isRequired: false,
@@ -181,8 +161,6 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: false,
   },
   {
-    id: "sec-11",
-    gestionCode: "1-2026",
     title: "Recomendaciones",
     description: "Sugerencias operativas o prospectivas derivadas del estudio.",
     isRequired: false,
@@ -191,6 +169,19 @@ const INITIAL_SECTIONS_ANEXO_III: AcademicSectionItem[] = [
     isSystemStandard: false,
   },
 ];
+
+export function buildDefaultSectionsForGestion(gestionCode: string): AcademicSectionItem[] {
+  return BASE_ANEXO_III_ITEMS.map((item, idx) => ({
+    id: `sec-${gestionCode}-${idx + 1}`,
+    gestionCode,
+    title: item.title,
+    description: item.description,
+    isRequired: item.isRequired,
+    isEnabled: item.isEnabled,
+    order: item.order,
+    isSystemStandard: item.isSystemStandard,
+  }));
+}
 
 const LOCAL_STORAGE_GESTIONES_KEY = "sigpri_gestiones_master_v1";
 const LOCAL_STORAGE_SECTIONS_KEY = "sigpri_sections_anexo_iii_v1";
@@ -247,36 +238,65 @@ export default function SystemSettingsPage() {
   const [secIsRequired, setSecIsRequired] = useState(true);
   const [secIsEnabled, setSecIsEnabled] = useState(true);
 
-  // CARGAR DE LOCALSTORAGE
+  // CARGAR DE LOCALSTORAGE CON AUTO-POBLACIÓN DE SECCIONES PARA TODAS LAS GESTIONES
   useEffect(() => {
     if (typeof window !== "undefined") {
+      let loadedGest: AcademicGestion[] = INITIAL_GESTIONES;
       const storedGest = localStorage.getItem(LOCAL_STORAGE_GESTIONES_KEY);
       if (storedGest) {
         try {
           const parsed = JSON.parse(storedGest);
-          setGestiones(Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_GESTIONES);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            loadedGest = parsed;
+          }
         } catch (e) {
-          setGestiones(INITIAL_GESTIONES);
+          loadedGest = INITIAL_GESTIONES;
         }
-      } else {
-        setGestiones(INITIAL_GESTIONES);
-        localStorage.setItem(LOCAL_STORAGE_GESTIONES_KEY, JSON.stringify(INITIAL_GESTIONES));
       }
+      setGestiones(loadedGest);
 
+      let loadedSections: AcademicSectionItem[] = [];
       const storedSec = localStorage.getItem(LOCAL_STORAGE_SECTIONS_KEY);
       if (storedSec) {
         try {
           const parsed = JSON.parse(storedSec);
-          setSections(Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_SECTIONS_ANEXO_III);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            loadedSections = parsed;
+          }
         } catch (e) {
-          setSections(INITIAL_SECTIONS_ANEXO_III);
+          loadedSections = [];
         }
-      } else {
-        setSections(INITIAL_SECTIONS_ANEXO_III);
-        localStorage.setItem(LOCAL_STORAGE_SECTIONS_KEY, JSON.stringify(INITIAL_SECTIONS_ANEXO_III));
+      }
+
+      // Garantizar que TODAS las gestiones registradas tengan su esquema de secciones inicializado
+      let needsSave = false;
+      loadedGest.forEach((g) => {
+        const hasSections = loadedSections.some((s) => s.gestionCode === g.code);
+        if (!hasSections) {
+          const defaultSecs = buildDefaultSectionsForGestion(g.code);
+          loadedSections = [...loadedSections, ...defaultSecs];
+          needsSave = true;
+        }
+      });
+
+      setSections(loadedSections);
+      if (needsSave || !storedSec) {
+        localStorage.setItem(LOCAL_STORAGE_SECTIONS_KEY, JSON.stringify(loadedSections));
       }
     }
   }, []);
+
+  // RESTABLECER O POPULAR PLANTILLA BASE PARA UNA GESTIÓN DADA
+  const handleResetTemplateForGestion = (gCode: string) => {
+    const cleanOtherSections = sections.filter((s) => s.gestionCode !== gCode);
+    const newTemplateSecs = buildDefaultSectionsForGestion(gCode);
+    const updated = [...cleanOtherSections, ...newTemplateSecs];
+    saveSectionsData(updated);
+    setToast({
+      message: `Plantilla base de la UNITEPC (Anexo III - Parte 2) cargada exitosamente para la Gestión ${gCode}.`,
+      type: "success",
+    });
+  };
 
   const saveGestionesData = (updated: AcademicGestion[]) => {
     setGestiones(updated);
@@ -315,12 +335,7 @@ export default function SystemSettingsPage() {
     const updatedGest = [...gestiones, newGestion];
     saveGestionesData(updatedGest);
 
-    const defaultSectionsForNewGestion: AcademicSectionItem[] = INITIAL_SECTIONS_ANEXO_III.map((s) => ({
-      ...s,
-      id: `sec-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      gestionCode: code,
-    }));
-
+    const defaultSectionsForNewGestion = buildDefaultSectionsForGestion(code);
     saveSectionsData([...sections, ...defaultSectionsForNewGestion]);
     setIsNewGestionOpen(false);
     setToast({ message: `Gestión ${code} aperturada exitosamente.`, type: "success" });
@@ -621,26 +636,36 @@ export default function SystemSettingsPage() {
                   </div>
                 </div>
 
-                <Button
-                  onClick={() => {
-                    setEditingSection(null);
-                    setSecTitle("");
-                    setSecDescription("");
-                    setSecIsRequired(true);
-                    setSecIsEnabled(true);
-                    setIsSectionModalOpen(true);
-                  }}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 shadow"
-                >
-                  <Plus className="w-4 h-4" /> + Añadir Punto Personalizado
-                </Button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleResetTemplateForGestion(selectedGestionCode)}
+                    className="font-bold text-xs gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
+                    title="Cargar o reponer los 8 puntos normativos del Anexo III Parte 2 de UNITEPC"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" /> 🔄 Cargar Plantilla Base UNITEPC
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setEditingSection(null);
+                      setSecTitle("");
+                      setSecDescription("");
+                      setSecIsRequired(true);
+                      setSecIsEnabled(true);
+                      setIsSectionModalOpen(true);
+                    }}
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 shadow"
+                  >
+                    <Plus className="w-4 h-4" /> + Añadir Punto Personalizado
+                  </Button>
+                </div>
               </div>
             </Card>
 
             {/* LISTADO DE PUNTOS DE LA ESTRUCTURA DEL PROYECTO */}
             <Card className="border-border bg-card shadow-md overflow-hidden">
               <CardHeader className="border-b border-border pb-3">
-                <CardTitle className="text-base font-bold text-foreground flex items-center justify-between">
+                <CardTitle className="text-base font-bold text-foreground flex items-center justify-between flex-wrap gap-2">
                   <span>Esquema Académico de la Gestión {selectedGestionCode} (Anexo III - Parte 2)</span>
                   <span className="text-xs font-normal text-muted-foreground">Habilite, deshabilite o reordene los puntos a solicitar.</span>
                 </CardTitle>
@@ -648,8 +673,16 @@ export default function SystemSettingsPage() {
 
               <div className="divide-y divide-border/60">
                 {currentSections.length === 0 ? (
-                  <div className="p-8 text-center text-muted-foreground text-xs">
-                    No existen puntos configurados para la Gestión {selectedGestionCode}. Presione "+ Añadir Punto Personalizado" o cargue la plantilla base.
+                  <div className="p-10 text-center text-muted-foreground text-xs space-y-3">
+                    <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
+                    <p className="font-bold text-foreground text-sm">No existen puntos configurados para la Gestión {selectedGestionCode}.</p>
+                    <p className="max-w-md mx-auto">Presione el botón a continuación para cargar instantáneamente la plantilla normativa con los 8 puntos estandarizados del Anexo III - Parte 2 UNITEPC.</p>
+                    <Button
+                      onClick={() => handleResetTemplateForGestion(selectedGestionCode)}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs gap-2 shadow"
+                    >
+                      <RefreshCw className="w-4 h-4" /> 🔄 Cargar Plantilla Base UNITEPC ({selectedGestionCode})
+                    </Button>
                   </div>
                 ) : (
                   currentSections.map((sec, idx) => (

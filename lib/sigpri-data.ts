@@ -53,6 +53,31 @@ export function calcularRetencionesLey843(
   let itPorcentaje = 0;
   let rcIvaPorcentaje = 0;
 
+  if (tipoGasto === "remesas_exterior_grossup") {
+    // EL PROVEEDOR DEL EXTERIOR NO ACEPTA RETENCIÓN -> GROSS-UP AL 12.5% (ACRECIMIENTO DE TASA)
+    const iuePorcentaje = 12.5;
+    const montoRequeridoProveedor = round(montoBruto);
+    const montoBrutoReexpresado = round(montoRequeridoProveedor / (1 - 0.125));
+    const iueMonto = round(montoBrutoReexpresado * 0.125);
+    const totalRetenciones = iueMonto;
+    const montoLiquido = round(montoBrutoReexpresado - iueMonto);
+
+    return {
+      montoBruto: montoBrutoReexpresado,
+      tipoGasto,
+      descripcion,
+      iuePorcentaje,
+      iueMonto,
+      itPorcentaje: 0,
+      itMonto: 0,
+      rcIvaPorcentaje: 0,
+      rcIvaMonto: 0,
+      totalRetenciones,
+      montoLiquido: montoRequeridoProveedor,
+      montoGrossUp: montoBrutoReexpresado,
+    };
+  }
+
   switch (tipoGasto) {
     case "bienes":
       iuePorcentaje = 5;
@@ -69,6 +94,12 @@ export function calcularRetencionesLey843(
       iuePorcentaje = 0;
       itPorcentaje = 3;
       rcIvaPorcentaje = 13;
+      break;
+    case "remesas_exterior":
+      // EL PROVEEDOR DEL EXTERIOR SÍ ACEPTA RETENCIÓN DIRECTA AL 12.5%
+      iuePorcentaje = 12.5;
+      itPorcentaje = 0;
+      rcIvaPorcentaje = 0;
       break;
     default:
       iuePorcentaje = 12.5;
@@ -290,6 +321,7 @@ export const mockSigpriProjects: SigpriProject[] = [
       },
     ],
     areaInvestigacion: "Biotecnología y Nanotecnología",
+    fundingType: "COFINANCIADO",
     convocatoriaId: "conv-2026-01",
     convocatoriaNombre: "Convocatoria FONDOS CTI - UMSA 2026",
     estado: "En Propuesta",
@@ -298,6 +330,36 @@ export const mockSigpriProjects: SigpriProject[] = [
     presupuestoTotalBOB: 180000,
     presupuestoEjecutadoBOB: 0,
     avancePorcentaje: 5,
+    attachedDocuments: [
+      { id: 'doc-001', name: 'Permiso_Bioetico_UNITEPC.pdf', type: 'Permiso Bioético', size: '2.4 MB', upload_date: '2026-08-04', status: 'VIGENTE', notes: 'Aval del Comité de Bioética e Investigación Médica.' },
+      { id: 'doc-002', name: 'Licencia_Bioseguridad_SEDES.pdf', type: 'Licencia Ambiental / Bioseguridad', size: '1.8 MB', upload_date: '2026-08-05', status: 'VIGENTE', notes: 'Certificación SEDES para laboratorio.' },
+      { id: 'doc-003', name: 'Carta_Aval_Director_Carrera.pdf', type: 'Carta de Aval Institucional', size: '950 KB', upload_date: '2026-08-03', status: 'VIGENTE', notes: 'Respaldo firmado por la Dirección de Carrera.' }
+    ],
+    rightsTransfers: [
+      {
+        id: 'TRANSFER-2026-001',
+        beneficiary_type: 'MIXTO',
+        beneficiary_name: 'UNITEPC & Gobierno Autónomo Municipal de Cochabamba (SEDES)',
+        transfer_type: 'CESION_TOTAL',
+        legal_advisor: 'Dr. Gonzalo Morales Salguero (Asesor Legal)',
+        clauses: 'Cesión de derechos patrimoniales y licencia de uso libre del modelo tecnológico en centros de salud.',
+        document_hash: 'SHA256-8F92A110-LEGAL2026',
+        created_at: '2026-08-10T11:00:00Z'
+      }
+    ],
+    customLines: ["Nanotecnología Aplicada a Salud Pública"],
+    diffusionData: {
+      type: "REVISTA",
+      journal_name: "Revista Latinoamericana de Nanotecnología y Salud",
+      issn: "2411-8901",
+      doi: "10.1016/j.nano.2026.08.012",
+      screenshots: ["/article_test.png"],
+      final_document: {
+        name: "Informe_Final_Cientifico_UNITEPC_2026.pdf",
+        url: "/informe_final_proyecto_grado.pdf",
+        size: "3.2 MB"
+      }
+    },
     dictamenes: [mockDictamenes[0]],
     retencionesHistorial: [],
     tags: ["Nanotecnología", "Agua", "Medio Ambiente", "El Alto"],
@@ -603,3 +665,16 @@ export const mockSigpriStatsSummary: SigpriStatsSummary = {
     (c) => c.estado === "Abierta" || c.estado === "En Evaluación"
   ).length,
 };
+
+export const mockGestionesAnuales = [
+  { id: 1, year: 2026, start_date: "2026-02-02", end_date: "2026-12-18", is_active: true },
+  { id: 2, year: 2027, start_date: "2027-02-01", end_date: "2027-12-17", is_active: false }
+];
+
+export const mockLineasInvestigacion = [
+  { id: 1, carrera: "Ingeniería de Sistemas", area: "Tecnología y Ciencias Computacionales", linea_nombre: "Desarrollo de Software e Inteligencia Artificial", description: "Sistemas inteligentes y redes neuronales" },
+  { id: 2, carrera: "Ingeniería de Sistemas", area: "Tecnología y Ciencias Computacionales", linea_nombre: "Ciberseguridad y Redes de Datos", description: "Protección de datos y arquitecturas seguras" },
+  { id: 3, carrera: "Medicina", area: "Salud y Biomedicina", linea_nombre: "Epidemiología y Salud Pública", description: "Estudios bio-médicos y enfermedades tropicales" },
+  { id: 4, carrera: "Medicina", area: "Salud y Biomedicina", linea_nombre: "Bioética y Farmacología", description: "Protocolos bioéticos y farmacología avanzada" },
+  { id: 5, carrera: "Derecho", area: "Ciencias Jurídicas y Sociales", linea_nombre: "Propiedad Intelectual y Derecho Tecnológico", description: "Cesión de derechos de autor y patentes" }
+];

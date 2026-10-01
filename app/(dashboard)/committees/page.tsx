@@ -31,8 +31,8 @@ export interface CommitteeMember {
   carrera?: string;
   degree: string;
   institution: string;
-  role: "Presidente" | "Secretario Técnico" | "Evaluador Par" | "Vocal";
-  systemRole: "comite";
+  role: "Presidente" | "Secretario Técnico" | "Evaluador Par" | "Vocal" | "Asesor Legal Principal";
+  systemRole: "comite" | "legal" | "contabilidad";
   status: "Activo" | "Deshabilitado";
   createdAt: string;
 }
@@ -100,6 +100,19 @@ const INITIAL_COMMITTEES: Committee[] = [
       { id: "m-7", name: "Dr. Oscar Campero", ciNumber: "4019283 CB", email: "oscar.campero@genetica.org", phone: "73344556", investigatorType: "EXTERNO", degree: "M.Sc. en Farmacología", institution: "Instituto de Genética", role: "Evaluador Par", systemRole: "comite", status: "Activo", createdAt: "2026-01-18" },
     ],
   },
+  {
+    id: "com-103",
+    code: "COM-LEGAL-1-2026",
+    name: "Comisión de Asesoría Legal y Propiedad Intelectual",
+    area: "Revisión Jurídica, Licencias y Cesión de Derechos (Ley 1322)",
+    gestion: "1-2026",
+    status: "Activo",
+    assignedProjectIds: ["proj-1"],
+    nextSessionDate: "2026-08-25",
+    members: [
+      { id: "m-8", name: "Dr. Gonzalo Morales Salguero", ciNumber: "2891048 CB", email: "legal.dicyt@unitepc.edu.bo", phone: "71982736", investigatorType: "INTERNO", sede: "Cochabamba", facultad: "Facultad de Ciencias Jurídicas", carrera: "Derecho", role: "Asesor Legal Principal", degree: "M.Sc. en Derecho Tecnológico y Propiedad Intelectual", institution: "UNITEPC", systemRole: "legal", status: "Activo", createdAt: "2026-01-20" }
+    ],
+  },
 ];
 
 // INICIALMENTE PERSONAL DE CONTABILIDAD Y FINANZAS
@@ -136,7 +149,7 @@ const LOCAL_STORAGE_COMMITTEES_KEY = "sigpri_committees_master_data_v2";
 const LOCAL_STORAGE_ACCOUNTING_KEY = "sigpri_accounting_officers_data_v1";
 
 export default function CommitteesPage() {
-  const [activeTab, setActiveTab] = useState<"committees" | "accounting">("committees");
+  const [activeTab, setActiveTab] = useState<"committees" | "accounting" | "legal">("committees");
   const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
   const [committees, setCommittees] = useState<Committee[]>([]);
   const [accountingOfficers, setAccountingOfficers] = useState<AccountingOfficer[]>([]);
@@ -548,7 +561,7 @@ export default function CommitteesPage() {
             </div>
           </div>
 
-          {/* TABS DE NAVEGACIÓN (COMITÉS VS CONTABILIDAD) */}
+          {/* TABS DE NAVEGACIÓN (COMITÉS VS FINANZAS VS ASESORÍA LEGAL) */}
           <div className="flex items-center gap-2 pt-4 border-t border-border">
             <button
               onClick={() => setActiveTab("committees")}
@@ -569,7 +582,18 @@ export default function CommitteesPage() {
                   : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
-              <Calculator className="h-4 w-4" /> Personal de Contabilidad y Finanzas ({accountingOfficers.length})
+              <Calculator className="h-4 w-4" /> Revisoress Financieros & Finanzas ({accountingOfficers.length})
+            </button>
+
+            <button
+              onClick={() => setActiveTab("legal")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                activeTab === "legal"
+                  ? "bg-amber-600 text-white shadow"
+                  : "bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              <ShieldCheck className="h-4 w-4" /> Asesoría Legal & Cesión de Derechos
             </button>
           </div>
         </CardHeader>
@@ -880,7 +904,7 @@ export default function CommitteesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleRemoveAccountingOfficer(officer.id)}
+                      onClick={() => setDeleteAccountingId(officer.id)}
                       className="h-7 w-7 text-rose-400 hover:bg-rose-500/10 rounded-full"
                       title="Eliminar usuario de contabilidad"
                     >
@@ -962,7 +986,7 @@ export default function CommitteesPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleRemoveAccountingOfficer(officer.id)}
+                            onClick={() => setDeleteAccountingId(officer.id)}
                             className="h-7 w-7 text-rose-400 hover:bg-rose-500/10 rounded-full"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

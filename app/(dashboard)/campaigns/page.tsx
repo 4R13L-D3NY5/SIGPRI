@@ -10,7 +10,7 @@ import {
   Megaphone, Plus, Search, Filter, Calendar, Clock, BookOpen, User, 
   Building2, GraduationCap, FilePlus, Sparkles, CheckCircle2, AlertCircle, 
   X, Check, ExternalLink, Globe, Layers, FileText, Edit3, LayoutGrid, Table as TableIcon,
-  Trash2
+  Trash2, Image, FileUp, UploadCloud, Eye, Download, FileCode
 } from "lucide-react";
 import { getStoredMasterProjects } from "@/lib/sigpri-store";
 import { ProjectItem } from "../projects/page";
@@ -29,6 +29,9 @@ export interface ResearchCall {
   endDate: string;
   status: "Abierta para Postulación" | "En Evaluación por Comité" | "Cerrada" | "Próxima";
   description: string;
+  artBannerUrl?: string;
+  artBannerType?: "image" | "pdf";
+  artBannerName?: string;
   createdAt: string;
 }
 
@@ -45,6 +48,9 @@ const INITIAL_RESEARCH_CALLS: ResearchCall[] = [
     endDate: "2026-08-31",
     status: "Abierta para Postulación",
     description: "Convocatoria abierta a todas las facultades, carreras y sedes nacionales para la presentación de perfiles y propuestas de investigación aplicada.",
+    artBannerUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
+    artBannerType: "image",
+    artBannerName: "Afiche_Institucional_UNITEPC_2026.jpg",
     createdAt: "2026-01-10",
   },
   {
@@ -58,6 +64,9 @@ const INITIAL_RESEARCH_CALLS: ResearchCall[] = [
     endDate: "2026-09-15",
     status: "Abierta para Postulación",
     description: "Convocatoria específica para proyectos orientados al estudio de enfermedades prevalentes, epidemiología y biotecnología médica.",
+    artBannerUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+    artBannerType: "image",
+    artBannerName: "Afiche_Salud_Biomedicina_2026.jpg",
     createdAt: "2026-01-20",
   },
   {
@@ -72,6 +81,9 @@ const INITIAL_RESEARCH_CALLS: ResearchCall[] = [
     endDate: "2026-10-31",
     status: "Abierta para Postulación",
     description: "Postulación para proyectos focalizados en desarrollo de software, modelado de datos y soluciones IA para el ámbito académico e industrial.",
+    artBannerUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    artBannerType: "image",
+    artBannerName: "Afiche_Sistemas_IA_2026.jpg",
     createdAt: "2026-02-01",
   },
   {
@@ -115,9 +127,36 @@ export default function CallsPage() {
   const [newEndDate, setNewEndDate] = useState("2026-11-30");
   const [newDescription, setNewDescription] = useState("");
   const [newStatus, setNewStatus] = useState<ResearchCall["status"]>("Abierta para Postulación");
+  const [newArtBannerUrl, setNewArtBannerUrl] = useState<string>("");
+  const [newArtBannerType, setNewArtBannerType] = useState<"image" | "pdf">("image");
+  const [newArtBannerName, setNewArtBannerName] = useState<string>("");
 
-  // MODAL: EDITAR CONVOCATORIA
+  // MODAL: EDITAR CONVOCATORIA Y VISTA AMPLIADA DE ARTE
   const [editingCall, setEditingCall] = useState<ResearchCall | null>(null);
+  const [viewArtCall, setViewArtCall] = useState<ResearchCall | null>(null);
+
+  // HELPER PARA CARGAR AFICHE / ARTE GRÁFICO (BASE64)
+  const handleFileUpload = (file: File, isEditMode: boolean = false) => {
+    if (!file) return;
+    const reader = new FileReader();
+    const isPdf = file.type === "application/pdf" || file.name.endsWith(".pdf");
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (isEditMode && editingCall) {
+        setEditingCall({
+          ...editingCall,
+          artBannerUrl: result,
+          artBannerType: isPdf ? "pdf" : "image",
+          artBannerName: file.name,
+        });
+      } else {
+        setNewArtBannerUrl(result);
+        setNewArtBannerType(isPdf ? "pdf" : "image");
+        setNewArtBannerName(file.name);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // LISTAS DINÁMICAS PARA SEDES Y FACULTADES
   const sedesList = Object.keys(UNITEPC_SEDES_DATA);
@@ -189,6 +228,9 @@ export default function CallsPage() {
       endDate: newEndDate,
       status: newStatus,
       description: newDescription || "Convocatoria oficial para proyectos de investigación.",
+      artBannerUrl: newArtBannerUrl || undefined,
+      artBannerType: newArtBannerType,
+      artBannerName: newArtBannerName || undefined,
       createdAt: new Date().toISOString().substring(0, 10),
     };
 
@@ -196,6 +238,8 @@ export default function CallsPage() {
     setNewTitle("");
     setNewCode("");
     setNewDescription("");
+    setNewArtBannerUrl("");
+    setNewArtBannerName("");
     setIsNewCallOpen(false);
     setToast({ message: `Convocatoria ${autoCode} aperturada exitosamente.`, type: "success" });
   };
@@ -368,7 +412,32 @@ export default function CallsPage() {
             const registeredProposals = getCallProposalsCount(call.code);
 
             return (
-              <Card key={call.id} className="border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden">
+              <Card key={call.id} className="border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between overflow-hidden group">
+                {/* BANNER DEL ARTE GRÁFICO SI EXISTE */}
+                {call.artBannerUrl && (
+                  <div className="relative w-full h-36 bg-muted border-b border-border overflow-hidden cursor-pointer" onClick={() => setViewArtCall(call)}>
+                    {call.artBannerType === "image" ? (
+                      <img src={call.artBannerUrl} alt={call.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-rose-950/40 via-purple-950/30 to-background flex items-center justify-center gap-3 p-4">
+                        <FileText className="h-10 w-10 text-rose-400" />
+                        <div>
+                          <Badge variant="outline" className="bg-rose-500/20 text-rose-300 border-rose-500/40 text-[10px] font-bold">Documento PDF Oficial</Badge>
+                          <p className="font-bold text-xs text-foreground mt-1 truncate">{call.artBannerName || "Afiche_Oficial.pdf"}</p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end justify-between p-3">
+                      <Badge variant="secondary" className="bg-black/60 backdrop-blur text-white border-white/20 font-bold text-[10px] gap-1">
+                        <Image className="h-3 w-3 text-primary" /> Arte Gráfico Oficial
+                      </Badge>
+                      <Button size="sm" variant="secondary" className="h-7 text-[11px] font-bold bg-white/90 text-black hover:bg-white gap-1 shadow">
+                        <Eye className="h-3.5 w-3.5" /> Ampliar Arte
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 <CardHeader className="pb-2 space-y-2">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -437,17 +506,28 @@ export default function CallsPage() {
                   </div>
                 </CardContent>
 
-                {/* FOOTER CON BOTÓN DE EDITAR CONVOCATORIA (ADMINISTRATIVO) */}
+                {/* FOOTER CON ACCIONES DE VER ARTE Y EDITAR */}
                 <CardFooter className="pt-2.5 pb-2.5 bg-muted/20 border-t border-border flex items-center justify-between gap-2">
                   <span className="text-[11px] text-muted-foreground font-mono">Creada: {call.createdAt}</span>
                   <div className="flex items-center gap-1.5">
+                    {call.artBannerUrl && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setViewArtCall(call)}
+                        className="text-xs font-bold gap-1 text-primary border-primary/30 hover:bg-primary/10"
+                        title="Ver Afiche / Arte Gráfico"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> Ver Arte
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setEditingCall(call)}
                       className="text-xs font-bold gap-1 text-foreground hover:bg-muted border-border"
                     >
-                      <Edit3 className="w-3.5 h-3.5 text-primary" /> Editar Convocatoria
+                      <Edit3 className="w-3.5 h-3.5 text-primary" /> Editar
                     </Button>
                     <Button
                       variant="ghost"
@@ -545,7 +625,7 @@ export default function CallsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDeleteCall(call.id)}
+                            onClick={() => setDeleteConfirmId(call.id)}
                             className="h-7 w-7 text-rose-400 hover:bg-rose-500/10 rounded-full"
                             title="Eliminar Convocatoria"
                           >
@@ -700,12 +780,83 @@ export default function CallsPage() {
               <div className="space-y-1">
                 <label className="font-bold text-foreground">Descripción / Objetivos</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Detalle los objetivos, términos de referencia y requisitos..."
                   className="w-full bg-background border border-input rounded-lg p-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                 />
+              </div>
+
+              {/* SECCIÓN: ARTE GRÁFICO / AFICHE OFICIAL DE LA CONVOCATORIA (IMAGEN O PDF) */}
+              <div className="space-y-1.5 p-3 rounded-lg bg-muted/30 border border-border">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-foreground flex items-center gap-1.5">
+                    <Image className="h-4 w-4 text-primary" />
+                    Arte Gráfico / Afiche Oficial (Imagen o PDF)
+                  </label>
+                  <span className="text-[10px] text-muted-foreground">Opcional</span>
+                </div>
+
+                {newArtBannerUrl ? (
+                  <div className="relative rounded-lg border border-primary/40 p-2 bg-background flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      {newArtBannerType === "image" ? (
+                        <img src={newArtBannerUrl} alt="Arte Banner" className="h-12 w-20 object-cover rounded border border-border shrink-0" />
+                      ) : (
+                        <div className="h-12 w-12 rounded bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
+                          <FileText className="h-6 w-6 text-rose-500" />
+                        </div>
+                      )}
+                      <div className="truncate text-xs">
+                        <p className="font-bold text-foreground truncate">{newArtBannerName || "Arte_Convocatoria"}</p>
+                        <p className="text-[10px] text-emerald-400 font-semibold">✓ Arte cargado correctamente ({newArtBannerType.toUpperCase()})</p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setNewArtBannerUrl("");
+                        setNewArtBannerName("");
+                      }}
+                      className="h-7 w-7 text-rose-400 hover:bg-rose-500/10 rounded-full shrink-0"
+                      title="Quitar Arte"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-center gap-2">
+                    <label className="flex-1 w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-input hover:border-primary bg-background cursor-pointer transition-colors text-xs font-semibold text-muted-foreground hover:text-foreground">
+                      <UploadCloud className="h-4 w-4 text-primary" />
+                      <span>Subir Afiche (PNG, JPG, WebP o PDF)</span>
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file, false);
+                        }}
+                      />
+                    </label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setNewArtBannerUrl("https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80");
+                        setNewArtBannerType("image");
+                        setNewArtBannerName("Afiche_Oficial_UNITEPC.jpg");
+                      }}
+                      className="text-[11px] font-semibold gap-1 text-primary border-primary/30 hover:bg-primary/10 shrink-0"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" /> Usar Arte Ejemplo
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-border">
@@ -810,11 +961,66 @@ export default function CallsPage() {
               <div className="space-y-1">
                 <label className="font-bold text-foreground">Descripción / Objetivos</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={editingCall.description}
                   onChange={(e) => setEditingCall({ ...editingCall, description: e.target.value })}
                   className="w-full bg-background border border-input rounded-lg p-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                 />
+              </div>
+
+              {/* SECCIÓN: ARTE GRÁFICO / AFICHE EN MODO EDICIÓN */}
+              <div className="space-y-1.5 p-3 rounded-lg bg-muted/30 border border-border">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-foreground flex items-center gap-1.5">
+                    <Image className="h-4 w-4 text-primary" />
+                    Arte Gráfico / Afiche Oficial (Imagen o PDF)
+                  </label>
+                  <span className="text-[10px] text-muted-foreground">Opcional</span>
+                </div>
+
+                {editingCall.artBannerUrl ? (
+                  <div className="relative rounded-lg border border-primary/40 p-2 bg-background flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      {editingCall.artBannerType === "image" ? (
+                        <img src={editingCall.artBannerUrl} alt="Arte Banner" className="h-12 w-20 object-cover rounded border border-border shrink-0" />
+                      ) : (
+                        <div className="h-12 w-12 rounded bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0">
+                          <FileText className="h-6 w-6 text-rose-500" />
+                        </div>
+                      )}
+                      <div className="truncate text-xs">
+                        <p className="font-bold text-foreground truncate">{editingCall.artBannerName || "Arte_Convocatoria"}</p>
+                        <p className="text-[10px] text-emerald-400 font-semibold">✓ Arte asignado ({editingCall.artBannerType?.toUpperCase() || "IMAGEN"})</p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setEditingCall({ ...editingCall, artBannerUrl: undefined, artBannerName: undefined })}
+                      className="h-7 w-7 text-rose-400 hover:bg-rose-500/10 rounded-full shrink-0"
+                      title="Quitar Arte"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-center gap-2">
+                    <label className="flex-1 w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-dashed border-input hover:border-primary bg-background cursor-pointer transition-colors text-xs font-semibold text-muted-foreground hover:text-foreground">
+                      <UploadCloud className="h-4 w-4 text-primary" />
+                      <span>Subir Nuevo Afiche (PNG, JPG, WebP o PDF)</span>
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file, true);
+                        }}
+                      />
+                    </label>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-border">
@@ -826,6 +1032,81 @@ export default function CallsPage() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: VISTA AMPLIADA DEL ARTE GRÁFICO / AFICHE DE CONVOCATORIA */}
+      {viewArtCall && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="w-full max-w-3xl bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200">
+            {/* CABECERA */}
+            <div className="p-4 border-b border-border bg-muted/40 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 overflow-hidden">
+                <Badge variant="outline" className="font-mono bg-primary/10 text-primary border-primary/30 font-bold shrink-0">
+                  {viewArtCall.code}
+                </Badge>
+                <h3 className="font-extrabold text-sm sm:text-base text-foreground truncate">
+                  Arte Gráfico Oficial: {viewArtCall.title}
+                </h3>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setViewArtCall(null)} className="rounded-full shrink-0 text-muted-foreground hover:text-foreground">
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* CUERPO DEL RENDER */}
+            <div className="p-6 overflow-y-auto flex items-center justify-center bg-black/40 min-h-[350px]">
+              {viewArtCall.artBannerUrl ? (
+                viewArtCall.artBannerType === "image" ? (
+                  <div className="space-y-3 text-center w-full">
+                    <img
+                      src={viewArtCall.artBannerUrl}
+                      alt={viewArtCall.title}
+                      className="max-h-[60vh] max-w-full object-contain mx-auto rounded-lg shadow-2xl border border-border"
+                    />
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {viewArtCall.artBannerName || "Afiche_Oficial_Convocatoria.jpg"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="w-full h-[60vh] bg-background border border-border rounded-lg p-2">
+                    <iframe
+                      src={viewArtCall.artBannerUrl}
+                      title="Afiche PDF Convocatoria"
+                      className="w-full h-full rounded border-0"
+                    />
+                  </div>
+                )
+              ) : (
+                <div className="text-center space-y-2 p-8 text-muted-foreground">
+                  <AlertCircle className="h-10 w-10 mx-auto text-amber-500" />
+                  <p className="font-bold text-foreground">No hay arte gráfico asignado a esta convocatoria.</p>
+                </div>
+              )}
+            </div>
+
+            {/* PIE DE MODAL */}
+            <div className="p-3 bg-muted/30 border-t border-border flex items-center justify-between gap-3 text-xs">
+              <span className="text-muted-foreground font-mono">Gestión {viewArtCall.gestion} | UNITEPC</span>
+              <div className="flex items-center gap-2">
+                {viewArtCall.artBannerUrl && (
+                  <a
+                    href={viewArtCall.artBannerUrl}
+                    download={viewArtCall.artBannerName || `Arte_${viewArtCall.code}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 font-bold text-xs gap-1.5 shadow">
+                      <Download className="h-4 w-4" /> Descargar Afiche Oficial
+                    </Button>
+                  </a>
+                )}
+                <Button variant="outline" size="sm" onClick={() => setViewArtCall(null)} className="font-bold">
+                  Cerrar
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}
